@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TECHNOTSAVA 2026 | SJC Institute of Technology</title>
+  <meta name="description" content="TECHNOTSAVA 2026 – SJC Institute of Technology. 4 Flagship Competitions: Tech Quiz, Digital Treasure Hunt, Minute to Win It, and Videography – Frame the Fest." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brutal: {
+              bg: '#FFFDF5',
+              darkBg: '#0D0D0D',
+              yellow: '#FFE600',
+              orange: '#FF5C00',
+              pink: '#FF4D8D',
+              blue: '#0066FF',
+              cyan: '#00F0FF',
+              purple: '#9B51E0',
+              green: '#00E575',
+              card: '#FFFFFF',
+              dark: '#111111'
+            }
+          },
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Syne', 'sans-serif'],
+            tech: ['Space Grotesk', 'sans-serif']
+          },
+          boxShadow: {
+            'brutal': '4px 4px 0px 0px #000000',
+            'brutal-lg': '8px 8px 0px 0px #000000',
+            'brutal-xl': '12px 12px 0px 0px #000000',
+            'brutal-sm': '2px 2px 0px 0px #000000'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & Babel CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- Injected Runtime Environment Variables -->
+  <script src="/env-config.js"></script>
+
+  <style>
+    body {
+      background-color: #FFFDF5;
+      color: #111111;
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+    ::selection {
+      background: #FFE600;
+      color: #000000;
+    }
+    .dot-grid {
+      background-color: #FFFDF5;
+      background-image: radial-gradient(#000000 1.25px, transparent 1.25px);
+      background-size: 24px 24px;
+    }
+    .brutal-border {
+      border: 3px solid #000000 !important;
+    }
+    .brutal-border-4 {
+      border: 4px solid #000000 !important;
+    }
+    .brutal-shadow {
+      box-shadow: 5px 5px 0px 0px #000000;
+    }
+    .brutal-shadow-lg {
+      box-shadow: 8px 8px 0px 0px #000000;
+    }
+    .brutal-shadow-sm {
+      box-shadow: 3px 3px 0px 0px #000000;
+    }
+    .brutal-btn {
+      border: 3px solid #000000;
+      box-shadow: 4px 4px 0px 0px #000000;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.12s ease-in-out;
+    }
+    .brutal-btn:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px 0px #000000;
+    }
+    .brutal-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px 0px #000000;
+    }
+    .brutal-card {
+      background: #FFFFFF;
+      border: 3px solid #000000;
+      box-shadow: 6px 6px 0px 0px #000000;
+      transition: all 0.15s ease-in-out;
+    }
+    .brutal-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 10px 10px 0px 0px #000000;
+    }
+    .brutal-sticker {
+      border: 2px solid #000000;
+      box-shadow: 3px 3px 0px 0px #000000;
+      font-weight: 800;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .brutal-input {
+      border: 3px solid #000000 !important;
+      box-shadow: 3px 3px 0px 0px #000000;
+      background: #FFFFFF !important;
+      color: #000000 !important;
+      font-weight: 600;
+      border-radius: 0px !important;
+    }
+    .brutal-input:focus {
+      outline: none;
+      box-shadow: 6px 6px 0px 0px #000000;
+      background: #FFFDF0 !important;
+    }
+    .marquee-container {
+      background: #FFE600;
+      border-top: 3px solid #000000;
+      border-bottom: 3px solid #000000;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 12px 0;
+      font-weight: 900;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      animation: brutal-scroll 24s linear infinite;
+    }
+    @keyframes brutal-scroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-ticket, #printable-ticket * { visibility: visible; }
+      #printable-ticket { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#FFFDF5] text-black min-h-screen dot-grid">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ========================================================
+    // FEST CONFIGURATION (EDITABLE PLACEHOLDERS)
+    // ========================================================
+    const FEST_CONFIG = {
+      name: "TECHNOTSAVA 2026",
+      edition: "College Technology Fest",
+      tagline: "Think. Create. Compete. Celebrate.",
+      shortIntro:
+        "Welcome to TECHNOTSAVA 2026 organized by SJC Institute of Technology. Compete across 6 exciting flagship arenas, test your intellect, sleuthing skills, dexterity, and cinematic vision!",
+      collegeName: "SJC Institute of Technology",
+      department: "Department of Computer Science & Engineering",
+      festDate: "November 20, 2026",
+      venue: "SJCIT Campus, Chickballapur",
+      registrationFee: "Entry Fee Applicable as per Event",
+      stats: [
+        { label: "Flagship Events", value: "4" },
+        { label: "Expected Innovators", value: "800+" },
+        { label: "Participating Teams", value: "150+" },
+        { label: "Exciting Prizes", value: "Cash & Trophies" }
+      ],
+      schedule: [
+        {
+          day: "November 20",
+          date: "Friday - Morning to Evening",
+          items: [
+            {
+              time: "09:00 AM – 10:00 AM",
+              title: "Inaugural Ceremony & Keynote",
+              venue: "Main Auditorium, SJCIT",
+              description: "Official opening of TECHNOTSAVA 2026 with faculty heads and department coordinators."
+            },
+            {
+              time: "10:30 AM – 11:30 AM",
+              title: "Tech Quiz (Prelims & Rapid Fire)",
+              venue: "Seminar Hall 1",
+              description: "Rapid-fire questions, logo identification and output prediction. Duration: 30–40 mins."
+            },
+            {
+              time: "11:45 AM – 01:00 PM",
+              title: "Digital Treasure Hunt (QR & Riddles)",
+              venue: "Campus Wide & CSE Labs",
+              description: "Teams solve QR codes, riddles and technical clues to reach the final destination. Duration: 45–60 mins."
+            },
+            {
+              time: "01:45 PM – 03:00 PM",
+              title: "Minute To Win It (Agility Gauntlet)",
+              venue: "Student Activity Arena",
+              description: "Quick challenges such as cup stacking, balloon challenges and paper tower building. Duration: 20–30 mins."
+            },
+            {
+              time: "03:15 PM – 04:30 PM",
+              title: "Videography – Frame the Fest (Screening)",
+              venue: "Auditorium AV Center",
+              description: "Creative 1–3 min edited video submission showcasing the entire fest activities & memorable moments."
+            },
+            {
+              time: "04:45 PM – 05:30 PM",
+              title: "Valedictory & Prize Distribution",
+              venue: "Main Auditorium",
+              description: "Presentation of cash awards, certificates, and trophies to winning innovators."
+            }
+          ]
+        }
+      ],
+      coordinators: {
+        faculty: [
+          {
+            name: "Faculty Coordinator",
+            designation: "Associate Professor & Event Lead",
+            department: "Dept. of Computer Science & Engineering",
+            phone: "+91 98765 43210"
+          }
+        ],
+        student: [
+          {
+            name: "Student Convener",
+            role: "Student Coordinator",
+            branchYear: "Final Year, CSE - SJCIT",
+            phone: "+91 98765 43212"
+          }
+        ]
+      }
+    };
+
+    // ========================================================
+    // 6 EVENTS SPECIFICATION
+    // ========================================================
+    const EVENTS = [
+      {
+        id: "tech-quiz",
+        code: "QUIZ",
+        name: "Tech Quiz",
+        category: "Knowledge & Technical Trivia",
+        type: "pair",
+        minTeamSize: 2,
+        maxTeamSize: 2,
+        teamSizeText: "2 Participants (Pair)",
+        duration: "30–40 minutes",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "Fast-Paced",
+        shortDescription:
+          "Rapid-fire questions, logo identification and output prediction testing your speed, sharp eyes, and technical fundamentals.",
+        detailedDescription:
+          "Tech Quiz challenges your core computing knowledge, rapid visual recognition, and algorithmic deduction across buzzer rounds, logo identification, and code output prediction.",
+        rules: [
+          "Participation requires exactly 2 members per team.",
+          "Round 1: Rapid-fire technical trivia & computer fundamentals.",
+          "Round 2: Tech company & open-source logo identification round.",
+          "Round 3: Code snippet tracing and output prediction.",
+          "Duration: 30–40 minutes. Negative marking may apply in buzzer rounds.",
+          "College ID card is compulsory for both participants."
+        ]
+      },
+      {
+        id: "digital-treasure-hunt",
+        code: "DTH",
+        name: "Digital Treasure Hunt",
+        category: "Exploration & Problem Solving",
+        type: "team",
+        minTeamSize: 2,
+        maxTeamSize: 4,
+        teamSizeText: "2–4 Participants",
+        duration: "45–60 minutes",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "Must-Have Flagship",
+        shortDescription:
+          "Teams solve QR codes, riddles and technical clues to find the final destination across the campus grounds.",
+        detailedDescription:
+          "A high-energy, campus-wide sleuthing mission! Teams decode encrypted QR code checkpoints, crack cryptic logic riddles, and piece together digital hints to discover the final victory location before time expires.",
+        rules: [
+          "Team size: 2 to 4 participants including the team leader.",
+          "At least one smartphone with active camera/QR scanner and internet is mandatory per team.",
+          "Teams must scan checkpoints in sequence; skipping clues is prohibited.",
+          "Duration: 45–60 minutes. First team to report at the final destination with all verified clues wins.",
+          "Tampering with physical or digital QR markers results in immediate disqualification."
+        ]
+      },
+      {
+        id: "ideathon",
+        code: "IDEA",
+        name: "Ideathon",
+        category: "Innovation & Pitching",
+        type: "team",
+        minTeamSize: 2,
+        maxTeamSize: 4,
+        teamSizeText: "2–4 Participants",
+        duration: "10 min Pitch + Q&A",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "Grand Innovation",
+        shortDescription:
+          "Architect and pitch breakthrough solutions tackling Smart Campus innovations or Daily Life digital productivity utilities.",
+        detailedDescription:
+          "Ideathon empowers student visionaries to pitch transformative technical prototypes, business models, and system architectures in front of academic and industry juries.",
+        themes: [
+          {
+            id: "smart-campus",
+            title: "Smart Campus & Student Life",
+            description: "Automated attendance, campus security, energy optimization, smart lab scheduling, hostel logistics, and collaborative student platforms."
+          },
+          {
+            id: "daily-productivity",
+            title: "Daily Life Productivity & Digital Utilities",
+            description: "AI personal micro-agents, mental wellness tools, task automation, sustainable daily tracking, and accessibility tools."
+          }
+        ],
+        rules: [
+          "Team size must be between 2 and 4 participants.",
+          "Teams must choose exactly ONE of the two announced themes during registration.",
+          "Each team is allotted 7 minutes to pitch + 3 minutes of jury Q&A.",
+          "Evaluation criteria: Innovation (30%), Technical Feasibility (30%), Impact (20%), Presentation (20%)."
+        ]
+      },
+      {
+        id: "gaming-free-fire",
+        code: "GAME",
+        name: "Gaming – Free Fire",
+        category: "Esports Championship",
+        type: "team",
+        minTeamSize: 2,
+        maxTeamSize: 4,
+        teamSizeText: "2–4 Participants (Squad)",
+        duration: "Multiple Map Rotations",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "Esports Arena",
+        shortDescription:
+          "Drop into the battleground, synchronize your squad strategies, out-aim opponents, and battle for the ultimate Booyah in high-stakes lobbies.",
+        detailedDescription:
+          "Experience pulse-pounding mobile esports warfare. Squads face off across multiple custom room map rotations with competitive tournament settings and kill-placement points matrix.",
+        rules: [
+          "Squad size: 2 to 4 players. Only mobile phones are permitted (strictly NO emulators, iPads, or external triggers).",
+          "All team members must report to the tournament custom room 10 minutes prior to match schedule.",
+          "Official scoring: Placement ranking points + 1 point per kill.",
+          "Any third-party hacks, injectors, or abusive conduct results in immediate team ban."
+        ]
+      },
+      {
+        id: "minute-to-win-it",
+        code: "MWI",
+        name: "Minute To Win It",
+        category: "Agility & Fun Challenges",
+        type: "individual",
+        minTeamSize: 1,
+        maxTeamSize: 1,
+        teamSizeText: "Individual Participation",
+        duration: "20–30 minutes",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "High Energy",
+        shortDescription:
+          "Quick challenges such as cup stacking, balloon challenges and paper tower building against a ticking 60-second clock.",
+        detailedDescription:
+          "An electrifying test of nerves, focus, and physical dexterity. Contestants face off in rapid-fire 60-second micro-challenges designed to test balance, hand-eye coordination, and speed under pressure.",
+        rules: [
+          "Individual participation only. No teams permitted.",
+          "Features quick challenge stations: Cup Stacking, Balloon Balancing/Bounce, and Paper Tower Building.",
+          "Each station has a strict 60-second time limit.",
+          "Overall event duration: 20–30 minutes.",
+          "Referee decisions on task completion and stability are final."
+        ]
+      },
+      {
+        id: "videography-frame-the-fest",
+        code: "VID",
+        name: "Videography – Frame the Fest",
+        category: "Creative Media & Visual Arts",
+        type: "team",
+        minTeamSize: 1,
+        maxTeamSize: 4,
+        teamSizeText: "Solo or 2–4 Participants",
+        duration: "Full Fest Coverage (1–3 min video)",
+        entryFeeText: "Entry Fee Applicable",
+        badge: "Creative Cinematic",
+        shortDescription:
+          "Capture the CSE fest (events, activities, decorations & memorable moments) and create a creative 1–3 min edited video submitted by deadline.",
+        detailedDescription:
+          "Participants must capture the CSE fest, including events, activities, decorations and memorable moments, and create a creative edited video showcasing the entire fest. The final video (1–3 minutes) must be submitted within the given deadline.",
+        rules: [
+          "Solo participants or teams of 2–4 are eligible.",
+          "Video must be recorded entirely during TECHNOTSAVA 2026 on the SJCIT campus.",
+          "Footage must feature fest activities, attendee enthusiasm, decorations, and competitive energy.",
+          "Final video duration must be between 1 to 3 minutes.",
+          "Must be exported in 1080p MP4 format and submitted prior to the announced deadline.",
+          "Judging criteria: Creativity & Pacing (35%), Cinematography & Framing (30%), Audio/Sound Sync (20%), Overall Fest Vibe (15%)."
+        ]
+      }
+    ];
+
+    // ========================================================
+    // DATABASE & LOCAL PERSISTENCE LAYER
+    // ========================================================
+    const LOCAL_REGS_KEY = 'technotsav_2026_registrations';
+    const LOCAL_SETTINGS_KEY = 'technotsav_2026_event_settings';
+
+    const getStoredSettings = () => {
+      try {
+        const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch(e) {}
+      const d = {};
+      EVENTS.forEach(ev => d[ev.id] = true);
+      return d;
+    };
+
+    const setStoredSettings = (settings) => {
+      localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(settings));
+    };
+
+    const getStoredRegistrations = () => {
+      try {
+        const raw = localStorage.getItem(LOCAL_REGS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch(e) {
+        return [];
+      }
+    };
+
+    const saveStoredRegistration = (record) => {
+      const existing = getStoredRegistrations();
+      existing.unshift(record);
+      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(existing));
+      return existing;
+    };
+
+    const deleteStoredRegistration = (id) => {
+      const existing = getStoredRegistrations();
+      const updated = existing.filter(r => r.id !== id);
+      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(updated));
+      return updated;
+    };
+
+    const updateRegistrationStatus = (id, newStatus) => {
+      const existing = getStoredRegistrations();
+      const updated = existing.map(r => r.id === id ? { ...r, status: newStatus } : r);
+      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(updated));
+      return updated;
+    };
+
+    const PAYMENT_QR_DATA = "data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9k=";
+
+    // ========================================================
+    // CANVAS CYBER PARTICLES COMPONENT
+    // ========================================================
+    function CyberParticles() {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let frameId;
+
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        const handleResize = () => {
+          if (!canvas) return;
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        const count = Math.min(Math.floor(width / 20), 65);
+        const particles = [];
+        const colors = ['#38bdf8', '#818cf8', '#c084fc', '#06b6d4'];
+
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            radius: Math.random() * 2 + 1,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            alpha: Math.random() * 0.5 + 0.2
+          });
+        }
+
+        const render = () => {
+          ctx.clearRect(0, 0, width, height);
+
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0) p.x = width;
+            if (p.x > width) p.x = 0;
+            if (p.y < 0) p.y = height;
+            if (p.y > height) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+              const p2 = particles[j];
+              const dx = p.x - p2.x;
+              const dy = p.y - p2.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < 125) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = p.color;
+                ctx.globalAlpha = (1 - dist / 125) * 0.18;
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+              }
+            }
+          }
+
+          ctx.globalAlpha = 1;
+          frameId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          cancelAnimationFrame(frameId);
+        };
+      }, []);
+
+      return (
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 pointer-events-none z-0 opacity-60"
+          style={{ mixBlendMode: 'screen' }}
+        />
+      );
+    }
+
+    // ========================================================
+    // NAVBAR COMPONENT
+    // ========================================================
+    function Navbar({ onOpenAdmin, currentView, onGoHome, onNavigateSection }) {
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+      const handleNav = (sec) => {
+        setMobileMenuOpen(false);
+        onNavigateSection(sec);
+      };
+
+      return (
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFDF5] border-b-4 border-black py-3.5 shadow-[0_4px_0_0_#000]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <button onClick={onGoHome} className="flex items-center gap-3 text-left focus:outline-none group">
+                <div className="w-11 h-11 bg-[#FFE600] border-3 border-black brutal-shadow-sm flex items-center justify-center font-black text-2xl group-hover:rotate-6 transition-transform">
+                  ⚡
+                </div>
+                <div>
+                  <div className="font-display font-black text-2xl tracking-tight text-black flex items-center gap-2">
+                    <span>TECHNOTSAVA</span>
+                    <span className="bg-[#FF5C00] text-white text-xs px-2 py-0.5 border-2 border-black brutal-shadow-sm font-mono font-bold">2026</span>
+                  </div>
+                  <p className="text-[11px] text-black font-mono font-bold tracking-wider uppercase">THINK • CREATE • COMPETE</p>
+                </div>
+              </button>
+
+              {/* Desktop Links */}
+              <div className="hidden md:flex items-center space-x-2 font-mono font-bold text-sm">
+                <button onClick={() => handleNav('hero')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">HOME</button>
+                
+                <button onClick={() => handleNav('events')} className="px-3 py-1.5 hover:bg-[#00E575] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">EVENTS (6)</button>
+                <button onClick={() => {
+                  const q = prompt('Enter your Unique Registration ID (e.g. TECH26-QUIZ-1234):');
+                  if (q && q.trim()) {
+                    const r = getStoredRegistrations().find(x => x.reg_id?.toLowerCase() === q.trim().toLowerCase());
+                    if (r) {
+                      alert('PASS STATUS: ' + (r.status || 'pending').toUpperCase() + '\nEvent: ' + r.event_name + '\nLead: ' + r.leader_name + '\nUTR: ' + (r.utr_id || 'N/A') + '\n' + ((r.status === 'completed' || r.status === 'confirmed') ? '✓ Pass is Verified and Downloadable!' : '⏳ UTR Pending Admin Verification.'));
+                    } else {
+                      alert('No registration found for: ' + q);
+                    }
+                  }
+                }} className="px-3 py-1.5 bg-[#FFE600] border-2 border-black brutal-shadow-sm font-mono font-bold text-xs text-black">🔍 CHECK STATUS</button>
+                <button onClick={() => handleNav('schedule')} className="px-3 py-1.5 hover:bg-[#FF4D8D] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">SCHEDULE</button>
+                <button onClick={() => handleNav('contact')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">CONTACT</button>
+              </div>
+
+              {/* Right CTA */}
+              <div className="hidden md:flex items-center space-x-3 font-mono">
+                <button
+                  onClick={onOpenAdmin}
+                  className="px-3.5 py-1.5 text-xs font-bold text-black bg-[#FF90E8] border-2 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all"
+                >
+                  ⚙️ ADMIN
+                </button>
+                <button
+                  onClick={() => handleNav('events')}
+                  className="px-5 py-2 text-sm font-black text-black bg-[#FFE600] border-3 border-black brutal-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#000] transition-all uppercase tracking-wide"
+                >
+                  REGISTER NOW →
+                </button>
+              </div>
+
+              {/* Mobile Hamburger */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 bg-[#FFE600] border-2 border-black brutal-shadow-sm"
+              >
+                <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t-4 border-black bg-[#FFFDF5] p-4 space-y-2 font-mono font-bold">
+              <button onClick={() => handleNav('hero')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">HOME</button>
+              
+              <button onClick={() => handleNav('events')} className="block w-full text-left p-2.5 bg-[#00E575] border-2 border-black brutal-shadow-sm">EVENTS (6)</button>
+              <button onClick={() => handleNav('schedule')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">SCHEDULE</button>
+              <button onClick={() => handleNav('contact')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">CONTACT</button>
+              <div className="pt-2 flex gap-2">
+                <button onClick={onOpenAdmin} className="w-1/2 p-2 bg-[#FF90E8] border-2 border-black brutal-shadow-sm text-center">ADMIN</button>
+                <button onClick={() => handleNav('events')} className="w-1/2 p-2 bg-[#FFE600] border-2 border-black brutal-shadow-sm text-center font-black">REGISTER</button>
+              </div>
+            </div>
+          )}
+        </nav>
+      );
+    }
+
+    // ========================================================
+    // HERO COMPONENT
+        // ========================================================
+    // HERO COMPONENT
+    // ========================================================
+    function Hero({ onExplore, onRegister }) {
+      return (
+        <section id="hero" className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Top Badges */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="brutal-badge px-3.5 py-1.5 bg-[#FFE600] text-black text-xs font-mono font-extrabold flex items-center gap-2">
+                <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
+                SJC INSTITUTE OF TECHNOLOGY
+              </div>
+              <div className="brutal-badge px-3.5 py-1.5 bg-[#00F0FF] text-black text-xs font-mono font-extrabold">
+                DEPT. OF COMPUTER SCIENCE & ENGINEERING
+              </div>
+              <div className="brutal-badge px-3.5 py-1.5 bg-[#00E575] text-black text-xs font-mono font-extrabold">
+                🗓️ NOVEMBER 20, 2026
+              </div>
+            </div>
+
+            {/* Giant Brutalist Headline */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10">
+              <div className="lg:col-span-8 space-y-4">
+                <div className="inline-block bg-black text-[#FFE600] font-mono font-black text-xs sm:text-sm px-3 py-1 uppercase tracking-widest border-2 border-black">
+                  /// SJC INSTITUTE OF TECHNOLOGY PRESENTS
+                </div>
+                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-black text-black leading-[0.95] tracking-tight">
+                  TECH<br/>
+                  <span className="bg-[#FFE600] px-3 border-4 border-black brutal-shadow-lg inline-block my-2">NOTSAVA</span><br/>
+                  <span className="text-[#0066FF]">2026.</span>
+                </h1>
+                <p className="text-xl sm:text-2xl font-mono font-bold text-black border-l-4 border-black pl-4 py-1">
+                  "{FEST_CONFIG.tagline}"
+                </p>
+                <p className="text-base sm:text-lg text-black font-medium max-w-2xl leading-relaxed">
+                  {FEST_CONFIG.shortIntro}
+                </p>
+              </div>
+
+              {/* Poster Stamp Card */}
+              <div className="lg:col-span-4">
+                <div className="bg-[#FFE600] border-4 border-black brutal-shadow-xl p-6 rotate-1 hover:rotate-0 transition-transform">
+                  <div className="border-3 border-black p-4 bg-white space-y-4 text-center">
+                    <div className="w-16 h-16 mx-auto bg-black text-[#FFE600] border-3 border-black flex items-center justify-center font-black text-3xl">
+                      ⚡
+                    </div>
+                    <div className="font-display font-black text-2xl text-black">6 EPIC ARENAS</div>
+                    <div className="text-xs font-mono font-bold bg-[#00E575] border-2 border-black py-1 px-2">
+                      TECH QUIZ • TREASURE HUNT • AGILITY • VIDEO
+                    </div>
+                    <div className="text-xs font-mono text-black leading-tight border-t-2 border-dashed border-black pt-3">
+                      CASH PRIZES • TROPHIES • BADGES • VERIFIED CERTIFICATES
+                    </div>
+                    <button
+                      onClick={onRegister}
+                      className="w-full brutal-btn bg-[#FF5C00] text-white py-3 font-mono font-black text-sm"
+                    >
+                      CLAIM SPOT NOW →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+              <div className="bg-white border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">06</div>
+                <div className="text-xs font-mono font-bold text-slate-700 uppercase">Flagship Competitions</div>
+              </div>
+              <div className="bg-[#FFE600] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">800+</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">Expected Innovators</div>
+              </div>
+              <div className="bg-[#00F0FF] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">150+</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">Participating Teams</div>
+              </div>
+              <div className="bg-[#00E575] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">₹₹₹</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">Cash Prize Pool</div>
+              </div>
+            </div>
+
+            {/* Event Key Details Banner */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-white border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#FFE600] border-2 border-black flex items-center justify-center font-bold text-xl">📅</div>
+                <div>
+                  <div className="text-[11px] font-mono uppercase font-bold text-slate-600">Fest Date</div>
+                  <div className="text-sm font-bold text-black">{FEST_CONFIG.festDate}</div>
+                </div>
+              </div>
+              <div className="bg-white border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#00F0FF] border-2 border-black flex items-center justify-center font-bold text-xl">📍</div>
+                <div>
+                  <div className="text-[11px] font-mono uppercase font-bold text-slate-600">Campus Venue</div>
+                  <div className="text-sm font-bold text-black">{FEST_CONFIG.venue}</div>
+                </div>
+              </div>
+              <div className="bg-white border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#00E575] border-2 border-black flex items-center justify-center font-bold text-xl">🎟️</div>
+                <div>
+                  <div className="text-[11px] font-mono uppercase font-bold text-slate-600">Event Entry</div>
+                  <div className="text-sm font-bold text-black">Entry Fee Applicable per Event</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ========================================================
+    // EVENTS SECTION COMPONENT (4 EVENTS)
+    // ========================================================
+    function EventsSection({ onSelectEvent, eventSettings }) {
+      const [selectedRuleEvent, setSelectedRuleEvent] = useState(null);
+
+      const colorPalette = ['bg-[#FFE600]', 'bg-[#00F0FF]', 'bg-[#FF90E8]', 'bg-[#00E575]', 'bg-[#FF5C00]', 'bg-[#D6BBFB]'];
+
+      return (
+        <section id="events" className="py-20 px-4 sm:px-6 lg:px-8 border-t-4 border-black bg-[#FFFDF5]">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+              <div>
+                <div className="inline-block bg-black text-white font-mono font-extrabold text-xs px-3 py-1 uppercase tracking-widest border-2 border-black mb-3">
+                  // COMPETITIONS LISTING
+                </div>
+                <h2 className="text-4xl sm:text-6xl font-display font-black text-black">
+                  6 FLAGSHIP <span className="bg-[#FFE600] px-2 border-3 border-black brutal-shadow-sm">EVENTS</span>
+                </h2>
+              </div>
+              <p className="text-base font-mono font-bold text-black max-w-md border-l-4 border-black pl-3">
+                Select your arena. Fill official student credentials. Download verified ticket pass instantly.
+              </p>
+            </div>
+
+            {/* Event Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {EVENTS.map((event, idx) => {
+                const isActive = eventSettings[event.id] !== false;
+                const headerColor = colorPalette[idx % colorPalette.length];
+
+                return (
+                  <div
+                    key={event.id}
+                    onClick={() => isActive && onSelectEvent(event)}
+                    className={`brutal-card flex flex-col justify-between overflow-hidden cursor-pointer ${
+                      !isActive ? 'opacity-60 grayscale cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {/* Top colored strip */}
+                    <div className={`p-4 ${headerColor} border-b-3 border-black flex items-center justify-between font-mono`}>
+                      <span className="font-black text-xs uppercase px-2 py-0.5 bg-black text-white border-2 border-black">
+                        #{event.code}
+                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        <span className="text-[11px] font-bold bg-white text-black px-2 py-0.5 border-2 border-black brutal-shadow-sm">
+                          {event.teamSizeText}
+                        </span>
+                        <span className="text-[11px] font-bold bg-[#FFE600] text-black px-2 py-0.5 border-2 border-black brutal-shadow-sm">
+                          ⏱ {event.duration}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                      <div>
+                        <div className="text-xs font-mono font-extrabold text-slate-700 uppercase tracking-wider mb-1">
+                          {event.category}
+                        </div>
+                        <h3 className="text-2xl font-display font-black text-black mb-2 leading-tight">
+                          {event.name}
+                        </h3>
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          <span className="text-[10px] font-mono font-extrabold bg-[#FF4D8D] text-white px-2 py-0.5 border-2 border-black">
+                            {event.badge || 'Official Event'}
+                          </span>
+                          <span className="text-[10px] font-mono font-extrabold bg-[#00E575] text-black px-2 py-0.5 border-2 border-black">
+                            💰 {event.entryFeeText || 'Entry Fee Applicable'}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium text-slate-800 leading-relaxed mb-4">
+                          {event.shortDescription}
+                        </p>
+
+                        {event.themes && (
+                          <div className="p-3 bg-[#FFF9D2] border-2 border-black font-mono text-xs space-y-1 mb-4">
+                            <div className="font-extrabold text-black">SELECTABLE TRACKS:</div>
+                            <div className="text-slate-800">• Smart Campus Ecosystem</div>
+                            <div className="text-slate-800">• Daily Life Digital Utilities</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="pt-4 border-t-2 border-black flex items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedRuleEvent(event);
+                          }}
+                          className="text-xs font-mono font-bold text-black underline hover:text-[#0066FF] flex items-center gap-1 uppercase"
+                        >
+                          Rules & Specs ↗
+                        </button>
+
+                        {isActive ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectEvent(event);
+                            }}
+                            className="brutal-btn px-4 py-2 text-xs font-black bg-[#FFE600] text-black hover:bg-[#FFE600]"
+                          >
+                            REGISTER NOW →
+                          </button>
+                        ) : (
+                          <span className="px-3 py-1 text-xs font-mono font-bold bg-red-500 text-white border-2 border-black">
+                            CLOSED
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Guidelines Modal */}
+          {selectedRuleEvent && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75">
+              <div className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-6 sm:p-8 relative">
+                <button
+                  onClick={() => setSelectedRuleEvent(null)}
+                  className="absolute top-4 right-4 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center"
+                >
+                  ✕
+                </button>
+                <div className="text-xs font-mono font-bold bg-[#FFE600] border-2 border-black px-2 py-0.5 inline-block mb-3">
+                  {selectedRuleEvent.category} • {selectedRuleEvent.teamSizeText}
+                </div>
+                <h3 className="text-2xl font-display font-black text-black mb-2">{selectedRuleEvent.name}</h3>
+                <p className="text-sm font-medium text-slate-800 mb-6">{selectedRuleEvent.detailedDescription}</p>
+                <div className="mb-6">
+                  <div className="text-xs font-mono font-black uppercase tracking-wider mb-2 bg-black text-white px-2 py-1 inline-block">
+                    OFFICIAL EVENT RULES:
+                  </div>
+                  <ul className="space-y-2 text-xs sm:text-sm font-medium text-slate-900">
+                    {selectedRuleEvent.rules.map((r, i) => (
+                      <li key={i} className="flex items-start gap-2 bg-[#FFFDF0] p-2 border-2 border-black font-mono">
+                        <span className="font-black text-[#FF5C00]">[{i + 1}]</span>
+                        <span>{r}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button
+                  onClick={() => {
+                    const ev = selectedRuleEvent;
+                    setSelectedRuleEvent(null);
+                    onSelectEvent(ev);
+                  }}
+                  className="w-full brutal-btn bg-[#00E575] text-black py-3 font-mono font-black text-sm"
+                >
+                  PROCEED TO REGISTER →
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    // ========================================================
+    // REGISTRATION PAGE (EXACT FORM RULES)
+        // ========================================================
+    // ULTRA-PREMIUM NEO-BRUTALIST REGISTRATION PAGE
+        // ========================================================
+    // DEDICATED ADMIN INTERFACE (PASSWORD PROTECTED)
+        // ========================================================
+    // REGISTRATION PAGE WITH UPI PAYMENT QR & UTR VERIFICATION
+    // ========================================================
+    function RegistrationPage({ event, onBack, onRegisterAnother, onOpenCheckStatus }) {
+      const [submitting, setSubmitting] = useState(false);
+      const [submittedRecord, setSubmittedRecord] = useState(null);
+
+      // Form State
+      const [teamName, setTeamName] = useState('');
+      const [leaderName, setLeaderName] = useState('');
+      const [leaderUsn, setLeaderUsn] = useState('');
+      const [leaderEmail, setLeaderEmail] = useState('');
+      const [leaderPhone, setLeaderPhone] = useState('');
+
+      // Payment State
+      const [utrNumber, setUtrNumber] = useState('');
+      const [paidAmount, setPaidAmount] = useState('₹150');
+
+      // Tech Quiz Member 2
+      const [quizMember2Name, setQuizMember2Name] = useState('');
+      const [quizMember2Usn, setQuizMember2Usn] = useState('');
+      const [quizMember2Phone, setQuizMember2Phone] = useState('');
+
+      // Dynamic members for 2-4 team events
+      const [dynamicMembers, setDynamicMembers] = useState([{ name: '', usn: '' }]);
+
+      // Ideathon Theme
+      const [selectedTheme, setSelectedTheme] = useState('');
+
+      const [errors, setErrors] = useState({});
+
+      const isValidEmail = (em) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+      const isValidPhone = (ph) => ph.replace(/\D/g, '').length >= 10;
+      const isValidUsn = (u) => u && u.trim().length >= 5;
+
+      const handleAddMember = () => {
+        if (dynamicMembers.length < 3) {
+          setDynamicMembers([...dynamicMembers, { name: '', usn: '' }]);
+        }
+      };
+
+      const handleRemoveMember = (idxToRemove) => {
+        if (dynamicMembers.length > 1) {
+          setDynamicMembers(dynamicMembers.filter((_, i) => i !== idxToRemove));
+        }
+      };
+
+      const handleMemberChange = (idx, field, val) => {
+        const u = [...dynamicMembers];
+        u[idx][field] = val;
+        setDynamicMembers(u);
+      };
+
+      const validate = () => {
+        const errs = {};
+        if (event.id === 'minute-to-win-it') {
+          if (!leaderName.trim()) errs.leaderName = 'Participant Name is required';
+          if (!leaderUsn.trim()) errs.leaderUsn = 'College USN is required';
+          else if (!isValidUsn(leaderUsn)) errs.leaderUsn = 'Enter valid USN (e.g. 1SJ21CS001)';
+          if (leaderEmail && !isValidEmail(leaderEmail)) errs.leaderEmail = 'Enter valid email address';
+          if (leaderPhone && !isValidPhone(leaderPhone)) errs.leaderPhone = 'Must be at least 10 digits';
+        } else if (event.id === 'tech-quiz') {
+          if (!teamName.trim()) errs.teamName = 'Team Name is required';
+          if (!leaderName.trim()) errs.leaderName = 'Member 1 Name is required';
+          if (!leaderUsn.trim()) errs.leaderUsn = 'Member 1 USN is required';
+          else if (!isValidUsn(leaderUsn)) errs.leaderUsn = 'Enter valid USN';
+          if (!leaderPhone.trim()) errs.leaderPhone = 'Member 1 Phone is required';
+          else if (!isValidPhone(leaderPhone)) errs.leaderPhone = 'Must be at least 10 digits';
+
+          if (!quizMember2Name.trim()) errs.quizMember2Name = 'Member 2 Name is required';
+          if (!quizMember2Usn.trim()) errs.quizMember2Usn = 'Member 2 USN is required';
+          else if (!isValidUsn(quizMember2Usn)) errs.quizMember2Usn = 'Enter valid USN';
+          if (!quizMember2Phone.trim()) errs.quizMember2Phone = 'Member 2 Phone is required';
+          else if (!isValidPhone(quizMember2Phone)) errs.quizMember2Phone = 'Must be at least 10 digits';
+        } else {
+          if (event.id !== 'videography-frame-the-fest' || teamName.trim()) {
+            if (!teamName.trim()) errs.teamName = 'Team Name is required';
+          }
+          if (!leaderName.trim()) errs.leaderName = 'Participant / Leader Name is required';
+          if (!leaderUsn.trim()) errs.leaderUsn = 'Leader USN is required';
+          else if (!isValidUsn(leaderUsn)) errs.leaderUsn = 'Enter valid USN';
+          if (!leaderEmail.trim()) errs.leaderEmail = 'Leader Email is required';
+          else if (!isValidEmail(leaderEmail)) errs.leaderEmail = 'Enter valid email address';
+          if (!leaderPhone.trim()) errs.leaderPhone = 'Leader Phone is required';
+          else if (!isValidPhone(leaderPhone)) errs.leaderPhone = 'Must be at least 10 digits';
+
+          if (event.id === 'ideathon' && !selectedTheme) {
+            errs.theme = 'Please select one Ideathon track';
+          }
+
+          if (['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id)) {
+            if (!dynamicMembers[0].name.trim()) errs.member2Name = 'Member 2 Name is required (min 2 participants)';
+            if (!dynamicMembers[0].usn.trim()) errs.member2Usn = 'Member 2 USN is required';
+          }
+
+          dynamicMembers.forEach((m, idx) => {
+            const num = idx + 2;
+            if (m.name.trim() && !m.usn.trim()) errs[`member${num}Usn`] = `Member ${num} USN is required`;
+            if (!m.name.trim() && m.usn.trim()) errs[`member${num}Name`] = `Member ${num} Name is required`;
+          });
+        }
+
+        if (!utrNumber.trim()) {
+          errs.utrNumber = 'Transaction / UTR ID is compulsory after scanning QR';
+        } else if (utrNumber.trim().length < 6) {
+          errs.utrNumber = 'Enter a valid 12-digit UPI UTR or bank reference number';
+        }
+
+        setErrors(errs);
+        return Object.keys(errs).length === 0;
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!validate()) {
+          window.scrollTo({ top: 150, behavior: 'smooth' });
+          return;
+        }
+
+        setSubmitting(true);
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const regId = `TECH26-${event.code}-${randomNum}`;
+        const now = new Date().toISOString();
+
+        let record = {
+          id: 'id-' + Date.now(),
+          reg_id: regId,
+          event_id: event.id,
+          event_name: event.name,
+          team_name: event.id === 'minute-to-win-it' ? null : teamName.trim(),
+          leader_name: leaderName.trim(),
+          leader_usn: leaderUsn.trim().toUpperCase(),
+          leader_email: leaderEmail.trim() || null,
+          leader_phone: leaderPhone.trim() || null,
+          theme: event.id === 'ideathon' ? selectedTheme : null,
+          utr_id: utrNumber.trim(),
+          amount: paidAmount,
+          created_at: now,
+          status: 'pending'
+        };
+
+        if (event.id === 'tech-quiz') {
+          record.members = [{ name: quizMember2Name.trim(), usn: quizMember2Usn.trim().toUpperCase(), phone: quizMember2Phone.trim() }];
+        } else if (event.id !== 'minute-to-win-it') {
+          record.members = dynamicMembers
+            .filter(m => m.name.trim() && m.usn.trim())
+            .map(m => ({ name: m.name.trim(), usn: m.usn.trim().toUpperCase() }));
+        }
+
+        setTimeout(() => {
+          saveStoredRegistration(record);
+          setSubmittedRecord(record);
+          setSubmitting(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+      };
+
+      // PASS GENERATED / VERIFICATION VIEW
+      if (submittedRecord) {
+        const isVerified = submittedRecord.status === 'completed' || submittedRecord.status === 'confirmed';
+
+        return (
+          <div className="py-28 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+            <div className="bg-white border-4 border-black brutal-shadow-xl p-8 mb-8 relative">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-4 border-black pb-6 mb-6">
+                <div>
+                  <span className={`font-mono font-black text-xs px-3 py-1 uppercase border-2 border-black inline-block mb-2 ${
+                    isVerified ? 'bg-[#00E575] text-black' : 'bg-[#FFE600] text-black animate-pulse'
+                  }`}>
+                    {isVerified ? '✓ PAYMENT VERIFIED & PASS CONFIRMED' : '⏳ VERIFICATION PENDING BY ADMIN'}
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-display font-black text-black">
+                    TECHNOTSAVA 2026
+                  </h2>
+                  <p className="font-mono font-bold text-xs text-slate-700">SJC INSTITUTE OF TECHNOLOGY • CSE DEPT</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-mono font-black uppercase text-slate-600">UNIQUE REGISTRATION ID</div>
+                  <div className="font-mono text-xl sm:text-2xl font-black bg-[#FFE600] px-3.5 py-1.5 border-3 border-black brutal-shadow-sm inline-block mt-1">
+                    {submittedRecord.reg_id}
+                  </div>
+                </div>
+              </div>
+
+              <div className={`p-4 border-3 border-black mb-6 font-mono text-xs ${
+                isVerified ? 'bg-[#D4EDDA] text-[#155724]' : 'bg-[#FFF3CD] text-[#856404]'
+              }`}>
+                <div className="font-black text-sm mb-1">
+                  {isVerified ? '🎉 Registration Status: VERIFIED & CONFIRMED' : '⏳ Registration Status: PENDING ADMIN APPROVAL'}
+                </div>
+                <p>
+                  {isVerified
+                    ? 'Your payment UTR was verified by the TECHNOTSAVA admin team. Your official entry pass is active and ready to download/print!'
+                    : 'Your submitted UTR ID is queued for payment verification by the coordinators. Once approved by the admin, your pass will become active. You can check back using your Registration ID!'}
+                </p>
+              </div>
+
+              <div id="printable-ticket" className="bg-[#FFFDF0] p-6 border-3 border-black space-y-4 font-mono">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xs font-bold text-slate-600 uppercase">Event Arena</div>
+                    <div className="font-black text-base text-black">{submittedRecord.event_name}</div>
+                  </div>
+                  {submittedRecord.team_name && (
+                    <div>
+                      <div className="text-xs font-bold text-slate-600 uppercase">Team / Squad</div>
+                      <div className="font-black text-base text-black">{submittedRecord.team_name}</div>
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-xs font-bold text-slate-600 uppercase">Lead Participant</div>
+                    <div className="font-black text-sm text-black">{submittedRecord.leader_name} ({submittedRecord.leader_usn})</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-600 uppercase">Submitted UTR / Ref ID</div>
+                    <div className="font-black text-sm text-[#0066FF]">{submittedRecord.utr_id}</div>
+                  </div>
+                </div>
+
+                {submittedRecord.members && submittedRecord.members.length > 0 && (
+                  <div className="border-t-2 border-black pt-3">
+                    <div className="text-xs font-bold uppercase mb-1.5">Registered Team Members:</div>
+                    <div className="space-y-1">
+                      {submittedRecord.members.map((m, i) => (
+                        <div key={i} className="p-1.5 bg-white border border-black flex justify-between text-xs">
+                          <span>Member {i + 2}: {m.name}</span>
+                          <span className="font-bold text-[#0066FF]">{m.usn}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="border-t-2 border-black pt-3 flex justify-between items-center text-xs">
+                  <div>
+                    <span className="font-bold">Fest Date:</span> November 20, 2026 • SJCIT Campus
+                  </div>
+                  <div className="font-black">
+                    STATUS: <span className={isVerified ? 'text-green-600' : 'text-amber-600'}>{submittedRecord.status.toUpperCase()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-4 justify-center font-mono">
+                {isVerified ? (
+                  <button
+                    onClick={() => window.print()}
+                    className="brutal-btn px-6 py-3 bg-[#00E575] text-black font-black text-sm flex items-center gap-2"
+                  >
+                    📥 DOWNLOAD / PRINT PASS RECEIPT
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      const latest = getStoredRegistrations().find(r => r.reg_id === submittedRecord.reg_id);
+                      if (latest) setSubmittedRecord(latest);
+                      alert('Status checked! Current: ' + (latest?.status || 'pending').toUpperCase());
+                    }}
+                    className="brutal-btn px-6 py-3 bg-[#FFE600] text-black font-black text-sm flex items-center gap-2"
+                  >
+                    🔄 REFRESH VERIFICATION STATUS
+                  </button>
+                )}
+                <button
+                  onClick={onRegisterAnother}
+                  className="brutal-btn px-5 py-3 bg-[#00F0FF] text-black font-black text-sm"
+                >
+                  REGISTER ANOTHER EVENT
+                </button>
+                <button
+                  onClick={onBack}
+                  className="brutal-btn px-5 py-3 bg-white text-black font-bold text-sm"
+                >
+                  RETURN TO HOME
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+          {/* Header Card */}
+          <div className="bg-white border-4 border-black brutal-shadow-lg p-6 sm:p-8 mb-8">
+            <button
+              type="button"
+              onClick={onBack}
+              className="brutal-btn px-4 py-1.5 bg-white text-black font-mono font-black text-xs inline-flex items-center gap-1.5 mb-4"
+            >
+              ← BACK TO ALL EVENTS
+            </button>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-3 border-black pb-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <span className="px-2.5 py-0.5 bg-black text-[#FFE600] border-2 border-black font-mono font-black text-xs uppercase">
+                    ARENA #{event.code}
+                  </span>
+                  <span className="px-2.5 py-0.5 bg-[#FFE600] text-black border-2 border-black font-mono font-extrabold text-xs">
+                    ⏱ {event.duration}
+                  </span>
+                  <span className="px-2.5 py-0.5 bg-[#FF4D8D] text-white border-2 border-black font-mono font-extrabold text-xs">
+                    💰 {event.entryFeeText}
+                  </span>
+                </div>
+                <h1 className="text-3xl sm:text-5xl font-display font-black text-black">
+                  {event.name}
+                </h1>
+              </div>
+
+              <div className="bg-[#FFF9D2] border-3 border-black p-3 font-mono text-right shrink-0">
+                <div className="text-[11px] font-bold text-slate-700 uppercase">TEAM REQUIREMENT</div>
+                <div className="text-sm font-black text-black">{event.teamSizeText}</div>
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
+              {event.detailedDescription}
+            </p>
+          </div>
+
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="bg-white border-4 border-black brutal-shadow-xl p-6 sm:p-10 space-y-8">
+            <div className="flex items-center justify-between border-b-3 border-black pb-4">
+              <h2 className="text-2xl font-display font-black text-black flex items-center gap-2">
+                <span>📝 PARTICIPATION FORM</span>
+              </h2>
+              <span className="text-xs font-mono font-bold bg-[#FFE600] border-2 border-black px-2 py-0.5">
+                FIELDS MARKED (*) COMPULSORY
+              </span>
+            </div>
+
+            {/* EVENT: MINUTE TO WIN IT */}
+            {event.id === 'minute-to-win-it' && (
+              <div className="space-y-6">
+                <div className="bg-[#00F0FF] p-3 border-3 border-black font-mono font-bold text-xs uppercase flex items-center gap-2">
+                  <span>⚡</span> INDIVIDUAL CONTESTANT CREDENTIALS
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rahul Sharma"
+                      value={leaderName}
+                      onChange={(e) => setLeaderName(e.target.value)}
+                      className="w-full brutal-input px-4 py-3 text-sm font-semibold"
+                    />
+                    {errors.leaderName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderName}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                      University / College USN *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1SJ21CS045"
+                      value={leaderUsn}
+                      onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
+                      className="w-full brutal-input px-4 py-3 text-sm font-mono uppercase font-bold"
+                    />
+                    {errors.leaderUsn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderUsn}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                        Phone Number (For Scheduling Updates)
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="10-digit mobile number"
+                        value={leaderPhone}
+                        onChange={(e) => setLeaderPhone(e.target.value)}
+                        className="w-full brutal-input px-4 py-3 text-sm font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                        Email Address (Optional)
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="student@sjcit.ac.in"
+                        value={leaderEmail}
+                        onChange={(e) => setLeaderEmail(e.target.value)}
+                        className="w-full brutal-input px-4 py-3 text-sm font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* EVENT: TECH QUIZ */}
+            {event.id === 'tech-quiz' && (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                    Quiz Team Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Quantum Bitwise"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    className="w-full brutal-input px-4 py-3 text-sm font-bold"
+                  />
+                  {errors.teamName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.teamName}</p>}
+                </div>
+
+                <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                    <span className="font-mono font-black text-xs bg-[#FFE600] px-2 py-0.5 border-2 border-black uppercase">
+                      Participant 1 (Lead Member) *
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-slate-600">COMPULSORY</span>
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Participant 1 Full Name *"
+                      value={leaderName}
+                      onChange={(e) => setLeaderName(e.target.value)}
+                      className="w-full brutal-input px-4 py-2.5 text-sm"
+                    />
+                    {errors.leaderName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderName}</p>}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Participant 1 USN *"
+                        value={leaderUsn}
+                        onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
+                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono uppercase font-bold"
+                      />
+                      {errors.leaderUsn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderUsn}</p>}
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="Participant 1 Phone *"
+                        value={leaderPhone}
+                        onChange={(e) => setLeaderPhone(e.target.value)}
+                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono"
+                      />
+                      {errors.leaderPhone && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderPhone}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                    <span className="font-mono font-black text-xs bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
+                      Participant 2 (Partner) *
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-slate-600">COMPULSORY</span>
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Participant 2 Full Name *"
+                      value={quizMember2Name}
+                      onChange={(e) => setQuizMember2Name(e.target.value)}
+                      className="w-full brutal-input px-4 py-2.5 text-sm"
+                    />
+                    {errors.quizMember2Name && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Name}</p>}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Participant 2 USN *"
+                        value={quizMember2Usn}
+                        onChange={(e) => setQuizMember2Usn(e.target.value.toUpperCase())}
+                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono uppercase font-bold"
+                      />
+                      {errors.quizMember2Usn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Usn}</p>}
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="Participant 2 Phone *"
+                        value={quizMember2Phone}
+                        onChange={(e) => setQuizMember2Phone(e.target.value)}
+                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono"
+                      />
+                      {errors.quizMember2Phone && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Phone}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TEAM EVENTS (DTH, IDEATHON, GAMING, VIDEOGRAPHY) */}
+            {event.id !== 'minute-to-win-it' && event.id !== 'tech-quiz' && (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
+                    {event.id === 'videography-frame-the-fest' ? 'Team or Creator Handle (Optional for solo)' : 'Official Team / Squad Name *'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Phoenix Squad / Visionary Labs"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    className="w-full brutal-input px-4 py-3 text-sm font-bold"
+                  />
+                  {errors.teamName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.teamName}</p>}
+                </div>
+
+                {event.id === 'ideathon' && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-mono font-black text-black uppercase">
+                        Select Innovation Track *
+                      </label>
+                      <span className="text-[11px] font-mono font-bold bg-[#FFE600] px-2 py-0.5 border border-black">
+                        PICK EXACTLY 1
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {event.themes && event.themes.map((th) => {
+                        const isChosen = selectedTheme === th.title;
+                        return (
+                          <div
+                            key={th.id}
+                            onClick={() => setSelectedTheme(th.title)}
+                            className={`p-4 border-3 border-black cursor-pointer transition-all ${
+                              isChosen
+                                ? 'bg-[#FFE600] brutal-shadow translate-x-[-2px] translate-y-[-2px]'
+                                : 'bg-[#FFFDF5] hover:bg-[#FFF9D2]'
+                            }`}
+                          >
+                            <div className="flex justify-between items-center mb-1.5">
+                              <span className="font-mono font-black text-xs uppercase px-2 py-0.5 bg-black text-white">
+                                {th.id}
+                              </span>
+                              <span className="text-base font-bold">{isChosen ? '☑ SELECTED' : '☐'}</span>
+                            </div>
+                            <h4 className="font-display font-black text-base text-black mb-1">{th.title}</h4>
+                            <p className="text-xs font-medium text-slate-800 leading-snug">{th.description}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {errors.theme && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.theme}</p>}
+                  </div>
+                )}
+
+                <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                    <span className="font-mono font-black text-xs bg-[#00E575] px-2.5 py-0.5 border-2 border-black uppercase text-black">
+                      Lead Participant / Team Leader *
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-slate-600">PRIMARY CONTACT</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        placeholder="Leader Full Name *"
+                        value={leaderName}
+                        onChange={(e) => setLeaderName(e.target.value)}
+                        className="w-full brutal-input px-3.5 py-2.5 text-sm"
+                      />
+                      {errors.leaderName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderName}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">College USN *</label>
+                      <input
+                        type="text"
+                        placeholder="1SJ21CS001"
+                        value={leaderUsn}
+                        onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
+                        className="w-full brutal-input px-3.5 py-2.5 text-sm font-mono uppercase font-bold"
+                      />
+                      {errors.leaderUsn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderUsn}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        placeholder="leader@college.edu"
+                        value={leaderEmail}
+                        onChange={(e) => setLeaderEmail(e.target.value)}
+                        className="w-full brutal-input px-3.5 py-2.5 text-sm font-mono"
+                      />
+                      {errors.leaderEmail && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderEmail}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase text-slate-700 mb-1">Phone Number *</label>
+                      <input
+                        type="tel"
+                        placeholder="10-digit mobile number"
+                        value={leaderPhone}
+                        onChange={(e) => setLeaderPhone(e.target.value)}
+                        className="w-full brutal-input px-3.5 py-2.5 text-sm font-mono"
+                      />
+                      {errors.leaderPhone && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.leaderPhone}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-5 bg-white border-3 border-black brutal-shadow-sm space-y-4">
+                  <div className="flex justify-between items-center border-b-2 border-black pb-2">
+                    <span className="font-mono font-black text-xs uppercase bg-[#FFE600] px-2 py-0.5 border-2 border-black">
+                      {event.id === 'videography-frame-the-fest'
+                        ? 'Additional Crew Members (Optional, up to 3)'
+                        : 'Squad Members (Min 2, Max 4 participants)'}
+                    </span>
+                    <span className="font-mono font-bold text-xs text-black">
+                      {dynamicMembers.length + 1} / 4 Members Total
+                    </span>
+                  </div>
+
+                  <div className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-black text-black uppercase">
+                        Member 2 {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id) ? '*' : '(Optional)'}
+                      </span>
+                      {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id) && (
+                        <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">
+                          COMPULSORY
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        placeholder="Member 2 Full Name"
+                        value={dynamicMembers[0].name}
+                        onChange={(e) => handleMemberChange(0, 'name', e.target.value)}
+                        className="w-full brutal-input px-3.5 py-2 text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Member 2 College USN"
+                        value={dynamicMembers[0].usn}
+                        onChange={(e) => handleMemberChange(0, 'usn', e.target.value.toUpperCase())}
+                        className="w-full brutal-input px-3.5 py-2 text-sm font-mono uppercase font-bold"
+                      />
+                    </div>
+                    {errors.member2Name && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Name}</p>}
+                    {errors.member2Usn && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Usn}</p>}
+                  </div>
+
+                  {dynamicMembers.slice(1).map((m, idx) => (
+                    <div key={idx} className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-mono font-black text-slate-800 uppercase">
+                          Member {idx + 3} (Optional)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(idx + 1)}
+                          className="text-xs font-mono font-bold text-red-600 underline hover:text-black uppercase"
+                        >
+                          ✕ Remove Member
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder={`Member ${idx + 3} Full Name`}
+                          value={m.name}
+                          onChange={(e) => handleMemberChange(idx + 1, 'name', e.target.value)}
+                          className="w-full brutal-input px-3.5 py-2 text-sm"
+                        />
+                        <input
+                          type="text"
+                          placeholder={`Member ${idx + 3} College USN`}
+                          value={m.usn}
+                          onChange={(e) => handleMemberChange(idx + 1, 'usn', e.target.value.toUpperCase())}
+                          className="w-full brutal-input px-3.5 py-2 text-sm font-mono uppercase font-bold"
+                        />
+                      </div>
+                      {errors[`member${idx + 3}Name`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Name`]}</p>}
+                      {errors[`member${idx + 3}Usn`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Usn`]}</p>}
+                    </div>
+                  ))}
+
+                  {dynamicMembers.length < 3 && (
+                    <button
+                      type="button"
+                      onClick={handleAddMember}
+                      className="w-full py-2.5 bg-[#FFF9D2] hover:bg-[#FFE600] border-2 border-dashed border-black font-mono font-black text-xs text-black uppercase transition-all"
+                    >
+                      + ADD TEAM MEMBER ({dynamicMembers.length + 2} of 4 max)
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: SCAN UPI QR & ENTER UTR */}
+            <div className="bg-[#FFFDF0] border-4 border-black brutal-shadow-lg p-6 sm:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-3 border-black pb-4">
+                <div>
+                  <span className="font-mono font-black text-xs px-2.5 py-0.5 bg-[#FF5C00] text-white border-2 border-black uppercase">
+                    STEP 2: SCAN & PAY ENTRY FEE
+                  </span>
+                  <h3 className="text-2xl font-display font-black text-black mt-1">
+                    OFFICIAL UPI PAYMENT QR
+                  </h3>
+                </div>
+                <div className="text-right font-mono">
+                  <span className="text-xs font-bold text-slate-700 uppercase">FEE PER TEAM / ENTRY</span>
+                  <div className="text-xl font-black text-black bg-[#FFE600] px-3 py-1 border-2 border-black brutal-shadow-sm inline-block">
+                    {paidAmount}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div className="md:col-span-5 flex flex-col items-center justify-center p-4 bg-white border-3 border-black brutal-shadow-sm">
+                  <img
+                    src={PAYMENT_QR_DATA}
+                    alt="Official Payment QR"
+                    className="w-56 h-auto max-w-full border-2 border-black"
+                  />
+                  <div className="text-center font-mono mt-3">
+                    <div className="font-black text-sm text-black">Aman Raj</div>
+                    <div className="text-xs text-slate-700 font-bold bg-[#FFF9D2] px-2 py-0.5 border border-black inline-block mt-0.5">
+                      UPI ID: aman7671@pingpay
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:col-span-7 space-y-4 font-mono">
+                  <div className="p-3 bg-white border-2 border-black text-xs space-y-1.5">
+                    <div className="font-black text-black flex items-center gap-1.5">
+                      <span>📱</span> PAYMENT INSTRUCTIONS:
+                    </div>
+                    <p className="text-slate-800">1. Open Google Pay, PhonePe, Paytm or Samsung Wallet.</p>
+                    <p className="text-slate-800">2. Scan the official QR code to make payment.</p>
+                    <p className="text-slate-800">3. Note the 12-digit <strong>UTR ID / Transaction ID</strong> from your banking app receipt.</p>
+                    <p className="text-slate-800">4. Enter the UTR ID below to submit your team registration.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black text-black uppercase mb-1.5">
+                      Transaction ID / UTR Number *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 431829104829 or UPI Ref ID"
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value.trim())}
+                      className="w-full brutal-input px-4 py-3 text-sm font-mono font-bold tracking-wider"
+                    />
+                    {errors.utrNumber && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.utrNumber}</p>}
+                    <p className="text-[11px] text-slate-600 mt-1">
+                      * This UTR will be verified by the admin. Your pass status will remain <strong>PENDING</strong> until confirmed.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <div className="pt-6 border-t-3 border-black">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full brutal-btn py-4 bg-[#00E575] hover:bg-[#00E575] text-black font-display font-black text-lg sm:text-xl tracking-wide disabled:opacity-50"
+              >
+                {submitting ? 'RECORDING REGISTRATION...' : `SUBMIT & GENERATE REGISTRATION PASS FOR ${event.name.toUpperCase()} →`}
+              </button>
+              <p className="text-center text-xs font-mono font-bold text-slate-600 mt-2">
+                🔒 Instant Unique ID • Queued for Admin Verification • Printable Pass
+              </p>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+
+    // ========================================================
+    function AdminDashboard({ onBack }) {
+      const [authed, setAuthed] = useState(false);
+      const [pin, setPin] = useState('');
+      const [err, setErr] = useState('');
+      const [regs, setRegs] = useState([]);
+      const [settings, setSettings] = useState({});
+      const [selectedFilter, setSelectedFilter] = useState('all');
+      const [search, setSearch] = useState('');
+      const [viewModal, setViewModal] = useState(null);
+
+      useEffect(() => {
+        if (sessionStorage.getItem('tech26_admin') === '1') {
+          setAuthed(true);
+        }
+      }, []);
+
+      useEffect(() => {
+        if (authed) {
+          setRegs(getStoredRegistrations());
+          setSettings(getStoredSettings());
+        }
+      }, [authed]);
+
+      const ADMIN_PASSCODE = (window.__ENV__ && window.__ENV__.VITE_ADMIN_PASSCODE) || 'techfestcse@0071&&';
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (pin.trim() === ADMIN_PASSCODE || pin.trim() === 'admin2026') {
+          sessionStorage.setItem('tech26_admin', '1');
+          setAuthed(true);
+          setErr('');
+        } else {
+          setErr('Invalid Passcode!');
+        }
+      };
+
+      const handleLogout = () => {
+        sessionStorage.removeItem('tech26_admin');
+        setAuthed(false);
+        setPin('');
+      };
+
+      const handleToggle = (id) => {
+        const updated = { ...settings, [id]: !settings[id] };
+        setSettings(updated);
+        setStoredSettings(updated);
+      };
+
+      const handleVerifyStatus = (id, newStatus) => {
+        const updated = updateRegistrationStatus(id, newStatus);
+        setRegs(updated);
+        if (viewModal?.id === id) {
+          setViewModal({ ...viewModal, status: newStatus });
+        }
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Permanently delete this registration record?')) {
+          const u = deleteStoredRegistration(id);
+          setRegs(u);
+          if (viewModal?.id === id) setViewModal(null);
+        }
+      };
+
+      const handleExportCSV = () => {
+        if (!regs.length) return alert('No registrations recorded yet.');
+        let csv = 'Reg ID,Event,Team Name,Leader Name,USN,Phone,Email,Total Members,Theme,Created At\n';
+        regs.forEach(r => {
+          csv += `"${r.reg_id}","${r.event_name}","${r.team_name || 'Solo'}","${r.leader_name}","${r.leader_usn}","${r.leader_phone || ''}","${r.leader_email || ''}",${1 + (r.members?.length || 0)},"${r.theme || ''}","${r.created_at}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `TECHNOTSAVA_Registrations_${Date.now()}.csv`;
+        a.click();
+      };
+
+      // PASSCODE GATE (ADMIN LOGIN)
+      if (!authed) {
+        return (
+          <div className="min-h-screen flex items-center justify-center p-4 bg-[#FFFDF5] dot-grid">
+            <div className="bg-white border-4 border-black brutal-shadow-xl max-w-md w-full p-8 text-center space-y-6">
+              <div className="w-16 h-16 mx-auto bg-[#FFE600] border-3 border-black brutal-shadow-sm flex items-center justify-center font-black text-3xl">
+                🔒
+              </div>
+              <div>
+                <span className="bg-black text-[#FFE600] font-mono font-black text-xs px-2.5 py-1 uppercase border-2 border-black">
+                  RESTRICTED PORTAL
+                </span>
+                <h2 className="text-3xl font-display font-black text-black mt-3">
+                  ADMIN AUTH
+                </h2>
+                <p className="text-xs font-mono font-bold text-slate-700 mt-1">
+                  Enter master coordinator passcode to unlock student participant rosters.
+                </p>
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4 text-left">
+                <div>
+                  <label className="block text-xs font-mono font-black text-black uppercase mb-1">
+                    Master Passcode
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Enter passcode (admin2026)"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    className="w-full brutal-input px-4 py-3 text-sm font-mono font-bold"
+                    autoFocus
+                  />
+                  {err && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {err}</p>}
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full brutal-btn py-3 bg-[#FFE600] text-black font-mono font-black text-sm uppercase"
+                >
+                  UNLOCK ADMIN DASHBOARD →
+                </button>
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="w-full text-center text-xs font-mono font-bold text-slate-700 hover:text-black uppercase underline"
+                >
+                  ← RETURN TO PARTICIPANT FEST SITE
+                </button>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      // Filtered records
+      const filtered = regs.filter(r => {
+        if (selectedFilter !== 'all' && r.event_id !== selectedFilter) return false;
+        if (search.trim()) {
+          const q = search.toLowerCase();
+          return r.reg_id?.toLowerCase().includes(q) || r.utr_id?.toLowerCase().includes(q) ||
+            r.team_name?.toLowerCase().includes(q) ||
+            r.leader_name?.toLowerCase().includes(q) ||
+            r.leader_usn?.toLowerCase().includes(q) ||
+            (r.members || []).some(m => m.name?.toLowerCase().includes(q) || m.usn?.toLowerCase().includes(q));
+        }
+        return true;
+      });
+
+      return (
+        <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 bg-[#FFFDF5] dot-grid">
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Top Admin Header Bar */}
+            <div className="bg-white border-4 border-black brutal-shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-mono font-black text-black bg-[#FFE600] px-2.5 py-0.5 border-2 border-black uppercase">
+                    OFFICIAL ADMIN CONSOLE
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-600">
+                    SJC INSTITUTE OF TECHNOLOGY
+                  </span>
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-display font-black text-black">
+                  PARTICIPANT ROSTER & DATA
+                </h1>
+              </div>
+
+              <div className="flex flex-wrap gap-2 font-mono">
+                <button
+                  onClick={handleExportCSV}
+                  className="brutal-btn px-4 py-2 bg-[#00E575] text-black text-xs font-black"
+                >
+                  📥 EXPORT CSV
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="brutal-btn px-4 py-2 bg-[#FF4D8D] text-white text-xs font-black"
+                >
+                  LOCK / LOGOUT
+                </button>
+                <button
+                  onClick={onBack}
+                  className="brutal-btn px-4 py-2 bg-white text-black text-xs font-bold"
+                >
+                  ← PARTICIPANT PORTAL
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stat Counters */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-[#FFE600] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">{regs.length}</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">Total Registrations</div>
+              </div>
+              <div className="bg-[#00F0FF] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">{EVENTS.length}</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">Active Arenas</div>
+              </div>
+              <div className="bg-white border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">
+                  {regs.reduce((acc, r) => acc + 1 + (r.members?.length || 0), 0)}
+                </div>
+                <div className="text-xs font-mono font-bold text-slate-700 uppercase">Total Students</div>
+              </div>
+              <div className="bg-[#00E575] border-3 border-black brutal-shadow p-4">
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">100%</div>
+                <div className="text-xs font-mono font-bold text-black uppercase">System Healthy</div>
+              </div>
+            </div>
+
+            {/* Event Registration Status Controller */}
+            <div className="bg-white border-4 border-black brutal-shadow p-6">
+              <div className="text-xs font-mono font-black uppercase text-black mb-3">
+                // REGISTRATION STATUS PER EVENT (OPEN / CLOSE CONTROLS):
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {EVENTS.map(ev => {
+                  const active = settings[ev.id] !== false;
+                  const c = regs.filter(r => r.event_id === ev.id).length;
+                  return (
+                    <div key={ev.id} className="p-3 bg-[#FFFDF0] border-2 border-black flex flex-col justify-between">
+                      <div>
+                        <div className="font-display font-bold text-xs text-black truncate">{ev.name}</div>
+                        <div className="text-xs font-mono font-black text-[#0066FF] mb-2">{c} Registered</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggle(ev.id)}
+                        className={`w-full py-1 text-[11px] font-mono font-black border-2 border-black ${
+                          active ? 'bg-[#00E575] text-black' : 'bg-[#FF4D8D] text-white'
+                        }`}
+                      >
+                        {active ? '🟢 OPEN' : '🔴 CLOSED'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Search by Team Name, Leader, Member, USN, or Reg ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 brutal-input px-4 py-2.5 text-sm font-semibold"
+              />
+              <div className="flex flex-wrap gap-1.5 font-mono">
+                <button
+                  type="button"
+                  onClick={() => setSelectedFilter('all')}
+                  className={`px-3.5 py-2 text-xs font-black border-2 border-black ${
+                    selectedFilter === 'all' ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
+                  }`}
+                >
+                  ALL ({regs.length})
+                </button>
+                {EVENTS.map(ev => (
+                  <button
+                    key={ev.id}
+                    type="button"
+                    onClick={() => setSelectedFilter(ev.id)}
+                    className={`px-3 py-2 text-xs font-black border-2 border-black truncate max-w-[130px] ${
+                      selectedFilter === ev.id ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
+                    }`}
+                  >
+                    #{ev.code}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Data Roster Table */}
+            <div className="bg-white border-4 border-black brutal-shadow-lg overflow-x-auto">
+              {filtered.length === 0 ? (
+                <div className="py-16 text-center text-black font-mono font-bold text-sm">
+                  NO REGISTRATIONS FOUND MATCHING CRITERIA.
+                </div>
+              ) : (
+                <table className="w-full text-left font-mono text-xs">
+                  <thead className="bg-[#FFE600] border-b-3 border-black text-black font-black uppercase">
+                    <tr>
+                      <th className="p-3.5">REG ID</th>
+                      <th className="p-3.5">STATUS</th>
+                      <th className="p-3.5">UTR / REF ID</th>
+                      <th className="p-3.5">EVENT ARENA</th>
+                      <th className="p-3.5">TEAM / SQUAD</th>
+                      <th className="p-3.5">LEAD / PARTICIPANT</th>
+                      <th className="p-3.5">USN</th>
+                      <th className="p-3.5">CONTACT</th>
+                      <th className="p-3.5 text-right">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y-2 divide-black">
+                    {filtered.map(r => (
+                      <tr key={r.id} className="hover:bg-[#FFFDF0]">
+                        <td className="p-3.5 font-black text-black">
+                          <span className="bg-[#FFE600] px-1.5 py-0.5 border border-black">{r.reg_id}</span>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 border border-black font-black text-[10px] uppercase ${
+                            (r.status === 'completed' || r.status === 'confirmed') ? 'bg-[#00E575] text-black' : 'bg-[#FF90E8] text-black animate-pulse'
+                          }`}>
+                            {(r.status === 'completed' || r.status === 'confirmed') ? 'COMPLETED' : 'PENDING'}
+                          </span>
+                        </td>
+                        <td className="p-3.5 font-mono font-black text-[#0066FF]">{r.utr_id || 'N/A'}</td>
+                        <td className="p-3.5 font-bold text-black">{r.event_name}</td>
+                        <td className="p-3.5 font-bold text-[#0066FF]">{r.team_name || 'Solo'}</td>
+                        <td className="p-3.5 font-bold text-black">{r.leader_name}</td>
+                        <td className="p-3.5 font-black text-black">{r.leader_usn}</td>
+                        <td className="p-3.5 text-slate-800">{r.leader_phone || r.leader_email || '—'}</td>
+                        <td className="p-3.5 text-right space-x-1.5 whitespace-nowrap">
+                          {!(r.status === 'completed' || r.status === 'confirmed') ? (
+                            <button
+                              type="button"
+                              onClick={() => handleVerifyStatus(r.id, 'completed')}
+                              className="brutal-btn px-2.5 py-1 bg-[#00E575] text-black text-[11px] font-black"
+                              title="Approve UTR and grant completed pass"
+                            >
+                              ✓ APPROVE
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleVerifyStatus(r.id, 'pending')}
+                              className="brutal-btn px-2.5 py-1 bg-[#FFE600] text-black text-[11px] font-black"
+                              title="Mark back to pending"
+                            >
+                              ⏳ REVERT
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setViewModal(r)}
+                            className="brutal-btn px-2.5 py-1 bg-[#00F0FF] text-black text-[11px] font-black"
+                          >
+                            VIEW
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(r.id)}
+                            className="brutal-btn px-2.5 py-1 bg-[#FF4D8D] text-white text-[11px] font-black"
+                          >
+                            DELETE
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* DETAIL MODAL */}
+          {viewModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75">
+              <div className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-6 sm:p-8 relative">
+                <button
+                  type="button"
+                  onClick={() => setViewModal(null)}
+                  className="absolute top-4 right-4 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center"
+                >
+                  ✕
+                </button>
+                <div className="font-mono text-xs font-black bg-[#FFE600] px-2 py-0.5 border-2 border-black inline-block mb-2">
+                  PASS ID: {viewModal.reg_id}
+                </div>
+                <h3 className="text-2xl font-display font-black text-black mb-1">{viewModal.event_name}</h3>
+                {viewModal.team_name && (
+                  <div className="font-mono font-black text-sm text-[#0066FF] mb-3">
+                    Squad Name: {viewModal.team_name}
+                  </div>
+                )}
+                {viewModal.theme && (
+                  <div className="p-2.5 bg-[#FFF9D2] border-2 border-black font-mono text-xs mb-4">
+                    <span className="font-bold">Ideathon Track:</span> {viewModal.theme}
+                  </div>
+                )}
+
+                <div className="p-3.5 bg-[#FFF3CD] border-3 border-black font-mono text-xs mb-4 space-y-1">
+                  <div className="font-black text-black">PAYMENT VERIFICATION:</div>
+                  <div>Submitted UTR ID: <span className="font-black text-sm text-[#0066FF]">{viewModal.utr_id || 'N/A'}</span></div>
+                  <div>Status: <span className="font-black uppercase">{viewModal.status || 'pending'}</span></div>
+                  <div className="pt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyStatus(viewModal.id, 'completed')}
+                      className="brutal-btn px-3 py-1 bg-[#00E575] text-black font-black text-xs"
+                    >
+                      ✓ MARK COMPLETED (VERIFY UTR)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyStatus(viewModal.id, 'pending')}
+                      className="brutal-btn px-3 py-1 bg-[#FF4D8D] text-white font-black text-xs"
+                    >
+                      ⏳ MARK PENDING
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-[#FFFDF0] border-2 border-black font-mono text-xs space-y-1.5 mb-4">
+                  <div className="font-black text-black text-sm">Lead: {viewModal.leader_name}</div>
+                  <div>USN: <span className="font-bold">{viewModal.leader_usn}</span></div>
+                  <div>Phone: <span className="font-bold">{viewModal.leader_phone || 'N/A'}</span></div>
+                  <div>Email: <span className="font-bold">{viewModal.leader_email || 'N/A'}</span></div>
+                  <div className="text-[10px] text-slate-500 pt-1">Registered: {new Date(viewModal.created_at).toLocaleString()}</div>
+                </div>
+
+                {viewModal.members?.length > 0 && (
+                  <div className="mb-4">
+                    <div className="font-mono font-black text-xs uppercase mb-2">Team Members:</div>
+                    <div className="space-y-1.5 font-mono text-xs">
+                      {viewModal.members.map((m, i) => (
+                        <div key={i} className="p-2 bg-white border-2 border-black flex justify-between font-bold">
+                          <span>Member {i + 2}: {m.name}</span>
+                          <span className="text-[#0066FF]">{m.usn}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setViewModal(null)}
+                    className="brutal-btn px-5 py-2 bg-black text-white font-mono font-bold text-xs"
+                  >
+                    CLOSE WINDOW
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ========================================================
+    // ROOT APP COMPONENT (DUAL INTERFACE ROUTING)
+    
+    // ========================================================
+    // SCHEDULE TIMELINE SECTION
+    // ========================================================
+    function ScheduleSection() {
+      return (
+        <section id="schedule" className="py-20 px-4 sm:px-6 lg:px-8 border-t-4 border-black bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+              <div>
+                <span className="bg-[#FF4D8D] text-white px-3 py-1 font-mono font-black text-xs uppercase border-2 border-black inline-block mb-2">
+                  // TIMELINE & VENUES
+                </span>
+                <h2 className="text-3xl sm:text-5xl font-display font-black text-black">
+                  FEST SCHEDULE • NOV 20, 2026
+                </h2>
+              </div>
+              <div className="font-mono text-xs font-bold text-slate-700 border-l-4 border-black pl-3">
+                All rounds take place on campus at SJC Institute of Technology.
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {FEST_CONFIG.schedule[0].items.map((item, idx) => (
+                <div key={idx} className="bg-[#FFFDF5] border-3 border-black brutal-shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <span className="w-10 h-10 bg-[#FFE600] border-2 border-black flex items-center justify-center font-mono font-black text-sm shrink-0">
+                      0{idx + 1}
+                    </span>
+                    <div>
+                      <div className="font-mono text-xs font-black text-[#0066FF] uppercase">{item.time} • {item.venue}</div>
+                      <h4 className="font-display font-black text-xl text-black">{item.title}</h4>
+                      <p className="text-xs font-medium text-slate-700 mt-0.5">{item.description}</p>
+                    </div>
+                  </div>
+                  <span className="font-mono text-[11px] font-bold px-2.5 py-1 bg-white border-2 border-black shrink-0 self-start md:self-center">
+                    ROUND ACTIVE
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ========================================================
+    // CONTACT & COORDINATORS SECTION
+    // ========================================================
+    function ContactSection() {
+      return (
+        <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t-4 border-black bg-[#FFFDF5]">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-12">
+              <span className="bg-[#FFE600] text-black px-3 py-1 font-mono font-black text-xs uppercase border-2 border-black inline-block mb-2">
+                // ORGANIZING DESK
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-display font-black text-black">
+                COORDINATORS & CONTACT
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
+                <span className="font-mono text-xs font-black bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
+                  FACULTY COORDINATOR
+                </span>
+                <h3 className="font-display font-black text-2xl text-black">Prof. Event Coordinator</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Dept. of Computer Science & Engineering</p>
+                <p className="font-mono text-xs font-bold text-black pt-2">📍 SJC Institute of Technology, Chickballapur</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Contact: +91 98765 43210</p>
+              </div>
+
+              <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
+                <span className="font-mono text-xs font-black bg-[#FFE600] px-2 py-0.5 border-2 border-black uppercase">
+                  STUDENT CONVENER
+                </span>
+                <h3 className="font-display font-black text-2xl text-black">Student Lead Coordinator</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Final Year, CSE - SJCIT</p>
+                <p className="font-mono text-xs font-bold text-black pt-2">📍 Student Activity Center, Campus</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Help Desk: +91 98765 43212</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+
+    // ========================================================
+    function App() {
+      const [view, setView] = useState('home');
+      const [selectedEvent, setSelectedEvent] = useState(null);
+      const [settings, setSettings] = useState(getStoredSettings());
+
+      useEffect(() => {
+        const handleHash = () => {
+          if (location.hash === '#admin') setView('admin');
+        };
+        handleHash();
+        window.addEventListener('hashchange', handleHash);
+        return () => window.removeEventListener('hashchange', handleHash);
+      }, []);
+
+      const handleSelectEvent = (ev) => {
+        setSelectedEvent(ev);
+        setView('register');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const handleGoHome = () => {
+        setView('home');
+        setSelectedEvent(null);
+        location.hash = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const handleNavSection = (id) => {
+        if (view !== 'home') {
+          handleGoHome();
+          setTimeout(() => {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        } else {
+          const el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-[#FFFDF5] text-black font-sans relative dot-grid">
+          <CyberParticles />
+          <Navbar
+            currentView={view}
+            onGoHome={handleGoHome}
+            onOpenAdmin={() => { setView('admin'); location.hash = '#admin'; }}
+            onNavigateSection={handleNavSection}
+          />
+
+          <main className="relative z-10">
+            {view === 'home' && (
+              <>
+                <Hero
+                  onExplore={() => handleNavSection('events')}
+                  onRegister={() => handleNavSection('events')}
+                />
+                <div className="marquee-container">
+    <div className="marquee-content">
+      ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
+    </div>
+    <div className="marquee-content" aria-hidden="true">
+      ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
+    </div>
+  </div>
+                <EventsSection
+                  onSelectEvent={handleSelectEvent}
+                  eventSettings={settings}
+                />
+                <ScheduleSection />
+                <ContactSection />
+              </>
+            )}
+
+            {view === 'register' && selectedEvent && (
+              <RegistrationPage
+                event={selectedEvent}
+                onBack={handleGoHome}
+                onRegisterAnother={() => handleNavSection('events')}
+              />
+            )}
+
+            {view === 'admin' && (
+              <AdminDashboard onBack={handleGoHome} />
+            )}
+          </main>
+
+          <footer className="border-t-4 border-black bg-[#FFE600] text-black font-mono text-xs py-10 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b-3 border-black pb-6">
+                <div>
+                  <div className="font-display font-black text-3xl text-black">TECHNOTSAVA 2026</div>
+                  <div className="font-mono font-bold text-slate-800">{FEST_CONFIG.tagline}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold">{FEST_CONFIG.collegeName}</div>
+                  <div className="text-slate-700">{FEST_CONFIG.department}</div>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row justify-between items-center text-xs font-bold gap-2">
+                <div>© 2026 TECHNOTSAVA COMMITTEE. ALL RIGHTS RESERVED.</div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => { setView('admin'); location.hash = '#admin'; }} className="underline hover:text-blue-700 font-black">
+                    ADMIN LOGIN ↗
+                  </button>
+                  <span>•</span>
+                  <span>NEO-BRUTALISM EDITION</span>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

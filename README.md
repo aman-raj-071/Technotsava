@@ -122,7 +122,7 @@ To sync all registrations to a live cloud database on Supabase:
    ```env
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
    VITE_SUPABASE_ANON_KEY=your-actual-anon-key-here
-   VITE_ADMIN_PASSCODE=admin2026
+   VITE_ADMIN_PASSCODE=techfestcse@2026&
    ```
 8. Restart your dev server. The app will immediately detect live Supabase and sync all submissions to the cloud!
 
@@ -131,7 +131,7 @@ To sync all registrations to a live cloud database on Supabase:
 ## 🛡️ Admin Dashboard Portal
 
 - **URL**: Navigate to `/admin` or click **Admin Portal** in the navigation bar.
-- **Default Passcode**: `admin2026` (configurable via `VITE_ADMIN_PASSCODE` in `.env`).
+- **Default Passcode**: `techfestcse@2026&` (configurable via `VITE_ADMIN_PASSCODE` in `.env`).
 - **Features**:
   - View total attendee count and event-specific registration volumes.
   - Search instantaneously by **Team Name**, **Participant Name**, **USN**, or **Registration ID**.
