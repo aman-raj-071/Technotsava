@@ -23,7 +23,7 @@ Inspired by modern tech fest interfaces (e.g. *srujanacu.in*), **TECHNOTSAV 2026
   - **Live Supabase Mode**: Connects directly to Supabase cloud PostgreSQL using provided credentials in `.env`.
   - **Local Persistence Failover**: Seamlessly saves and manages registrations in local storage if offline or before database keys are entered, guaranteeing 100% functionality out of the box!
 - **Protected Admin Dashboard**:
-  - Secure Passcode Authentication (Default: `admin2026`).
+  - Secure Passcode Authentication (Default: `techfestcse@2026&`).
   - Total and event-wise registration counters with quota progress.
   - Real-time search across Team Name, Leader Name, Participant Names, USNs, and Registration IDs.
   - Event filter tabs.

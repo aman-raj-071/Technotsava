@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TECHNOTSAVA 2026 | SJC Institute of Technology</title>
-  <meta name="description" content="TECHNOTSAVA 2026 – SJC Institute of Technology. 4 Flagship Competitions: Tech Quiz, Digital Treasure Hunt, Minute to Win It, and Videography – Frame the Fest." />
+  <meta name="description"
+    content="TECHNOTSAVA 2026 – SJC Institute of Technology. 4 Flagship Competitions: Tech Quiz, Digital Treasure Hunt, Minute to Win It, and Videography – Frame the Fest." />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Syne:wght@700;800;900&display=swap"
+    rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,30 +70,38 @@
       font-family: 'Space Grotesk', sans-serif;
       overflow-x: hidden;
     }
+
     ::selection {
       background: #FFE600;
       color: #000000;
     }
+
     .dot-grid {
       background-color: #FFFDF5;
       background-image: radial-gradient(#000000 1.25px, transparent 1.25px);
       background-size: 24px 24px;
     }
+
     .brutal-border {
       border: 3px solid #000000 !important;
     }
+
     .brutal-border-4 {
       border: 4px solid #000000 !important;
     }
+
     .brutal-shadow {
       box-shadow: 5px 5px 0px 0px #000000;
     }
+
     .brutal-shadow-lg {
       box-shadow: 8px 8px 0px 0px #000000;
     }
+
     .brutal-shadow-sm {
       box-shadow: 3px 3px 0px 0px #000000;
     }
+
     .brutal-btn {
       border: 3px solid #000000;
       box-shadow: 4px 4px 0px 0px #000000;
@@ -98,24 +110,29 @@
       letter-spacing: 0.05em;
       transition: all 0.12s ease-in-out;
     }
+
     .brutal-btn:hover {
       transform: translate(-3px, -3px);
       box-shadow: 7px 7px 0px 0px #000000;
     }
+
     .brutal-btn:active {
       transform: translate(2px, 2px);
       box-shadow: 1px 1px 0px 0px #000000;
     }
+
     .brutal-card {
       background: #FFFFFF;
       border: 3px solid #000000;
       box-shadow: 6px 6px 0px 0px #000000;
       transition: all 0.15s ease-in-out;
     }
+
     .brutal-card:hover {
       transform: translate(-3px, -3px);
       box-shadow: 10px 10px 0px 0px #000000;
     }
+
     .brutal-sticker {
       border: 2px solid #000000;
       box-shadow: 3px 3px 0px 0px #000000;
@@ -123,6 +140,7 @@
       text-transform: uppercase;
       display: inline-block;
     }
+
     .brutal-input {
       border: 3px solid #000000 !important;
       box-shadow: 3px 3px 0px 0px #000000;
@@ -131,11 +149,13 @@
       font-weight: 600;
       border-radius: 0px !important;
     }
+
     .brutal-input:focus {
       outline: none;
       box-shadow: 6px 6px 0px 0px #000000;
       background: #FFFDF0 !important;
     }
+
     .marquee-container {
       background: #FFE600;
       border-top: 3px solid #000000;
@@ -148,22 +168,45 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
+
     .marquee-content {
       display: inline-block;
       white-space: nowrap;
       animation: brutal-scroll 24s linear infinite;
     }
+
     @keyframes brutal-scroll {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-50%); }
+      0% {
+        transform: translateX(0%);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
     }
+
     @media print {
-      body * { visibility: hidden; }
-      #printable-ticket, #printable-ticket * { visibility: visible; }
-      #printable-ticket { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+      body * {
+        visibility: hidden;
+      }
+
+      #printable-ticket,
+      #printable-ticket * {
+        visibility: visible;
+      }
+
+      #printable-ticket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
     }
   </style>
 </head>
+
 <body class="bg-[#FFFDF5] text-black min-h-screen dot-grid">
   <div id="root"></div>
 
@@ -426,7 +469,7 @@
       try {
         const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
         if (raw) return JSON.parse(raw);
-      } catch(e) {}
+      } catch (e) { }
       const d = {};
       EVENTS.forEach(ev => d[ev.id] = true);
       return d;
@@ -440,7 +483,7 @@
       try {
         const raw = localStorage.getItem(LOCAL_REGS_KEY);
         return raw ? JSON.parse(raw) : [];
-      } catch(e) {
+      } catch (e) {
         return [];
       }
     };
@@ -597,7 +640,7 @@
               {/* Desktop Links */}
               <div className="hidden md:flex items-center space-x-2 font-mono font-bold text-sm">
                 <button onClick={() => handleNav('hero')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">HOME</button>
-                
+
                 <button onClick={() => handleNav('events')} className="px-3 py-1.5 hover:bg-[#00E575] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">EVENTS (6)</button>
                 <button onClick={() => {
                   const q = prompt('Enter your Unique Registration ID (e.g. TECH26-QUIZ-1234):');
@@ -649,7 +692,7 @@
           {mobileMenuOpen && (
             <div className="md:hidden border-t-4 border-black bg-[#FFFDF5] p-4 space-y-2 font-mono font-bold">
               <button onClick={() => handleNav('hero')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">HOME</button>
-              
+
               <button onClick={() => handleNav('events')} className="block w-full text-left p-2.5 bg-[#00E575] border-2 border-black brutal-shadow-sm">EVENTS (6)</button>
               <button onClick={() => handleNav('schedule')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">SCHEDULE</button>
               <button onClick={() => handleNav('contact')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">CONTACT</button>
@@ -665,7 +708,7 @@
 
     // ========================================================
     // HERO COMPONENT
-        // ========================================================
+    // ========================================================
     // HERO COMPONENT
     // ========================================================
     function Hero({ onExplore, onRegister }) {
@@ -693,8 +736,8 @@
                   /// SJC INSTITUTE OF TECHNOLOGY PRESENTS
                 </div>
                 <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-black text-black leading-[0.95] tracking-tight">
-                  TECH<br/>
-                  <span className="bg-[#FFE600] px-3 border-4 border-black brutal-shadow-lg inline-block my-2">NOTSAVA</span><br/>
+                  TECH<br />
+                  <span className="bg-[#FFE600] px-3 border-4 border-black brutal-shadow-lg inline-block my-2">NOTSAVA</span><br />
                   <span className="text-[#0066FF]">2026.</span>
                 </h1>
                 <p className="text-xl sm:text-2xl font-mono font-bold text-black border-l-4 border-black pl-4 py-1">
@@ -815,9 +858,8 @@
                   <div
                     key={event.id}
                     onClick={() => isActive && onSelectEvent(event)}
-                    className={`brutal-card flex flex-col justify-between overflow-hidden cursor-pointer ${
-                      !isActive ? 'opacity-60 grayscale cursor-not-allowed' : ''
-                    }`}
+                    className={`brutal-card flex flex-col justify-between overflow-hidden cursor-pointer ${!isActive ? 'opacity-60 grayscale cursor-not-allowed' : ''
+                      }`}
                   >
                     {/* Top colored strip */}
                     <div className={`p-4 ${headerColor} border-b-3 border-black flex items-center justify-between font-mono`}>
@@ -948,11 +990,11 @@
 
     // ========================================================
     // REGISTRATION PAGE (EXACT FORM RULES)
-        // ========================================================
+    // ========================================================
     // ULTRA-PREMIUM NEO-BRUTALIST REGISTRATION PAGE
-        // ========================================================
+    // ========================================================
     // DEDICATED ADMIN INTERFACE (PASSWORD PROTECTED)
-        // ========================================================
+    // ========================================================
     // REGISTRATION PAGE WITH UPI PAYMENT QR & UTR VERIFICATION
     // ========================================================
     function RegistrationPage({ event, onBack, onRegisterAnother, onOpenCheckStatus }) {
@@ -1118,9 +1160,8 @@
             <div className="bg-white border-4 border-black brutal-shadow-xl p-8 mb-8 relative">
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-4 border-black pb-6 mb-6">
                 <div>
-                  <span className={`font-mono font-black text-xs px-3 py-1 uppercase border-2 border-black inline-block mb-2 ${
-                    isVerified ? 'bg-[#00E575] text-black' : 'bg-[#FFE600] text-black animate-pulse'
-                  }`}>
+                  <span className={`font-mono font-black text-xs px-3 py-1 uppercase border-2 border-black inline-block mb-2 ${isVerified ? 'bg-[#00E575] text-black' : 'bg-[#FFE600] text-black animate-pulse'
+                    }`}>
                     {isVerified ? '✓ PAYMENT VERIFIED & PASS CONFIRMED' : '⏳ VERIFICATION PENDING BY ADMIN'}
                   </span>
                   <h2 className="text-3xl sm:text-4xl font-display font-black text-black">
@@ -1136,9 +1177,8 @@
                 </div>
               </div>
 
-              <div className={`p-4 border-3 border-black mb-6 font-mono text-xs ${
-                isVerified ? 'bg-[#D4EDDA] text-[#155724]' : 'bg-[#FFF3CD] text-[#856404]'
-              }`}>
+              <div className={`p-4 border-3 border-black mb-6 font-mono text-xs ${isVerified ? 'bg-[#D4EDDA] text-[#155724]' : 'bg-[#FFF3CD] text-[#856404]'
+                }`}>
                 <div className="font-black text-sm mb-1">
                   {isVerified ? '🎉 Registration Status: VERIFIED & CONFIRMED' : '⏳ Registration Status: PENDING ADMIN APPROVAL'}
                 </div>
@@ -1487,11 +1527,10 @@
                           <div
                             key={th.id}
                             onClick={() => setSelectedTheme(th.title)}
-                            className={`p-4 border-3 border-black cursor-pointer transition-all ${
-                              isChosen
+                            className={`p-4 border-3 border-black cursor-pointer transition-all ${isChosen
                                 ? 'bg-[#FFE600] brutal-shadow translate-x-[-2px] translate-y-[-2px]'
                                 : 'bg-[#FFFDF5] hover:bg-[#FFF9D2]'
-                            }`}
+                              }`}
                           >
                             <div className="flex justify-between items-center mb-1.5">
                               <span className="font-mono font-black text-xs uppercase px-2 py-0.5 bg-black text-white">
@@ -1767,11 +1806,11 @@
         }
       }, [authed]);
 
-      const ADMIN_PASSCODE = (window.__ENV__ && window.__ENV__.VITE_ADMIN_PASSCODE) || 'techfestcse@0071&&';
+      const ADMIN_PASSCODE = (window.__ENV__ && window.__ENV__.VITE_ADMIN_PASSCODE) || 'techfestcse@2026&';
 
       const handleLogin = (e) => {
         e.preventDefault();
-        if (pin.trim() === ADMIN_PASSCODE || pin.trim() === 'admin2026') {
+        if (pin.trim() === ADMIN_PASSCODE) {
           sessionStorage.setItem('tech26_admin', '1');
           setAuthed(true);
           setErr('');
@@ -1848,7 +1887,7 @@
                   </label>
                   <input
                     type="password"
-                    placeholder="Enter passcode (admin2026)"
+                    placeholder="Enter passcode (techfestcse@2026&)"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="w-full brutal-input px-4 py-3 text-sm font-mono font-bold"
@@ -1971,9 +2010,8 @@
                       <button
                         type="button"
                         onClick={() => handleToggle(ev.id)}
-                        className={`w-full py-1 text-[11px] font-mono font-black border-2 border-black ${
-                          active ? 'bg-[#00E575] text-black' : 'bg-[#FF4D8D] text-white'
-                        }`}
+                        className={`w-full py-1 text-[11px] font-mono font-black border-2 border-black ${active ? 'bg-[#00E575] text-black' : 'bg-[#FF4D8D] text-white'
+                          }`}
                       >
                         {active ? '🟢 OPEN' : '🔴 CLOSED'}
                       </button>
@@ -1996,9 +2034,8 @@
                 <button
                   type="button"
                   onClick={() => setSelectedFilter('all')}
-                  className={`px-3.5 py-2 text-xs font-black border-2 border-black ${
-                    selectedFilter === 'all' ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
-                  }`}
+                  className={`px-3.5 py-2 text-xs font-black border-2 border-black ${selectedFilter === 'all' ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
+                    }`}
                 >
                   ALL ({regs.length})
                 </button>
@@ -2007,9 +2044,8 @@
                     key={ev.id}
                     type="button"
                     onClick={() => setSelectedFilter(ev.id)}
-                    className={`px-3 py-2 text-xs font-black border-2 border-black truncate max-w-[130px] ${
-                      selectedFilter === ev.id ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
-                    }`}
+                    className={`px-3 py-2 text-xs font-black border-2 border-black truncate max-w-[130px] ${selectedFilter === ev.id ? 'bg-black text-[#FFE600]' : 'bg-white text-black'
+                      }`}
                   >
                     #{ev.code}
                   </button>
@@ -2045,9 +2081,8 @@
                           <span className="bg-[#FFE600] px-1.5 py-0.5 border border-black">{r.reg_id}</span>
                         </td>
                         <td className="p-3.5">
-                          <span className={`px-2 py-0.5 border border-black font-black text-[10px] uppercase ${
-                            (r.status === 'completed' || r.status === 'confirmed') ? 'bg-[#00E575] text-black' : 'bg-[#FF90E8] text-black animate-pulse'
-                          }`}>
+                          <span className={`px-2 py-0.5 border border-black font-black text-[10px] uppercase ${(r.status === 'completed' || r.status === 'confirmed') ? 'bg-[#00E575] text-black' : 'bg-[#FF90E8] text-black animate-pulse'
+                            }`}>
                             {(r.status === 'completed' || r.status === 'confirmed') ? 'COMPLETED' : 'PENDING'}
                           </span>
                         </td>
@@ -2188,7 +2223,7 @@
 
     // ========================================================
     // ROOT APP COMPONENT (DUAL INTERFACE ROUTING)
-    
+
     // ========================================================
     // SCHEDULE TIMELINE SECTION
     // ========================================================
@@ -2336,13 +2371,13 @@
                   onRegister={() => handleNavSection('events')}
                 />
                 <div className="marquee-container">
-    <div className="marquee-content">
-      ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
-    </div>
-    <div className="marquee-content" aria-hidden="true">
-      ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
-    </div>
-  </div>
+                  <div className="marquee-content">
+                    ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
+                  </div>
+                  <div className="marquee-content" aria-hidden="true">
+                    ⚡ TECHNOTSAVA 2026 • SJC INSTITUTE OF TECHNOLOGY • TECH QUIZ • DIGITAL TREASURE HUNT • MINUTE TO WIN IT • VIDEOGRAPHY – FRAME THE FEST • NOV 20, 2026 • CASH PRIZES • TROPHIES •
+                  </div>
+                </div>
                 <EventsSection
                   onSelectEvent={handleSelectEvent}
                   eventSettings={settings}
@@ -2396,4 +2431,5 @@
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
+
 </html>

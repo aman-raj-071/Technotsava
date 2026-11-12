@@ -1906,12 +1906,12 @@
 
       const handleLogin = (e) => {
         e.preventDefault();
-        if (pin.trim() === 'admin2026') {
+        if (pin.trim() === 'techfestcse@2026&') {
           sessionStorage.setItem('tech26_admin', '1');
           setAuthed(true);
           setErr('');
         } else {
-          setErr('Invalid Passcode! (Default: admin2026)');
+          setErr('Invalid Passcode! (Default: techfestcse@2026&)');
         }
       };
 
@@ -2003,7 +2003,7 @@
                   </label>
                   <input
                     type="password"
-                    placeholder="Enter passcode (admin2026)"
+                    placeholder="Enter passcode (techfestcse@2026&)"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="w-full brutal-input px-4 py-3 text-sm font-mono font-bold"

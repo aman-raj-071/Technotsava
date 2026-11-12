@@ -28,9 +28,6 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     status VARCHAR(50) DEFAULT 'confirmed',
     utr_id VARCHAR(100),
     amount VARCHAR(20) DEFAULT 'Free',
-    attendance_code VARCHAR(30),
-    attended BOOLEAN DEFAULT false,
-    attended_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

@@ -578,9 +578,8 @@
       return updated;
     };
 
-    const updateRegistrationStatus = async (id, newStatus, attendanceCode = null) => {
+    const updateRegistrationStatus = async (id, newStatus) => {
       const updatePayload = { status: newStatus };
-      if (attendanceCode) updatePayload.attendance_code = attendanceCode;
 
       try {
         let res = await sb.from('registrations').update(updatePayload).eq('id', id);
@@ -1284,10 +1283,7 @@
           utr_id: utrNumber.trim(),
           amount: paidAmount,
           created_at: now,
-          status: 'pending',
-          attendance_code: 'TN-' + event.code + '-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
-          attended: false,
-          attended_at: null
+          status: 'pending'
         };
 
         if (event.id === 'tech-quiz') {
@@ -2019,19 +2015,13 @@
       };
 
       const handleVerifyStatus = (id, newStatus) => {
-        const current = regs.find(r => r.id === id);
         const approving = newStatus === 'completed' || newStatus === 'confirmed';
-        let newAttendanceCode = null;
-        if (approving && current && !current.attendance_code) {
-          const ev = EVENTS.find(e => e.id === current.event_id) || EVENTS[0];
-          newAttendanceCode = 'TN-' + (ev?.code || 'EVT') + '-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-        }
 
-        updateRegistrationStatus(id, newStatus, newAttendanceCode).then(updated => {
+        updateRegistrationStatus(id, newStatus).then(updated => {
           setRegs(updated);
           const rec = updated.find(r => r.id === id);
           if (viewModal?.id === id && rec) {
-            setViewModal({ ...viewModal, status: newStatus, attended: rec.attended, attended_at: rec.attended_at, attendance_code: rec.attendance_code });
+            setViewModal({ ...viewModal, status: newStatus, attended: rec.attended, attended_at: rec.attended_at });
           }
           if (approving && rec) {
             alert(
@@ -2040,8 +2030,7 @@
               'Event: ' + rec.event_name + '\n' +
               'Team/Squad: ' + (rec.team_name || 'Solo') + '\n' +
               'Leader: ' + rec.leader_name + ' (' + (rec.leader_usn || '') + ')\n' +
-              'UTR / Ref: ' + (rec.utr_id || 'N/A') + '\n' +
-              'Entry Code: ' + (rec.attendance_code || '—') + '\n\n' +
+              'UTR / Ref: ' + (rec.utr_id || 'N/A') + '\n\n' +
               'The participant can now see this verified pass under 🔍 CHECK STATUS.'
             );
           }
@@ -2081,9 +2070,9 @@
 
       const handleExportCSV = () => {
         if (!regs.length) return alert('No registrations recorded yet.');
-        let csv = 'Reg ID,Entry Code,Event,Team Name,Leader Name,USN,Phone,Email,Total Members,Theme,Status,Attended,Created At\n';
+        let csv = 'Reg ID,Event,Team Name,Leader Name,USN,Phone,Email,Total Members,Theme,Status,Attended,Created At\n';
         regs.forEach(r => {
-          csv += `"${r.reg_id}","${r.attendance_code || ''}","${r.event_name}","${r.team_name || 'Solo'}","${r.leader_name}","${r.leader_usn}","${r.leader_phone || ''}","${r.leader_email || ''}",${1 + (r.members?.length || 0)},"${r.theme || ''}","${r.status}","${r.attended ? 'YES' : 'NO'}","${r.created_at}"\n`;
+          csv += `"${r.reg_id}","${r.event_name}","${r.team_name || 'Solo'}","${r.leader_name}","${r.leader_usn}","${r.leader_phone || ''}","${r.leader_email || ''}",${1 + (r.members?.length || 0)},"${r.theme || ''}","${r.status}","${r.attended ? 'YES' : 'NO'}","${r.created_at}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv' });
         const a = document.createElement('a');
@@ -2253,59 +2242,6 @@
               </div>
             </div>
 
-            {/* ATTENDANCE CHECK-IN PANEL */}
-            <div className="bg-[#001F3F] border-4 border-black brutal-shadow-lg p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div className="flex-1">
-                  <div className="text-xs font-mono font-black uppercase text-[#00F0FF] mb-1">
-                    🛂 DOOR CHECK-IN • ENTER TEAM REGISTRATION ID (REG ID)
-                  </div>
-                  <div className="text-sm font-bold text-white mb-3">
-                    Type the team's Registration ID (Reg ID) from their pass. It verifies the team and marks them as ATTENDED, preventing duplicate / fake entries.
-                  </div>
-                  <form onSubmit={handleCheckin} className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      placeholder="Registration ID (e.g. TNOT-01)"
-                      value={checkinCode}
-                      onChange={(e) => { setCheckinCode(e.target.value); setCheckinResult(null); }}
-                      className="flex-1 brutal-input px-4 py-3 text-sm font-mono font-black uppercase bg-white"
-                    />
-                    <button type="submit" className="brutal-btn px-5 py-3 bg-[#00F0FF] text-black text-xs font-black">
-                      🔍 VERIFY & CHECK-IN
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              {checkinResult && (
-                <div className={`mt-4 p-4 border-3 border-black font-mono text-xs ${checkinResult.error ? 'bg-[#FF4D8D] text-white' : 'bg-[#D4EDDA] text-[#155724]'}`}>
-                  {checkinResult.error ? (
-                    <div className="font-black">⚠ {checkinResult.error}</div>
-                  ) : (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <div className="font-black text-sm">✓ MATCH • {checkinResult.team.leader_name} ({checkinResult.team.leader_usn})</div>
-                        <div className="mt-0.5">Event: {checkinResult.team.event_name} • Reg ID: {checkinResult.team.reg_id}</div>
-                        <div className="mt-0.5">Status: {checkinResult.team.attended
-                          ? '✅ ALREADY ATTENDED ' + (checkinResult.team.attended_at ? new Date(checkinResult.team.attended_at).toLocaleString() : '')
-                          : '⏳ NOT YET ATTENDED'}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => { handleAttendance(checkinResult.team.id); setCheckinResult(null); setCheckinCode(''); }}
-                          className={`brutal-btn px-4 py-2 text-xs font-black ${checkinResult.team.attended ? 'bg-[#FFE600] text-black' : 'bg-[#00E575] text-black'}`}
-                        >
-                          {checkinResult.team.attended ? '↩️ UNDO / REVERT' : '✓ MARK ATTENDED'}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -2364,11 +2300,6 @@
                       <tr key={r.id} className="hover:bg-[#FFFDF0]">
                         <td className="p-3.5 font-black text-black">
                           <span className="bg-[#FFE600] px-1.5 py-0.5 border border-black">{r.reg_id}</span>
-                          {r.attendance_code && (
-                            <div className="mt-1 font-mono text-[10px] text-[#0066FF] border border-dashed border-[#0066FF] inline-block px-1.5 py-0.5">
-                              🛂 {r.attendance_code}
-                            </div>
-                          )}
                         </td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 border border-black font-black text-[10px] uppercase ${(r.status === 'completed' || r.status === 'confirmed') ? 'bg-[#00E575] text-black' : 'bg-[#FF90E8] text-black animate-pulse'
@@ -2644,6 +2575,16 @@
       const [showTemplate, setShowTemplate] = useState(false);
       const [matches, setMatches] = useState([]);
 
+      // Lock background body scroll while the pass template modal is open
+      useEffect(() => {
+        if (showTemplate) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+      }, [showTemplate]);
+
       const handleSearch = (e) => {
         e && e.preventDefault();
         setSearchError('');
@@ -2866,12 +2807,6 @@
                     <div className="text-xs font-black uppercase text-slate-600 mb-0.5">SUBMITTED UTR / REF ID</div>
                     <div className="font-black text-sm text-[#0066FF]">{foundRecord.utr_id || 'N/A'}</div>
                   </div>
-                  {isVerified && foundRecord.attendance_code && (
-                    <div className="p-3 bg-[#00E575] border-2 border-black">
-                      <div className="text-xs font-black uppercase text-slate-700 mb-0.5">ENTRY / ATTENDANCE CODE</div>
-                      <div className="font-mono font-black text-base text-black">{foundRecord.attendance_code}</div>
-                    </div>
-                  )}
                   {foundRecord.leader_phone && (
                     <div className="p-3 bg-[#FFFDF0] border-2 border-black">
                       <div className="text-xs font-black uppercase text-slate-600 mb-0.5">CONTACT PHONE</div>
@@ -2949,9 +2884,9 @@
 
               {/* Pass Template Modal */}
               {showTemplate && foundRecord && (
-                <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 bg-black/75" onClick={() => setShowTemplate(false)}>
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 overflow-y-auto" onClick={() => setShowTemplate(false)}>
                   <div
-                    className="bg-white border-4 border-black brutal-shadow-xl max-w-2xl w-full p-6 sm:p-8 relative my-auto max-h-[90vh] overflow-y-auto"
+                    className="bg-white border-4 border-black brutal-shadow-xl max-w-2xl w-full p-6 sm:p-8 relative z-[10000] my-8 max-h-[90vh] overflow-y-auto"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -3000,12 +2935,6 @@
                           <div className="text-[11px] font-black uppercase text-slate-700 mb-1">REGISTRATION ID</div>
                           <div className="font-mono text-lg sm:text-xl font-black text-black">{foundRecord.reg_id}</div>
                         </div>
-                        {isVerified && foundRecord.attendance_code && (
-                          <div className="p-3 bg-[#00E575] border-2 border-black sm:col-span-2 text-center">
-                            <div className="text-[11px] font-black uppercase text-slate-700 mb-1">ENTRY / ATTENDANCE CODE</div>
-                            <div className="font-mono text-lg font-black text-black">{foundRecord.attendance_code}</div>
-                          </div>
-                        )}
                       </div>
 
                       {foundRecord.members && foundRecord.members.length > 0 && (
@@ -3162,7 +3091,7 @@
             onNavigateSection={handleNavSection}
           />
 
-          <main className="relative z-10">
+          <main className="relative z-10 min-h-[calc(100vh-250px)] pb-20">
             {view === 'home' && (
               <>
                 <Hero
@@ -3206,7 +3135,7 @@
             )}
           </main>
 
-          <footer className="border-t-4 border-black bg-[#F2B705] text-black font-mono text-xs py-10 relative z-10">
+          <footer className="border-t-4 border-black bg-[#F2B705] text-black font-mono text-xs py-10 relative z-0">
             <div className="max-w-7xl mx-auto px-4 space-y-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b-3 border-black pb-6">
                 <div className="flex items-center gap-3">

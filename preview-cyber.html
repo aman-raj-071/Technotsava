@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +10,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -55,30 +58,37 @@
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
     }
+
     ::selection {
       background: #38bdf8;
       color: #020617;
     }
+
     ::-webkit-scrollbar {
       width: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: #060813;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #1e293b;
       border-radius: 4px;
       border: 1px solid rgba(56, 189, 248, 0.2);
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #38bdf8;
     }
+
     .glass-panel {
       background: rgba(13, 20, 36, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(56, 189, 248, 0.15);
     }
+
     .glass-panel-glow {
       background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(16px);
@@ -86,36 +96,45 @@
       border: 1px solid rgba(56, 189, 248, 0.2);
       box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.12);
     }
+
     .glass-panel-glow:hover {
       border-color: rgba(56, 189, 248, 0.45);
       box-shadow: 0 0 35px -5px rgba(56, 189, 248, 0.25);
     }
+
     .text-gradient-cyan {
       background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .text-gradient-purple {
       background: linear-gradient(135deg, #c084fc 0%, #f43f5e 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .text-glow {
       text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
     }
+
     .cyber-grid-bg {
-      background-image: 
+      background-image:
         linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
       background-size: 40px 40px;
     }
+
     @media print {
       body * {
         visibility: hidden;
       }
-      #printable-ticket, #printable-ticket * {
+
+      #printable-ticket,
+      #printable-ticket * {
         visibility: visible;
       }
+
       #printable-ticket {
         position: absolute;
         left: 0;
@@ -127,6 +146,7 @@
     }
   </style>
 </head>
+
 <body class="bg-[#060813] text-slate-100 min-h-screen">
   <div id="root"></div>
 
@@ -395,7 +415,7 @@
       try {
         const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
         if (raw) return JSON.parse(raw);
-      } catch(e) {}
+      } catch (e) { }
       const d = {};
       EVENTS.forEach(ev => d[ev.id] = true);
       return d;
@@ -409,7 +429,7 @@
       try {
         const raw = localStorage.getItem(LOCAL_REGS_KEY);
         return raw ? JSON.parse(raw) : [];
-      } catch(e) {
+      } catch (e) {
         return [];
       }
     };
@@ -545,11 +565,10 @@
 
       return (
         <nav
-          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            scrolled
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
               ? 'bg-[#060813]/90 backdrop-blur-xl border-b border-cyan-500/20 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
               : 'bg-transparent py-5'
-          }`}
+            }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
@@ -657,7 +676,7 @@
                   <svg className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_12px_rgba(0,240,255,0.7)]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <polygon points="12 2 2 8.5 2 15.5 12 22 22 15.5 22 8.5 12 2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     <circle cx="12" cy="12" r="3" strokeWidth="1.5" />
-                    <path d="M12 2v7M12 15v7M2 8.5l7 3.5M15 12l7-3.5M2 15.5l7-3.5M15 12l7 3.5" strokeWidth="1.2" opacity="0.6"/>
+                    <path d="M12 2v7M12 15v7M2 8.5l7 3.5M15 12l7-3.5M2 15.5l7-3.5M15 12l7 3.5" strokeWidth="1.2" opacity="0.6" />
                   </svg>
                   <span className="text-[9px] font-mono tracking-widest text-cyan-300 font-bold mt-1">FEST LOGO</span>
                 </div>
@@ -811,9 +830,8 @@
                   <div
                     key={event.id}
                     onClick={() => isActive && onSelectEvent(event)}
-                    className={`group relative glass-panel-glow rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border border-slate-700/60 hover:-translate-y-1.5 cursor-pointer overflow-hidden ${
-                      !isActive ? 'opacity-70 grayscale-[30%] cursor-not-allowed' : ''
-                    }`}
+                    className={`group relative glass-panel-glow rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border border-slate-700/60 hover:-translate-y-1.5 cursor-pointer overflow-hidden ${!isActive ? 'opacity-70 grayscale-[30%] cursor-not-allowed' : ''
+                      }`}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-4">
@@ -1331,11 +1349,10 @@
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div
                           onClick={() => setSelectedTheme('Smart Campus & Student Life')}
-                          className={`p-4 rounded-xl border cursor-pointer transition-colors ${
-                            selectedTheme === 'Smart Campus & Student Life'
+                          className={`p-4 rounded-xl border cursor-pointer transition-colors ${selectedTheme === 'Smart Campus & Student Life'
                               ? 'bg-amber-500/20 border-amber-400 shadow-md'
                               : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                          }`}
+                            }`}
                         >
                           <div className="flex justify-between items-center mb-1">
                             <span className="text-xs font-mono text-amber-300 font-bold">Theme 1</span>
@@ -1347,11 +1364,10 @@
 
                         <div
                           onClick={() => setSelectedTheme('Daily Life Productivity & Digital Utilities')}
-                          className={`p-4 rounded-xl border cursor-pointer transition-colors ${
-                            selectedTheme === 'Daily Life Productivity & Digital Utilities'
+                          className={`p-4 rounded-xl border cursor-pointer transition-colors ${selectedTheme === 'Daily Life Productivity & Digital Utilities'
                               ? 'bg-amber-500/20 border-amber-400 shadow-md'
                               : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                          }`}
+                            }`}
                         >
                           <div className="flex justify-between items-center mb-1">
                             <span className="text-xs font-mono text-amber-300 font-bold">Theme 2</span>
@@ -1534,11 +1550,11 @@
 
       const handleLogin = (e) => {
         e.preventDefault();
-        if (pin.trim() === 'admin2026') {
+        if (pin.trim() === 'techfestcse@2026&') {
           sessionStorage.setItem('tech26_admin', '1');
           setAuthed(true);
         } else {
-          setErr('Invalid Passcode! (Default is admin2026)');
+          setErr('Invalid Passcode! (Default is techfestcse@2026&)');
         }
       };
 
@@ -1583,7 +1599,7 @@
               <form onSubmit={handleLogin} className="space-y-3">
                 <input
                   type="password"
-                  placeholder="Passcode (admin2026)"
+                  placeholder="Passcode (techfestcse@2026&)"
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none"
@@ -1850,4 +1866,5 @@
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
+
 </html>
