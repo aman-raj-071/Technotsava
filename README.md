@@ -123,7 +123,6 @@ To sync all registrations to a live cloud database on Supabase:
    ```env
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
    VITE_SUPABASE_ANON_KEY=your-actual-anon-key-here
-   VITE_ADMIN_PASSCODE=techfestcse@2026&
    ```
 8. Restart your dev server. The app will immediately detect live Supabase and sync all submissions to the cloud!
 
