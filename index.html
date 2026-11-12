@@ -3096,13 +3096,30 @@
             { event: '*', schema: 'public', table: 'event_settings' },
             (payload) => {
               const row = payload.new;
-              if (row && typeof row.event_id === 'string') {
-                setSettings((prev) => ({ ...prev, [row.event_id]: !!row.is_active }));
+              // Only trust the toggle when is_active is a real boolean. With
+              // default replica identity, UPDATE events may deliver only the PK
+              // (event_id) with is_active undefined, which we must ignore rather
+              // than treat as "closed".
+              if (row && typeof row.event_id === 'string' && typeof row.is_active === 'boolean') {
+                setSettings((prev) => ({ ...prev, [row.event_id]: row.is_active }));
               }
             }
           )
           .subscribe();
         return () => { sb.removeChannel(channel); };
+      }, []);
+
+      // POLLING FALLBACK: Realtime relies on WebSockets, which some networks /
+      // proxies (and some mobile carriers) block. This lightweight poll refetches
+      // open/close settings from Supabase every 8s so an admin's toggle still
+      // reaches participant devices even when realtime fails.
+      useEffect(() => {
+        const timer = setInterval(() => {
+          getStoredSettings().then((map) => {
+            if (map && Object.keys(map).length > 0) setSettings((prev) => ({ ...prev, ...map }));
+          });
+        }, 8000);
+        return () => clearInterval(timer);
       }, []);
 
       const handleSelectEvent = (ev) => {

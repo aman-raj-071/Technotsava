@@ -64,18 +64,21 @@ ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.event_settings ENABLE ROW LEVEL SECURITY;
 
 -- Allow public participant submissions (INSERT)
+DROP POLICY IF EXISTS "Allow public insert registrations" ON public.registrations;
 CREATE POLICY "Allow public insert registrations" 
 ON public.registrations 
 FOR INSERT 
 WITH CHECK (true);
 
 -- Allow public reading event active status (SELECT)
+DROP POLICY IF EXISTS "Allow public select event settings" ON public.event_settings;
 CREATE POLICY "Allow public select event settings" 
 ON public.event_settings 
 FOR SELECT 
 USING (true);
 
 -- Allow read access for public/admin registrations (SELECT)
+DROP POLICY IF EXISTS "Allow select registrations" ON public.registrations;
 CREATE POLICY "Allow select registrations" 
 ON public.registrations 
 FOR SELECT 
@@ -90,18 +93,21 @@ USING (true)
 WITH CHECK (true);
 
 -- Allow delete registrations (admin management)
+DROP POLICY IF EXISTS "Allow delete registrations" ON public.registrations;
 CREATE POLICY "Allow delete registrations" 
 ON public.registrations 
 FOR DELETE 
 USING (true);
 
 -- Allow update event settings (admin toggle)
+DROP POLICY IF EXISTS "Allow update event settings" ON public.event_settings;
 CREATE POLICY "Allow update event settings" 
 ON public.event_settings 
 FOR UPDATE 
 USING (true);
 
 -- Allow insert event settings (admin first-time upsert of a new event)
+DROP POLICY IF EXISTS "Allow insert event settings" ON public.event_settings;
 CREATE POLICY "Allow insert event settings" 
 ON public.event_settings 
 FOR INSERT 
@@ -119,5 +125,13 @@ EXCEPTION WHEN duplicate_object THEN
   NULL; -- already a member of the publication
 END
 $$;
+
+-- IMPORTANT for Realtime: report FULL rows (including is_active) so that
+-- postgres_changes UPDATE events deliver the changed columns, not just the
+-- primary key. Without this, the front-end realtime handler only receives
+-- event_id (the PK) and cannot see the new is_active value, so admin toggles
+-- fail to propagate to participant devices.
+ALTER TABLE public.event_settings REPLICA IDENTITY FULL;
+ALTER TABLE public.registrations REPLICA IDENTITY FULL;
 
 -- Done! Your TECHNOTSAV 2026 database is ready!
