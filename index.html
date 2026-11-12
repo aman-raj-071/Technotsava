@@ -521,10 +521,16 @@
     const setStoredSettings = async (map) => {
       lsSetSettingsLocal(map);
       const entries = Object.entries(map);
+      let failed = 0;
       for (let i = 0; i < entries.length; i++) {
-        try { await sb.from('event_settings').upsert({ event_id: entries[i][0], is_active: entries[i][1], updated_at: new Date().toISOString() }, { onConflict: 'event_id' }); }
-        catch (e) { console.warn('[db] settings upsert error:', e); }
+        try {
+          const res = await sb.from('event_settings').upsert({ event_id: entries[i][0], is_active: entries[i][1], updated_at: new Date().toISOString() }, { onConflict: 'event_id' });
+          if (res && res.error) { failed++; console.warn('[db] settings upsert error:', res.error); }
+        } catch (e) { failed++; console.warn('[db] settings upsert error:', e); }
       }
+      // Resolve true if every write reached Supabase; resolve false if any failed
+      // so callers can surface a visible warning instead of failing silently.
+      return failed === 0;
     };
 
     const getStoredRegistrations = async () => {
@@ -1996,6 +2002,7 @@
       const [viewModal, setViewModal] = useState(null);
       const [checkinCode, setCheckinCode] = useState('');
       const [checkinResult, setCheckinResult] = useState(null);
+      const [dbSyncError, setDbSyncError] = useState('');
 
       useEffect(() => {
         if (sessionStorage.getItem('tech26_admin') === '1') {
@@ -2030,7 +2037,19 @@
       const handleToggle = (id) => {
         const updated = { ...settings, [id]: !settings[id] };
         setSettings(updated);
-        setStoredSettings(updated).catch(e => console.warn('toggle error', e));
+        setDbSyncError('');
+        // Persist to Supabase; if the write fails, surface a visible warning so
+        // the admin knows other devices will NOT see this toggle.
+        setStoredSettings(updated)
+          .then((ok) => {
+            if (!ok) {
+              setDbSyncError("⚠️ Could NOT save to Supabase — other devices won't see this change. Check that the event_settings table has the is_active column and the RLS update/insert policies exist.");
+            }
+          })
+          .catch((e) => {
+            console.warn('toggle error', e);
+            setDbSyncError("⚠️ Could NOT save to Supabase — other devices won't see this change. Check DB connection and RLS policies.");
+          });
         // Sync the toggle up to App immediately so the participant site reflects it.
         if (onSettingsChange) onSettingsChange(updated);
       };
@@ -2233,6 +2252,12 @@
                 <div className="text-xs font-mono font-bold text-black uppercase">System Healthy</div>
               </div>
             </div>
+
+            {dbSyncError && (
+              <div className="mb-4 p-4 bg-[#FF4D8D] border-4 border-black text-white font-mono font-bold text-xs brutal-shadow">
+                {dbSyncError}
+              </div>
+            )}
 
             {/* Event Registration Status Controller */}
             <div className="bg-white border-4 border-black brutal-shadow p-6">
