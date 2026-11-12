@@ -3085,6 +3085,26 @@
         });
       }, []);
 
+      // REAL-TIME SYNC: subscribe to `event_settings` changes in Supabase so an
+      // admin's open/close toggle is reflected instantly on EVERY participant's
+      // device (any tab/browser/phone that has the site open) without a reload.
+      useEffect(() => {
+        const channel = sb
+          .channel('event-settings-realtime')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'event_settings' },
+            (payload) => {
+              const row = payload.new;
+              if (row && typeof row.event_id === 'string') {
+                setSettings((prev) => ({ ...prev, [row.event_id]: !!row.is_active }));
+              }
+            }
+          )
+          .subscribe();
+        return () => { sb.removeChannel(channel); };
+      }, []);
+
       const handleSelectEvent = (ev) => {
         setSelectedEvent(ev);
         setView('register');

@@ -107,4 +107,17 @@ ON public.event_settings
 FOR INSERT 
 WITH CHECK (true);
 
+-- 6. REALTIME PUBLICATION
+-- Required for the front-end Supabase Realtime subscription to receive live
+-- open/close changes. When the admin toggles an event, every participant's
+-- open tab/device is updated instantly (no reload needed).
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.event_settings;
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.registrations;
+EXCEPTION WHEN duplicate_object THEN
+  NULL; -- already a member of the publication
+END
+$$;
+
 -- Done! Your TECHNOTSAV 2026 database is ready!
