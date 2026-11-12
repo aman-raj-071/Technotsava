@@ -165,5 +165,3 @@ All placeholders are neatly organized in `src/data/festConfig.js`. Update the fi
 - Registration Fees
 - Faculty Advisors & Student Conveners contact details
 - Timeline schedule milestones
-# cse
-# cse
