@@ -783,14 +783,14 @@
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <button onClick={onGoHome} className="flex items-center gap-3 text-left focus:outline-none group">
-                <img src="/sjcit-logo.png" alt="SJCIT Logo" className="w-11 h-11 object-contain group-hover:scale-110 transition-transform" />
-                <div>
-                  <div className="font-display font-black text-2xl tracking-tight text-black flex items-center gap-2">
-                    <span>TECHNOTSAVA</span>
-                    <span className="bg-[#FF5C00] text-white text-xs px-2 py-0.5 border-2 border-black brutal-shadow-sm font-mono font-bold">2026</span>
+              <button onClick={onGoHome} className="flex items-center gap-2 sm:gap-3 text-left focus:outline-none group min-w-0">
+                <img src="/sjcit-logo.png" alt="SJCIT Logo" className="w-9 h-9 sm:w-11 sm:h-11 object-contain shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="min-w-0">
+                  <div className="font-display font-black text-lg sm:text-2xl tracking-tight text-black flex items-center gap-2">
+                    <span className="truncate">TECHNOTSAVA</span>
+                    <span className="bg-[#FF5C00] text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 border-2 border-black brutal-shadow-sm font-mono font-bold shrink-0">2026</span>
                   </div>
-                  <p className="text-[11px] text-black font-mono font-bold tracking-wider uppercase">THINK • CREATE • COMPETE</p>
+                  <p className="hidden min-[360px]:block text-[10px] sm:text-[11px] text-black font-mono font-bold tracking-wider uppercase truncate">THINK • CREATE • COMPETE</p>
                 </div>
               </button>
 
@@ -890,7 +890,7 @@
                 <div className="inline-block bg-black text-[#F2B705] font-mono font-black text-xs sm:text-sm px-3 py-1 uppercase tracking-widest border-2 border-black">
                   /// SJC INSTITUTE OF TECHNOLOGY PRESENTS
                 </div>
-                <h1 className="text-5xl sm:text-7xl lg:text-7xl font-display font-black text-black leading-[0.95] tracking-tight">
+                <h1 className="text-4xl min-[420px]:text-5xl sm:text-7xl lg:text-7xl font-display font-black text-black leading-[0.95] tracking-tight">
                   <span className="bg-[#FFE600] px-3 py-1 border-4 border-black brutal-shadow-lg inline-block my-2">TECHNOTSAVA</span>
                   <span className="bg-black text-[#F2B705] font-mono font-black text-xl sm:text-2xl px-3 py-1 border-2 border-black brutal-shadow-sm inline-block ml-2 align-middle">8.O</span>
                   <span className="text-[#0066FF] block mt-4">2026.</span>
@@ -905,7 +905,7 @@
 
               {/* Poster Stamp Card */}
               <div className="lg:col-span-4">
-                <div className="bg-[#F2B705] border-4 border-black brutal-shadow-xl p-6 rotate-1 hover:rotate-0 transition-transform">
+                <div className="bg-[#F2B705] border-4 border-black brutal-shadow-xl p-6 md:rotate-1 md:hover:rotate-0 transition-transform">
                   <div className="border-3 border-black p-4 bg-white space-y-4 text-center">
                     <img src="/sjcit-logo.png" alt="SJCIT Logo" className="w-16 h-16 mx-auto object-contain" />
                     <div className="font-display font-black text-2xl text-black">6 EPIC ARENAS</div>
