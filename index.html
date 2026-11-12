@@ -774,6 +774,12 @@
         onNavigateSection(sec);
       };
 
+      // Always collapse the mobile menu when the active view changes,
+      // so navigating (e.g. opening Check Status) never leaves the menu open.
+      useEffect(() => {
+        setMobileMenuOpen(false);
+      }, [currentView]);
+
       const navStyle = scrolled
         ? 'bg-[#FFFDF5]/70 backdrop-blur-xl border-b border-black/20 shadow-[0_2px_16px_rgba(0,0,0,0.08)]'
         : 'bg-[#FFFDF5] border-b-4 border-black shadow-[0_4px_0_0_#000]';
