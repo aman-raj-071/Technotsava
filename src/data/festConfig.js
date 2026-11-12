@@ -96,41 +96,20 @@ export const FEST_CONFIG = {
   coordinators: {
     faculty: [
       {
-        name: "Faculty Coordinator 1",
-        designation: "Associate Professor & Event Lead",
-        department: "Dept. of Computer Science & Engineering",
-        phone: "+91 98765 43210",
-        email: "faculty.coord1@college.edu"
-      },
-      {
-        name: "Faculty Coordinator 2",
-        designation: "Assistant Professor & Technical Head",
-        department: "Dept. of Information Science",
-        phone: "+91 98765 43211",
-        email: "faculty.coord2@college.edu"
+        name: "Girish BG",
+        designation: "Faculty Coordinator",
+        department: "TECHNOTSAVA 2026",
+        phone: "+91 96203 07516",
+        email: ""
       }
     ],
     student: [
       {
-        name: "Student Convener 1",
-        role: "President / Lead Student Convener",
-        branchYear: "Final Year, CSE",
-        phone: "+91 98765 43212",
-        email: "convener1@fest.edu"
-      },
-      {
-        name: "Student Convener 2",
-        role: "Vice President / Operations Lead",
-        branchYear: "Final Year, ISE",
-        phone: "+91 98765 43213",
-        email: "convener2@fest.edu"
-      },
-      {
-        name: "Technical Support Convener",
-        role: "Web & Registrations Coordinator",
-        branchYear: "Pre-Final Year, CSE",
-        phone: "+91 98765 43214",
-        email: "techsupport@fest.edu"
+        name: "Sohan Gowda K",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 80505 73782",
+        email: ""
       }
     ]
   },

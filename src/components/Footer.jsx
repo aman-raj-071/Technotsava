@@ -51,7 +51,7 @@ export const Footer = ({ onOpenAdmin, onSelectSection }) => {
                   onClick={() => onSelectSection('events')}
                   className="hover:text-cyan-400 transition-colors"
                 >
-                  Flagship Events (6)
+                  Flagship Events (7)
                 </button>
               </li>
               <li>

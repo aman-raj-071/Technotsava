@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TECHNOTSAVA 2026 | SJC Institute of Technology</title>
   <meta name="description"
-    content="TECHNOTSAVA 2026 – SJC Institute of Technology. 6 Flagship Competitions: Tech Quiz, Digital Treasure Hunt, Free Fire Gaming, Minute to Win It, and Videography – Frame the Fest." />
+    content="TECHNOTSAVA 2026 – SJC Institute of Technology. 7 Flagship Competitions: Tech Quiz, Digital Treasure Hunt, Free Fire Gaming, Minute to Win It, Videography, and Logo Mania – Frame the Fest." />
   <link rel="icon" type="image/png" href="/sjcit-logo.png" />
   <meta name="theme-color" content="#FBF8F0" />
 
@@ -253,14 +253,14 @@
       edition: "College Technology Fest",
       tagline: "Think. Create. Compete. Celebrate.",
       shortIntro:
-        "Welcome to TECHNOTSAVA 2026 organized by SJC Institute of Technology. Compete across 6 exciting flagship arenas, test your intellect, sleuthing skills, dexterity, and cinematic vision!",
+        "Welcome to TECHNOTSAVA 2026 organized by SJC Institute of Technology. Compete across 7 exciting flagship arenas, test your intellect, sleuthing skills, dexterity, and cinematic vision!",
       collegeName: "SJC Institute of Technology",
       department: "Department of Computer Science & Engineering",
       festDate: "November 20, 2026",
       venue: "SJCIT Campus, Chickballapur",
       registrationFee: "Entry Fee Applicable as per Event",
       stats: [
-        { label: "Flagship Events", value: "4" },
+        { label: "Flagship Events", value: "7" },
         { label: "Expected Innovators", value: "800+" },
         { label: "Participating Teams", value: "150+" },
         { label: "Exciting Prizes", value: "Cash & Trophies" }
@@ -306,25 +306,25 @@
       coordinators: {
         faculty: [
           {
-            name: "Faculty Coordinator",
-            designation: "Associate Professor & Event Lead",
-            department: "Dept. of Computer Science & Engineering",
-            phone: "+91 98765 43210"
+            name: "Girish BG",
+            designation: "Faculty Coordinator",
+            department: "TECHNOTSAVA 2026",
+            phone: "+91 96203 07516"
           }
         ],
         student: [
           {
-            name: "Student Convener",
+            name: "Sohan Gowda K",
             role: "Student Coordinator",
-            branchYear: "Final Year, CSE - SJCIT",
-            phone: "+91 98765 43212"
+            branchYear: "TECHNOTSAVA 2026",
+            phone: "+91 80505 73782"
           }
         ]
       }
     };
 
     // ========================================================
-    // 6 EVENTS SPECIFICATION
+    // 7 EVENTS SPECIFICATION
     // ========================================================
     const EVENTS = [
       {
@@ -489,8 +489,38 @@
           "Any malpractice may result in disqualification.",
           "Registration fee: Individual participation ₹100, Pair ₹150."
         ]
+      },
+      {
+        id: "logo-mania",
+        code: "LOGO",
+        name: "Logo Mania",
+        category: "Visual Trivia & Brand Recognition",
+        type: "team",
+        minTeamSize: 2,
+        maxTeamSize: 2,
+        teamSizeText: "2 Participants (Exactly)",
+        duration: "30–45 minutes",
+        entryFeeText: "Entry Fee ₹100 / Team",
+        badge: "Buzzer Showdown",
+        shortDescription:
+          "Fastest-finger buzzer contest identifying iconic brands, tech logos, cropped emblems, and company origins.",
+        detailedDescription:
+          "A high-stakes visual brand contest. A logo will be displayed on screen; the first team to buzz after recognizing the brand gets the chance to answer within the time limit. Accuracy, lightning reflexes, and composure under pressure determine the champion.",
+        rules: [
+          "Teams: Each team must have exactly 2 members. Students may not compete alone or in groups larger than 2.",
+          "How the game works: A logo will be displayed on screen. The first team to press the buzzer after recognizing the brand or company gets the chance to answer.",
+          "Answering: Only the team that buzzes first may answer. Answers must be given within the time limit announced by the judge.",
+          "Scoring: A correct answer earns points as announced before the round begins. An incorrect answer may result in a point deduction or loss of the chance to answer, as announced by the judge.",
+          "Buzzer etiquette: Do not press the buzzer before the logo is fully displayed. Pressing early may result in a penalty.",
+          "Judge's decision: The judge's decision is final. Any disputes must be raised politely and respectfully before the next logo is shown.",
+          "Internet access: No Wi-Fi access will be provided at the venue. Participants are responsible for their own mobile data or networks, and the organizers are not liable for any connectivity issues.",
+          "Conduct: Teams must behave respectfully toward other participants, judges, and organizers. Cheating, sharing answers with other teams, or using outside help is not allowed and will lead to disqualification.",
+          "Disqualification: Teams that break these rules may be warned, penalized, or disqualified at the organizers' discretion.",
+          "Winners: The team with the highest score at the end of the contest will be declared the winner. In the event of a tie, a tiebreaker round will be held.",
+          "Organizer's rights: The organizers reserve the right to modify these rules if necessary. Any changes will be announced before the contest begins."
+        ]
       }
-    ];
+    ]
 
     // ========================================================
     // DATABASE LAYER - Supabase PRIMARY + localStorage FALLBACK
@@ -804,12 +834,11 @@
               <div className="hidden md:flex items-center space-x-2 font-mono font-bold text-sm">
                 <button onClick={() => handleNav('hero')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">HOME</button>
 
-                <button onClick={() => handleNav('events')} className="px-3 py-1.5 hover:bg-[#00E575] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">EVENTS (6)</button>
+                <button onClick={() => handleNav('events')} className="px-3 py-1.5 hover:bg-[#00E575] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">EVENTS (7)</button>
                 <button onClick={() => {
                   setMobileMenuOpen(false);
                   onCheckStatus();
                 }} className="px-3 py-1.5 bg-[#F2B705] border-2 border-black brutal-shadow-sm font-mono font-bold text-xs text-black">🔍 CHECK STATUS</button>
-                <button onClick={() => handleNav('schedule')} className="px-3 py-1.5 hover:bg-[#FF4D8D] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">SCHEDULE</button>
                 <button onClick={() => handleNav('contact')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">CONTACT</button>
               </div>
 
@@ -851,9 +880,8 @@
             <div className="md:hidden border-t-4 border-black bg-[#FFFDF5] p-4 space-y-2 font-mono font-bold">
               <button onClick={() => handleNav('hero')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">HOME</button>
 
-              <button onClick={() => handleNav('events')} className="block w-full text-left p-2.5 bg-[#00A878] border-2 border-black brutal-shadow-sm">EVENTS (6)</button>
+              <button onClick={() => handleNav('events')} className="block w-full text-left p-2.5 bg-[#00A878] border-2 border-black brutal-shadow-sm">EVENTS (7)</button>
               <button onClick={() => { setMobileMenuOpen(false); onCheckStatus(); }} className="block w-full text-left p-2.5 bg-[#F2B705] border-2 border-black brutal-shadow-sm">🔍 CHECK STATUS</button>
-              <button onClick={() => handleNav('schedule')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">SCHEDULE</button>
               <button onClick={() => handleNav('contact')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">CONTACT</button>
               <div className="pt-2 flex gap-2">
                 <button onClick={onOpenAdmin} className="w-1/2 p-2 bg-[#E85E7E] border-2 border-black brutal-shadow-sm text-center">ADMIN</button>
@@ -913,8 +941,16 @@
               <div className="lg:col-span-4">
                 <div className="bg-[#F2B705] border-4 border-black brutal-shadow-xl p-6 md:rotate-1 md:hover:rotate-0 transition-transform">
                   <div className="border-3 border-black p-4 bg-white space-y-4 text-center">
-                    <img src="/sjcit-logo.png" alt="SJCIT Logo" className="w-16 h-16 mx-auto object-contain" />
-                    <div className="font-display font-black text-2xl text-black">6 EPIC ARENAS</div>
+                    <div className="flex justify-center items-center py-1">
+                      <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-4 border-black brutal-shadow overflow-hidden bg-white flex items-center justify-center p-0 hover:scale-105 transition-transform">
+                        <img
+                          src="/technotsava-logo.jpg"
+                          alt="Technotsava 2K26 Logo"
+                          className="w-full h-full object-cover scale-[1.78]"
+                        />
+                      </div>
+                    </div>
+                    <div className="font-display font-black text-2xl text-black">7 EPIC ARENAS</div>
                     <div className="text-xs font-mono font-bold bg-[#00A878] border-2 border-black py-1 px-2">
                       TECH QUIZ • TREASURE HUNT • AGILITY • VIDEO
                     </div>
@@ -935,7 +971,7 @@
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
               <div className="group bg-white border-3 border-black brutal-shadow p-4 transition-transform duration-200 hover:-translate-y-1">
-                <div className="text-3xl sm:text-4xl font-display font-black text-black">06</div>
+                <div className="text-3xl sm:text-4xl font-display font-black text-black">07</div>
                 <div className="text-xs font-mono font-bold text-slate-700 uppercase">Flagship Competitions</div>
               </div>
               <div className="group bg-[#F2B705] border-3 border-black brutal-shadow p-4 transition-transform duration-200 hover:-translate-y-1">
@@ -999,7 +1035,7 @@
                   // COMPETITIONS LISTING
                 </div>
                 <h2 className="text-4xl sm:text-6xl font-display font-black text-black">
-                  6 FLAGSHIP <span className="bg-[#F2B705] px-2 border-3 border-black brutal-shadow-sm">EVENTS</span>
+                  7 FLAGSHIP <span className="bg-[#F2B705] px-2 border-3 border-black brutal-shadow-sm">EVENTS</span>
                 </h2>
               </div>
               <p className="text-base font-mono font-bold text-black max-w-md border-l-4 border-black pl-3">
@@ -1201,6 +1237,8 @@
           setPaidAmount('₹200');
         } else if (event.id === 'digital-treasure-hunt') {
           setPaidAmount('₹200'); // flat fee per team
+        } else if (event.id === 'logo-mania') {
+          setPaidAmount('₹100'); // flat fee per team
         }
       }, [event.id, dynamicMembers.length]);
 
@@ -1209,7 +1247,8 @@
       const isValidUsn = (u) => u && u.trim().length >= 5;
 
       const handleAddMember = () => {
-        if (dynamicMembers.length < 3) {
+        const maxDynamic = Math.max(1, (event.maxTeamSize || 4) - 1);
+        if (dynamicMembers.length < maxDynamic) {
           setDynamicMembers([...dynamicMembers, { name: '', usn: '' }]);
         }
       };
@@ -1259,7 +1298,7 @@
             errs.theme = 'Please select one Ideathon track';
           }
 
-          if (['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id)) {
+          if (['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id)) {
             if (!dynamicMembers[0].name.trim()) errs.member2Name = 'Member 2 Name is required (min 2 participants)';
             if (!dynamicMembers[0].usn.trim()) errs.member2Usn = 'Member 2 USN is required';
           }
@@ -1788,19 +1827,21 @@
                     <span className="font-mono font-black text-xs uppercase bg-[#FFE600] px-2 py-0.5 border-2 border-black">
                       {event.id === 'videography-frame-the-fest'
                         ? 'Additional Crew Members (Optional, up to 3)'
-                        : 'Squad Members (Min 2, Max 4 participants)'}
+                        : event.id === 'logo-mania'
+                          ? 'Team Members (Exactly 2 participants)'
+                          : 'Squad Members (Min 2, Max 4 participants)'}
                     </span>
                     <span className="font-mono font-bold text-xs text-black">
-                      {dynamicMembers.length + 1} / 4 Members Total
+                      {dynamicMembers.length + 1} / {event.maxTeamSize || 4} Members Total
                     </span>
                   </div>
 
                   <div className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-black text-black uppercase">
-                        Member 2 {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id) ? '*' : '(Optional)'}
+                        Member 2 {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) ? '*' : '(Optional)'}
                       </span>
-                      {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire'].includes(event.id) && (
+                      {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) && (
                         <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">
                           COMPULSORY
                         </span>
@@ -1865,13 +1906,13 @@
                     </div>
                   ))}
 
-                  {dynamicMembers.length < 3 && (
+                  {dynamicMembers.length < Math.max(1, (event.maxTeamSize || 4) - 1) && (
                     <button
                       type="button"
                       onClick={handleAddMember}
                       className="w-full py-2.5 bg-[#FFF9D2] hover:bg-[#FFE600] border-2 border-dashed border-black font-mono font-black text-xs text-black uppercase transition-all"
                     >
-                      + ADD TEAM MEMBER ({dynamicMembers.length + 2} of 4 max)
+                      + ADD TEAM MEMBER ({dynamicMembers.length + 2} of {event.maxTeamSize || 4} max)
                     </button>
                   )}
                 </div>
@@ -2071,6 +2112,22 @@
         }
       };
 
+      const handleCheckinMarkAttendance = async (id) => {
+        // Await the database/localStorage attendance flip, then refresh the
+        // result from the returned data so the button reflects the new state
+        // immediately (and on the next search of the same ID).
+        const updated = await updateRegistrationAttendance(id);
+        setRegs(updated);
+        const rec = updated.find(r => r.id === id);
+        setCheckinResult(rec ? { team: rec } : null);
+        setCheckinCode('');
+      };
+
+      const handleCheckinReset = () => {
+        setCheckinResult(null);
+        setCheckinCode('');
+      };
+
       const handleDelete = (id) => {
         if (confirm('Permanently delete this registration record?')) {
           deleteStoredRegistration(id).then(u => {
@@ -2230,6 +2287,73 @@
                 {dbSyncError}
               </div>
             )}
+
+            {/* Door Check-In Panel */}
+            <div className="bg-white border-4 border-black brutal-shadow p-6 mb-6">
+              <div className="text-xs font-mono font-black uppercase text-black mb-3">
+                🛂 DOOR CHECK-IN • ENTER TEAM REGISTRATION ID
+              </div>
+              <form onSubmit={handleCheckin} className="flex flex-col sm:flex-row gap-3 mb-3">
+                <input
+                  type="text"
+                  value={checkinCode}
+                  onChange={(e) => setCheckinCode(e.target.value)}
+                  placeholder="e.g. TN2026-ABCD12"
+                  className="flex-1 px-4 py-3 border-3 border-black font-mono text-sm font-bold focus:outline-none focus:bg-[#FFF8D6]"
+                />
+                <button
+                  type="submit"
+                  className="brutal-btn px-5 py-3 bg-[#00AEC9] text-white text-xs font-black uppercase"
+                >
+                  🔍 Find Team
+                </button>
+                {checkinResult && (
+                  <button
+                    type="button"
+                    onClick={handleCheckinReset}
+                    className="brutal-btn px-4 py-3 bg-white text-black text-xs font-black uppercase border-2 border-black"
+                  >
+                    ✕ Clear
+                  </button>
+                )}
+              </form>
+
+              {checkinResult?.error && (
+                <div className="p-4 bg-[#FF4D8D] border-4 border-black text-white font-mono font-bold text-xs">
+                  ❌ {checkinResult.error}
+                </div>
+              )}
+
+              {checkinResult?.team && (
+                <div className="border-3 border-black bg-[#FFFDF0] p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-lg font-display font-black text-black truncate">
+                        {checkinResult.team.team_name || checkinResult.team.leader_name}
+                      </div>
+                      <div className="text-xs font-mono font-bold text-slate-700">
+                        {checkinResult.team.reg_id} • {checkinResult.team.event_name}
+                      </div>
+                      <div className="text-xs font-mono font-bold text-slate-700 mt-1">
+                        Leader: {checkinResult.team.leader_name} ({checkinResult.team.leader_usn || '—'})
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className={`px-3 py-1 border-2 border-black font-mono font-black text-[11px] ${checkinResult.team.attended ? 'bg-[#00E575] text-black' : 'bg-[#FFE600] text-black'}`}>
+                        {checkinResult.team.attended ? '✅ ATTENDED' : '⏳ NOT CHECKED IN'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCheckinMarkAttendance(checkinResult.team.id)}
+                        className={`brutal-btn px-4 py-2 text-xs font-black uppercase ${checkinResult.team.attended ? 'bg-white text-black' : 'bg-[#00E575] text-black'}`}
+                      >
+                        {checkinResult.team.attended ? '↩ Undo' : '✓ MARK ATTENDED'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Event Registration Status Controller */}
             <div className="bg-white border-4 border-black brutal-shadow p-6">
@@ -2477,69 +2601,6 @@
     // ROOT APP COMPONENT (DUAL INTERFACE ROUTING)
 
     // ========================================================
-    // SCHEDULE TIMELINE SECTION
-    // ========================================================
-    function ScheduleSection() {
-      const [activeDay, setActiveDay] = useState(0);
-      return (
-        <section id="schedule" className="reveal py-20 px-4 sm:px-6 lg:px-8 border-t-4 border-black bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-              <div>
-                <span className="bg-[#FF4D8D] text-white px-3 py-1 font-mono font-black text-xs uppercase border-2 border-black inline-block mb-2">
-                  // TIMELINE & VENUES
-                </span>
-                <h2 className="text-3xl sm:text-5xl font-display font-black text-black">
-                  FEST SCHEDULE • 2026
-                </h2>
-              </div>
-              <div className="font-mono text-xs font-bold text-slate-700 border-l-4 border-black pl-3">
-                All rounds take place on campus at SJC Institute of Technology.
-              </div>
-            </div>
-
-            {/* Day Tabs */}
-            <div className="flex flex-wrap gap-2 mb-8">
-              {FEST_CONFIG.schedule.map((sch, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveDay(i)}
-                  className={
-                    i === activeDay
-                      ? "px-4 py-2 font-mono font-black text-sm border-2 border-black bg-black text-white brutal-shadow-sm"
-                      : "px-4 py-2 font-mono font-bold text-sm border-2 border-black bg-white text-black hover:bg-[#F2B705] transition-colors"
-                  }
-                >
-                  {sch.day} • {sch.date.split(' (')[0]}
-                </button>
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              {FEST_CONFIG.schedule[activeDay].items.map((item, idx) => (
-                <div key={idx} className="bg-[#FFFDF5] border-3 border-black brutal-shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <span className="w-10 h-10 bg-[#FFE600] border-2 border-black flex items-center justify-center font-mono font-black text-sm shrink-0">
-                      0{idx + 1}
-                    </span>
-                    <div>
-                      <div className="font-mono text-xs font-black text-[#0066FF] uppercase">{item.time} • {item.venue}</div>
-                      <h4 className="font-display font-black text-xl text-black">{item.title}</h4>
-                      <p className="text-xs font-medium text-slate-700 mt-0.5">{item.description}</p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-[11px] font-bold px-2.5 py-1 bg-white border-2 border-black shrink-0 self-start md:self-center">
-                    ROUND ACTIVE
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      );
-    }
-
-    // ========================================================
     // CONTACT & COORDINATORS SECTION
     // ========================================================
     function ContactSection() {
@@ -2560,20 +2621,20 @@
                 <span className="font-mono text-xs font-black bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
                   FACULTY COORDINATOR
                 </span>
-                <h3 className="font-display font-black text-2xl text-black">Prof. Event Coordinator</h3>
-                <p className="font-mono text-xs font-bold text-slate-700">Dept. of Computer Science & Engineering</p>
+                <h3 className="font-display font-black text-2xl text-black">Girish BG</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Faculty Coordinator – TECHNOTSAVA 2026</p>
                 <p className="font-mono text-xs font-bold text-black pt-2">📍 SJC Institute of Technology, Chickballapur</p>
-                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Contact: +91 98765 43210</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Contact: +91 96203 07516</p>
               </div>
 
               <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
                 <span className="font-mono text-xs font-black bg-[#FFE600] px-2 py-0.5 border-2 border-black uppercase">
                   STUDENT CONVENER
                 </span>
-                <h3 className="font-display font-black text-2xl text-black">Student Lead Coordinator</h3>
-                <p className="font-mono text-xs font-bold text-slate-700">Final Year, CSE - SJCIT</p>
+                <h3 className="font-display font-black text-2xl text-black">Sohan Gowda K</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Student Coordinator – TECHNOTSAVA 2026</p>
                 <p className="font-mono text-xs font-bold text-black pt-2">📍 Student Activity Center, Campus</p>
-                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Help Desk: +91 98765 43212</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">📞 Contact: +91 80505 73782</p>
               </div>
             </div>
           </div>
@@ -3175,7 +3236,6 @@
                   onSelectEvent={handleSelectEvent}
                   eventSettings={settings}
                 />
-                <ScheduleSection />
                 <ContactSection />
               </>
             )}

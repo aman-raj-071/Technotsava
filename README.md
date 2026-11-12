@@ -9,13 +9,14 @@ Inspired by modern tech fest interfaces (e.g. *srujanacu.in*), **TECHNOTSAV 2026
 
 ## 🌟 Key Highlights & Architecture
 
-- **6 Flagship Competitions**:
+- **7 Flagship Competitions**:
   1. **Digital Treasure Hunt** (2–4 participants, dynamic add/remove, min 2)
   2. **Tech Quiz** (Exactly 2 participants, both compulsory)
   3. **Ideathon** (2–4 participants, interactive selectable theme cards)
   4. **Gaming – Free Fire** (2–4 participants, mobile battle royale squad)
   5. **Minute to Win It** (Individual agility challenge, strictly no team details)
   6. **Video Editing** (2–4 participants, creative cinematic production)
+  7. **Logo Mania** (Exactly 2 participants, buzzer brand trivia)
 - **Automatic Event Identification**: Clicking any event card or "Register Now" opens its dedicated registration page with the exact corresponding form rules without asking the participant to re-select.
 - **Strict Validation Rules**: Enforces mandatory fields, RFC email format, 10-digit phone numbers, college USN format, team size constraints, and duplicate submission locks.
 - **Instant Official Pass Generation**: Unique Registration ID (e.g. `TECH26-DTH-7842`), verified check-in badge, digital QR code representation, and 1-click printable ticket receipt.

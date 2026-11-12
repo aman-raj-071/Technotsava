@@ -49,7 +49,8 @@ VALUES
     ('ideathon', 'Ideathon', TRUE, 40, 'Free'),
     ('gaming-free-fire', 'Gaming – Free Fire', TRUE, 48, 'Free'),
     ('minute-to-win-it', 'Minute to Win It', TRUE, 100, 'Free'),
-    ('video-editing', 'Video Editing', TRUE, 50, 'Free')
+    ('video-editing', 'Video Editing', TRUE, 50, 'Free'),
+    ('logo-mania', 'Logo Mania', TRUE, 40, '₹100')
 ON CONFLICT (event_id) DO UPDATE 
 SET event_name = EXCLUDED.event_name;
 

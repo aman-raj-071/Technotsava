@@ -30,8 +30,8 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-[#060813]/90 backdrop-blur-xl border-b border-cyan-500/20 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
-          : 'bg-transparent py-5'
+        ? 'bg-[#060813]/90 backdrop-blur-xl border-b border-cyan-500/20 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+        : 'bg-transparent py-5'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +73,7 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
               onClick={() => handleNavClick('events')}
               className="px-3.5 py-2 text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-white/5 rounded-lg transition-all"
             >
-              Events (6)
+              Events (7)
             </button>
             <button
               onClick={() => handleNavClick('schedule')}
@@ -236,7 +236,7 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
             onClick={() => handleNavClick('events')}
             className="block w-full text-left px-3 py-2.5 text-base font-medium text-slate-200 hover:text-cyan-400 hover:bg-white/5 rounded-lg"
           >
-            All Events (6)
+            All Events (7)
           </button>
           <button
             onClick={() => handleNavClick('schedule')}

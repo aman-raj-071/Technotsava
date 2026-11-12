@@ -37,6 +37,12 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
+      case 'logo-mania':
+        return (
+          <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" />
+          </svg>
+        );
       case 'video-editing':
         return (
           <svg className="w-6 h-6 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,14 +67,14 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
             <span>// Flagship Competitions</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-tech font-bold text-white mb-4">
-            Six Arenas of <span className="text-gradient-cyan">Glory</span>
+            Seven Arenas of <span className="text-gradient-cyan">Glory</span>
           </h2>
           <p className="text-slate-300 text-base sm:text-lg">
             Choose your battlefield. Click any event card to view rules or proceed directly to its dedicated registration page.
           </p>
         </div>
 
-        {/* 6 Event Cards Grid */}
+        {/* 7 Event Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {EVENTS.map((event) => {
             const isActive = eventSettings[event.id] !== false;

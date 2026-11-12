@@ -162,6 +162,37 @@ export const EVENTS = [
       "Editing software of choice is permitted (Premiere Pro, DaVinci Resolve, After Effects, CapCut, etc.).",
       "Final video duration must be between 60 to 90 seconds. Submissions must be in 1080p MP4 format."
     ]
+  },
+  {
+    id: "logo-mania",
+    code: "LOGO",
+    name: "Logo Mania",
+    category: "Visual Trivia & Brand Recognition",
+    type: "team",
+    minTeamSize: 2,
+    maxTeamSize: 2,
+    teamSizeText: "2 Participants (Exactly)",
+    shortDescription:
+      "Fastest-finger buzzer contest identifying iconic brands, tech logos, cropped emblems, and company origins.",
+    detailedDescription:
+      "A high-stakes visual brand contest. A logo will be displayed on screen; the first team to buzz after recognizing the brand gets the chance to answer within the time limit. Accuracy, lightning reflexes, and composure under pressure determine the champion.",
+    accentColor: "from-cyan-500 to-blue-600",
+    glowColor: "rgba(34, 211, 238, 0.4)",
+    badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    icon: "Crown",
+    rules: [
+      "Teams: Each team must have exactly 2 members. Students may not compete alone or in groups larger than 2.",
+      "How the game works: A logo will be displayed on screen. The first team to press the buzzer after recognizing the brand or company gets the chance to answer.",
+      "Answering: Only the team that buzzes first may answer. Answers must be given within the time limit announced by the judge.",
+      "Scoring: A correct answer earns points as announced before the round begins. An incorrect answer may result in a point deduction or loss of the chance to answer, as announced by the judge.",
+      "Buzzer etiquette: Do not press the buzzer before the logo is fully displayed. Pressing early may result in a penalty.",
+      "Judge's decision: The judge's decision is final. Any disputes must be raised politely and respectfully before the next logo is shown.",
+      "Internet access: No Wi-Fi access will be provided at the venue. Participants are responsible for their own mobile data or networks, and the organizers are not liable for any connectivity issues.",
+      "Conduct: Teams must behave respectfully toward other participants, judges, and organizers. Cheating, sharing answers with other teams, or using outside help is not allowed and will lead to disqualification.",
+      "Disqualification: Teams that break these rules may be warned, penalized, or disqualified at the organizers' discretion.",
+      "Winners: The team with the highest score at the end of the contest will be declared the winner. In the event of a tie, a tiebreaker round will be held.",
+      "Organizer's rights: The organizers reserve the right to modify these rules if necessary. Any changes will be announced before the contest begins."
+    ]
   }
 ];
 
