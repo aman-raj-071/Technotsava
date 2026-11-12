@@ -48,7 +48,7 @@ const server = http.createServer((req, res) => {
     const clientEnv = {
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
       VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '',
-      VITE_ADMIN_PASSCODE: process.env.VITE_ADMIN_PASSCODE || 'admin2026'
+      VITE_ADMIN_PASSCODE: process.env.VITE_ADMIN_PASSCODE || 'techfestcse@2026&'
     };
     res.writeHead(200, {
       'Content-Type': 'application/javascript; charset=utf-8',
@@ -92,6 +92,6 @@ server.listen(PORT, () => {
   console.log(`🚀 TECHNOTSAV 2026 Web Server is live!`);
   console.log(`🔗 Local URL: http://localhost:${PORT}`);
   console.log(`💡 Admin Portal: http://localhost:${PORT}/#admin`);
-  console.log(`   (Default Passcode: admin2026)`);
+  console.log(`   (Default Passcode: techfestcse@2026&)`);
   console.log(`======================================================\n`);
 });

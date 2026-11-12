@@ -26,6 +26,11 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     all_usns TEXT[] DEFAULT '{}',
     theme VARCHAR(150),
     status VARCHAR(50) DEFAULT 'confirmed',
+    utr_id VARCHAR(100),
+    amount VARCHAR(20) DEFAULT 'Free',
+    attendance_code VARCHAR(30),
+    attended BOOLEAN DEFAULT false,
+    attended_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -79,6 +84,14 @@ ON public.registrations
 FOR SELECT 
 USING (true);
 
+-- Allow update registrations (admin approval, status, attendance)
+DROP POLICY IF EXISTS "Allow update registrations" ON public.registrations;
+CREATE POLICY "Allow update registrations" 
+ON public.registrations 
+FOR UPDATE 
+USING (true)
+WITH CHECK (true);
+
 -- Allow delete registrations (admin management)
 CREATE POLICY "Allow delete registrations" 
 ON public.registrations 
@@ -90,5 +103,11 @@ CREATE POLICY "Allow update event settings"
 ON public.event_settings 
 FOR UPDATE 
 USING (true);
+
+-- Allow insert event settings (admin first-time upsert of a new event)
+CREATE POLICY "Allow insert event settings" 
+ON public.event_settings 
+FOR INSERT 
+WITH CHECK (true);
 
 -- Done! Your TECHNOTSAV 2026 database is ready!

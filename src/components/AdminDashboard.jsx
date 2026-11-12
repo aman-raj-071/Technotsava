@@ -29,7 +29,7 @@ export const AdminDashboard = ({ onBackToFest }) => {
   const [deletingId, setDeletingId] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
 
-  const configuredPasscode = import.meta.env.VITE_ADMIN_PASSCODE || 'admin2026';
+  const configuredPasscode = import.meta.env.VITE_ADMIN_PASSCODE || 'techfestcse@2026&';
 
   // Check existing session
   useEffect(() => {
@@ -70,7 +70,7 @@ export const AdminDashboard = ({ onBackToFest }) => {
       sessionStorage.setItem('technotsav_admin_session', 'authenticated');
       setIsAuthenticated(true);
     } else {
-      setAuthError('Invalid Admin Passcode. Default is: admin2026');
+      setAuthError('Invalid Admin Passcode.');
     }
   };
 
@@ -98,8 +98,10 @@ export const AdminDashboard = ({ onBackToFest }) => {
     if (window.confirm('Are you sure you want to delete this registration? This action cannot be undone.')) {
       setDeletingId(id);
       try {
-        const updated = await deleteRegistration(id);
-        setRegistrations(updated);
+        await deleteRegistration(id);
+        // Re-fetch from Supabase so local list stays in sync with the cloud
+        const refreshed = await getAllRegistrations();
+        setRegistrations(refreshed || []);
         if (viewingRecord?.id === id) setViewingRecord(null);
         setStatusMessage('Registration deleted successfully.');
         setTimeout(() => setStatusMessage(null), 3000);
@@ -181,7 +183,7 @@ export const AdminDashboard = ({ onBackToFest }) => {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
-                Passcode (Default: <code className="text-cyan-400">admin2026</code>)
+                Passcode (Default: <code className="text-cyan-400">techfestcse@2026&</code>)
               </label>
               <input
                 type="password"
@@ -229,11 +231,10 @@ export const AdminDashboard = ({ onBackToFest }) => {
                 Live Organiser Portal
               </span>
               <span
-                className={`text-xs font-mono px-2.5 py-0.5 rounded-full flex items-center gap-1.5 ${
-                  isSupabaseConfigured()
+                className={`text-xs font-mono px-2.5 py-0.5 rounded-full flex items-center gap-1.5 ${isSupabaseConfigured()
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                     : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                }`}
+                  }`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured() ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                 {isSupabaseConfigured() ? 'Supabase Cloud Connected' : 'Local Persistence Mode'}
@@ -357,11 +358,10 @@ export const AdminDashboard = ({ onBackToFest }) => {
 
                   <button
                     onClick={() => handleToggleEvent(ev.id, isActive)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 ${
-                      isActive
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 ${isActive
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
                         : 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30'
-                    }`}
+                      }`}
                   >
                     <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-rose-400'}`} />
                     <span>{isActive ? 'Open' : 'Closed'}</span>
@@ -407,11 +407,10 @@ export const AdminDashboard = ({ onBackToFest }) => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedEventFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                selectedEventFilter === 'all'
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${selectedEventFilter === 'all'
                   ? 'bg-cyan-500 text-slate-950 font-bold'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-              }`}
+                }`}
             >
               All Events ({totalCount})
             </button>
@@ -419,11 +418,10 @@ export const AdminDashboard = ({ onBackToFest }) => {
               <button
                 key={ev.id}
                 onClick={() => setSelectedEventFilter(ev.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                  selectedEventFilter === ev.id
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${selectedEventFilter === ev.id
                     ? 'bg-cyan-500 text-slate-950 font-bold'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                }`}
+                  }`}
               >
                 {ev.name} ({eventCounts[ev.id] || 0})
               </button>

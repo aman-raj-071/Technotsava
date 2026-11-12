@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { saveRegistration } from '../lib/db';
+import React, { useState, useEffect } from 'react';
+import { saveRegistration, getEventSettings } from '../lib/db';
 import { RegistrationSuccess } from '../components/RegistrationSuccess';
 
 export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) => {
@@ -7,6 +7,26 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [confirmedRecord, setConfirmedRecord] = useState(null);
+
+  // Closed-registration gate: live admin open/close status for this event
+  const [isClosed, setIsClosed] = useState(false);
+  const [settingsChecked, setSettingsChecked] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const settings = (await getEventSettings()) || {};
+        if (mounted) {
+          setIsClosed(!settings[event.id]);
+          setSettingsChecked(true);
+        }
+      } catch {
+        if (mounted) setSettingsChecked(true);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [event.id]);
 
   // Form Fields State
   const [teamName, setTeamName] = useState('');
@@ -143,6 +163,19 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
     e.preventDefault();
     setSubmitError(null);
 
+    // Re-verify the event is still open before saving.
+    // This closes the race where admin disables an event while a participant.
+    // is mid-form.
+    try {
+      const settings = (await getEventSettings()) || {};
+      if (!settings[event.id]) {
+        setIsClosed(true);
+        setSubmitError('Registrations for this event are currently closed by the organizers.');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    } catch { /* render-gate above already covers offline/error cases */ }
+
     if (!validateForm()) {
       window.scrollTo({ top: 120, behavior: 'smooth' });
       return;
@@ -209,6 +242,29 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
         onBackToEvents={onBackToEvents}
         onRegisterAnother={onRegisterAnother}
       />
+    );
+  }
+
+  // If the event is closed (admin turned it off), block registration.
+  if (settingsChecked && isClosed) {
+    return (
+      <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-xl mx-auto text-center glass-panel rounded-3xl p-8 sm:p-12 border border-slate-800">
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-tech font-extrabold text-white mb-3">Registrations are closed</h2>
+          <p className="text-slate-300 text-sm leading-relaxed mb-6">
+            {event.name} is not accepting new registrations right now. Please check back later or pick another event.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button onClick={onBackToEvents} className="px-5 py-2.5 text-sm font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">Back to All Events</button>
+            <button onClick={onRegisterAnother} className="px-5 py-2.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 rounded-xl shadow-lg">Register for Another Event</button>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -290,9 +346,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                   placeholder="e.g. Rahul Sharma"
                   value={leaderName}
                   onChange={(e) => setLeaderName(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                    errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                  } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                    } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
                 />
                 {errors.leaderName && (
                   <p className="text-xs text-rose-400 mt-1">{errors.leaderName}</p>
@@ -309,9 +364,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                   placeholder="e.g. 1RV21CS001"
                   value={leaderUsn}
                   onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
-                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                    errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                  } text-white placeholder-slate-500 text-sm font-mono focus:outline-none uppercase transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                    } text-white placeholder-slate-500 text-sm font-mono focus:outline-none uppercase transition-colors`}
                 />
                 {errors.leaderUsn && (
                   <p className="text-xs text-rose-400 mt-1">{errors.leaderUsn}</p>
@@ -370,9 +424,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                   placeholder="e.g. Binary Brains"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                    errors.teamName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                  } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${errors.teamName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                    } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
                 />
                 {errors.teamName && (
                   <p className="text-xs text-rose-400 mt-1">{errors.teamName}</p>
@@ -398,9 +451,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                     placeholder="e.g. Ananya Rao"
                     value={leaderName}
                     onChange={(e) => setLeaderName(e.target.value)}
-                    className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                      errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                    } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                    className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
                   />
                   {errors.leaderName && (
                     <p className="text-xs text-rose-400 mt-1">{errors.leaderName}</p>
@@ -417,9 +469,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 1BM22CS045"
                       value={leaderUsn}
                       onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                        errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
                     />
                     {errors.leaderUsn && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderUsn}</p>
@@ -435,9 +486,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 9876543210"
                       value={leaderPhone}
                       onChange={(e) => setLeaderPhone(e.target.value)}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                        errors.leaderPhone ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.leaderPhone ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
                     />
                     {errors.leaderPhone && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderPhone}</p>
@@ -465,9 +515,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                     placeholder="e.g. Rohan Kulkarni"
                     value={quizMember2Name}
                     onChange={(e) => setQuizMember2Name(e.target.value)}
-                    className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                      errors.quizMember2Name ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
-                    } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                    className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.quizMember2Name ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
+                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
                   />
                   {errors.quizMember2Name && (
                     <p className="text-xs text-rose-400 mt-1">{errors.quizMember2Name}</p>
@@ -484,9 +533,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 1BM22CS089"
                       value={quizMember2Usn}
                       onChange={(e) => setQuizMember2Usn(e.target.value.toUpperCase())}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                        errors.quizMember2Usn ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
-                      } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.quizMember2Usn ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
+                        } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
                     />
                     {errors.quizMember2Usn && (
                       <p className="text-xs text-rose-400 mt-1">{errors.quizMember2Usn}</p>
@@ -502,9 +550,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 9876543211"
                       value={quizMember2Phone}
                       onChange={(e) => setQuizMember2Phone(e.target.value)}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${
-                        errors.quizMember2Phone ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
-                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-950 border ${errors.quizMember2Phone ? 'border-rose-500' : 'border-slate-700 focus:border-purple-400'
+                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
                     />
                     {errors.quizMember2Phone && (
                       <p className="text-xs text-rose-400 mt-1">{errors.quizMember2Phone}</p>
@@ -538,9 +585,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                     placeholder="e.g. CyberKnights"
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                      errors.teamName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                    } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${errors.teamName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                      } text-white placeholder-slate-500 text-sm focus:outline-none transition-colors`}
                   />
                   {errors.teamName && (
                     <p className="text-xs text-rose-400 mt-1">{errors.teamName}</p>
@@ -569,22 +615,20 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                     {/* Theme 1 */}
                     <div
                       onClick={() => setSelectedTheme('Smart Campus & Student Life')}
-                      className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 relative ${
-                        selectedTheme === 'Smart Campus & Student Life'
-                          ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
-                          : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                      }`}
+                      className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 relative ${selectedTheme === 'Smart Campus & Student Life'
+                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
+                        : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">
                           Theme 01
                         </span>
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            selectedTheme === 'Smart Campus & Student Life'
-                              ? 'border-amber-400 bg-amber-400 text-slate-950'
-                              : 'border-slate-600'
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedTheme === 'Smart Campus & Student Life'
+                            ? 'border-amber-400 bg-amber-400 text-slate-950'
+                            : 'border-slate-600'
+                            }`}
                         >
                           {selectedTheme === 'Smart Campus & Student Life' && (
                             <svg className="w-3 h-3 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -604,22 +648,20 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                     {/* Theme 2 */}
                     <div
                       onClick={() => setSelectedTheme('Daily Life Productivity & Digital Utilities')}
-                      className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 relative ${
-                        selectedTheme === 'Daily Life Productivity & Digital Utilities'
-                          ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
-                          : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-                      }`}
+                      className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 relative ${selectedTheme === 'Daily Life Productivity & Digital Utilities'
+                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
+                        : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">
                           Theme 02
                         </span>
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            selectedTheme === 'Daily Life Productivity & Digital Utilities'
-                              ? 'border-amber-400 bg-amber-400 text-slate-950'
-                              : 'border-slate-600'
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedTheme === 'Daily Life Productivity & Digital Utilities'
+                            ? 'border-amber-400 bg-amber-400 text-slate-950'
+                            : 'border-slate-600'
+                            }`}
                         >
                           {selectedTheme === 'Daily Life Productivity & Digital Utilities' && (
                             <svg className="w-3 h-3 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -659,9 +701,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. Vikramaditya"
                       value={leaderName}
                       onChange={(e) => setLeaderName(e.target.value)}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${
-                        errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${errors.leaderName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
                     />
                     {errors.leaderName && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderName}</p>
@@ -677,9 +718,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 1MS21CS099"
                       value={leaderUsn}
                       onChange={(e) => setLeaderUsn(e.target.value.toUpperCase())}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${
-                        errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${errors.leaderUsn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
                     />
                     {errors.leaderUsn && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderUsn}</p>
@@ -695,9 +735,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. leader@college.edu"
                       value={leaderEmail}
                       onChange={(e) => setLeaderEmail(e.target.value)}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${
-                        errors.leaderEmail ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${errors.leaderEmail ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
                     />
                     {errors.leaderEmail && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderEmail}</p>
@@ -713,9 +752,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                       placeholder="e.g. 9876543210"
                       value={leaderPhone}
                       onChange={(e) => setLeaderPhone(e.target.value)}
-                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${
-                        errors.leaderPhone ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                      } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                      className={`w-full px-4 py-2.5 rounded-lg bg-slate-900 border ${errors.leaderPhone ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
                     />
                     {errors.leaderPhone && (
                       <p className="text-xs text-rose-400 mt-1">{errors.leaderPhone}</p>
@@ -755,9 +793,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                         placeholder="Team Member 2 Name *"
                         value={dynamicMembers[0]?.name || ''}
                         onChange={(e) => handleMemberChange(0, 'name', e.target.value)}
-                        className={`w-full px-3.5 py-2 rounded-lg bg-slate-950 border ${
-                          errors.member2Name ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                        } text-white placeholder-slate-600 text-sm focus:outline-none`}
+                        className={`w-full px-3.5 py-2 rounded-lg bg-slate-950 border ${errors.member2Name ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                          } text-white placeholder-slate-600 text-sm focus:outline-none`}
                       />
                       {errors.member2Name && (
                         <p className="text-[11px] text-rose-400 mt-1">{errors.member2Name}</p>
@@ -770,9 +807,8 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
                         placeholder="Team Member 2 USN *"
                         value={dynamicMembers[0]?.usn || ''}
                         onChange={(e) => handleMemberChange(0, 'usn', e.target.value.toUpperCase())}
-                        className={`w-full px-3.5 py-2 rounded-lg bg-slate-950 border ${
-                          errors.member2Usn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
-                        } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
+                        className={`w-full px-3.5 py-2 rounded-lg bg-slate-950 border ${errors.member2Usn ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-400'
+                          } text-white placeholder-slate-600 text-sm font-mono uppercase focus:outline-none`}
                       />
                       {errors.member2Usn && (
                         <p className="text-[11px] text-rose-400 mt-1">{errors.member2Usn}</p>

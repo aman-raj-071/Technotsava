@@ -77,9 +77,8 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
               <div
                 key={event.id}
                 onClick={() => isActive && onSelectEvent(event)}
-                className={`group relative glass-panel-glow rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border border-slate-700/60 hover:-translate-y-1.5 cursor-pointer overflow-hidden ${
-                  !isActive ? 'opacity-70 grayscale-[30%] cursor-not-allowed' : ''
-                }`}
+                className={`group relative glass-panel-glow rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border border-slate-700/60 hover:-translate-y-1.5 cursor-pointer overflow-hidden ${!isActive ? 'opacity-70 grayscale-[30%] cursor-not-allowed' : ''
+                  }`}
               >
                 {/* Top Corner Glow Effect */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-bl-full pointer-events-none group-hover:from-cyan-500/20 transition-all duration-300" />
@@ -224,16 +223,22 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
               >
                 Close
               </button>
-              <button
-                onClick={() => {
-                  const ev = selectedRuleEvent;
-                  setSelectedRuleEvent(null);
-                  onSelectEvent(ev);
-                }}
-                className="px-5 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 rounded-lg shadow-lg"
-              >
-                Proceed to Register
-              </button>
+              {eventSettings[selectedRuleEvent.id] !== false ? (
+                <button
+                  onClick={() => {
+                    const ev = selectedRuleEvent;
+                    setSelectedRuleEvent(null);
+                    onSelectEvent(ev);
+                  }}
+                  className="px-5 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 rounded-lg shadow-lg"
+                >
+                  Proceed to Register
+                </button>
+              ) : (
+                <span className="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">
+                  Registration Closed
+                </span>
+              )}
             </div>
           </div>
         </div>

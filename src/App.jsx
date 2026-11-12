@@ -55,6 +55,8 @@ export default function App() {
   }, []);
 
   const handleSelectEvent = (event) => {
+    // Never open registration for an event the admin has closed.
+    if (eventSettings[event.id] === false) return;
     setSelectedEvent(event);
     setCurrentView('register');
     window.location.hash = `#register/${event.id}`;

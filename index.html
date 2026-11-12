@@ -486,66 +486,137 @@
     ];
 
     // ========================================================
-    // DATABASE & LOCAL PERSISTENCE LAYER
+    // DATABASE LAYER - Supabase PRIMARY + localStorage FALLBACK
     // ========================================================
+    const SUPABASE_URL = 'https://pylcrhjlyvtotivbnlro.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5bGNyaGpseXZ0b3RpdmJubHJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0NjE5MjUsImV4cCI6MjExMDAzNzkyNX0.0seCMeEH-iSdziD2F_d1Kx1PMqt7CeWd2Wsm85LvsRs';
+    const ADMIN_PASSCODE = 'techfestcse@2026&';
+
     const LOCAL_REGS_KEY = 'technotsav_2026_registrations';
     const LOCAL_SETTINGS_KEY = 'technotsav_2026_event_settings';
 
-    const getStoredSettings = () => {
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+
+    const lsGetRegs = () => { try { const r = localStorage.getItem(LOCAL_REGS_KEY); return r ? JSON.parse(r) : []; } catch (e) { return []; } };
+    const lsSetRegs = (list) => { try { localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(list)); } catch (e) { } };
+    const lsGetSettings = () => {
+      try { const r = localStorage.getItem(LOCAL_SETTINGS_KEY); if (r) return JSON.parse(r); } catch (e) { }
+      const d = {}; EVENTS.forEach(ev => { d[ev.id] = true; }); return d;
+    };
+    const lsSetSettingsLocal = (map) => { try { localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(map)); } catch (e) { } };
+
+    const generateRegId = (code) => 'TECH26-' + (code || 'REG') + '-' + Math.floor(1000 + Math.random() * 9000);
+
+    const getStoredSettings = async () => {
       try {
-        const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
-        if (raw) return JSON.parse(raw);
+        const res = await sb.from('event_settings').select('event_id, is_active');
+        if (!res.error && res.data && res.data.length > 0) {
+          const map = {}; res.data.forEach(r => { map[r.event_id] = r.is_active; });
+          lsSetSettingsLocal(map); return map;
+        }
       } catch (e) { }
-      const d = {};
-      EVENTS.forEach(ev => d[ev.id] = true);
-      return d;
+      return lsGetSettings();
     };
 
-    const setStoredSettings = (settings) => {
-      localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(settings));
-    };
-
-    const getStoredRegistrations = () => {
-      try {
-        const raw = localStorage.getItem(LOCAL_REGS_KEY);
-        return raw ? JSON.parse(raw) : [];
-      } catch (e) {
-        return [];
+    const setStoredSettings = async (map) => {
+      lsSetSettingsLocal(map);
+      const entries = Object.entries(map);
+      for (let i = 0; i < entries.length; i++) {
+        try { await sb.from('event_settings').upsert({ event_id: entries[i][0], is_active: entries[i][1], updated_at: new Date().toISOString() }, { onConflict: 'event_id' }); }
+        catch (e) { console.warn('[db] settings upsert error:', e); }
       }
     };
 
-    const saveStoredRegistration = (record) => {
-      const existing = getStoredRegistrations();
-      existing.unshift(record);
-      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(existing));
-      return existing;
+    const getStoredRegistrations = async () => {
+      try {
+        const res = await sb.from('registrations').select('*').order('created_at', { ascending: false });
+        if (!res.error && res.data) { lsSetRegs(res.data); return res.data; }
+      } catch (e) { }
+      return lsGetRegs();
     };
 
-    const deleteStoredRegistration = (id) => {
-      const existing = getStoredRegistrations();
-      const updated = existing.filter(r => r.id !== id);
-      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(updated));
-      return updated;
+    const saveStoredRegistration = async (record) => {
+      const res = await sb.from('registrations').insert([record]).select().single();
+      if (res.error) {
+        console.error('[db] INSERT FAILED:', res.error.message, res.error.code);
+        // If the DB rejects the insert because the table is missing a column
+        // (e.g. schema not yet migrated), fall back to the local save instead of
+        // failing the registration. The missing columns can be added with:
+        //   ALTER TABLE public.registrations
+        //     ADD COLUMN IF NOT EXISTS utr_id VARCHAR(100),
+        //     ADD COLUMN IF NOT EXISTS amount VARCHAR(20) DEFAULT 'Free',
+        //     ADD COLUMN IF NOT EXISTS attendance_code VARCHAR(30),
+        //     ADD COLUMN IF NOT EXISTS attended BOOLEAN DEFAULT false,
+        //     ADD COLUMN IF NOT EXISTS attended_at TIMESTAMP WITH TIME ZONE;
+        // Any DB insert failure (missing column / RLS / connection) must NOT be
+        // silently swallowed. Keep the data safe in localStorage so the user
+        // doesn't lose it, but mark it so the UI can clearly warn that this
+        // registration was NOT persisted to the shared Supabase database and
+        // therefore will not appear on the admin dashboard.
+        console.error('[db] INSERT FAILED:', res.error.code, res.error.message);
+        record.__localOnly = true;
+        record.__localOnlyReason = (res.error.message || res.error.code || 'DB write failed').toString();
+        const existing = lsGetRegs(); existing.unshift(record); lsSetRegs(existing);
+        return record;
+      }
+      const existing = lsGetRegs(); existing.unshift(res.data); lsSetRegs(existing);
+      return res.data;
     };
 
-    const updateRegistrationStatus = (id, newStatus) => {
-      const existing = getStoredRegistrations();
-      const updated = existing.map(r => r.id === id ? { ...r, status: newStatus } : r);
-      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(updated));
-      return updated;
-    };
-
-    const updateRegistrationAttendance = (id) => {
-      const existing = getStoredRegistrations();
-      const updated = existing.map(r => {
-        if (r.id === id) {
-          return r.attended
-            ? { ...r, attended: false, attended_at: null }
-            : { ...r, attended: true, attended_at: new Date().toISOString() };
+    const deleteStoredRegistration = async (id) => {
+      const rec = lsGetRegs().find(r => r.id === id);
+      try {
+        let res = await sb.from('registrations').delete().eq('id', id);
+        if (res.error && rec?.reg_id) {
+          res = await sb.from('registrations').delete().eq('reg_id', rec.reg_id);
         }
-        return r;
-      });
-      localStorage.setItem(LOCAL_REGS_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.warn('[db] delete error:', e);
+      }
+      const updated = lsGetRegs().filter(r => r.id !== id);
+      lsSetRegs(updated);
+      return updated;
+    };
+
+    const updateRegistrationStatus = async (id, newStatus, attendanceCode = null) => {
+      const updatePayload = { status: newStatus };
+      if (attendanceCode) updatePayload.attendance_code = attendanceCode;
+
+      try {
+        let res = await sb.from('registrations').update(updatePayload).eq('id', id);
+        if (res.error) {
+          // If matching by id didn't find the record or failed (e.g. non-uuid or missing id), try by reg_id
+          const rec = lsGetRegs().find(r => r.id === id);
+          if (rec?.reg_id) {
+            res = await sb.from('registrations').update(updatePayload).eq('reg_id', rec.reg_id);
+          }
+        }
+        if (res.error) console.error('[db] status update error:', res.error);
+      } catch (e) {
+        console.warn('[db] status error:', e);
+      }
+      const updated = lsGetRegs().map(r => r.id === id ? Object.assign({}, r, updatePayload) : r);
+      lsSetRegs(updated);
+      return updated;
+    };
+
+    const updateRegistrationAttendance = async (id) => {
+      const existing = lsGetRegs();
+      const rec = existing.find(r => r.id === id);
+      const attended = rec ? !rec.attended : true;
+      const attended_at = attended ? new Date().toISOString() : null;
+      const updatePayload = { attended: attended, attended_at: attended_at };
+      try {
+        let res = await sb.from('registrations').update(updatePayload).eq('id', id);
+        if (res.error && rec?.reg_id) {
+          res = await sb.from('registrations').update(updatePayload).eq('reg_id', rec.reg_id);
+        }
+        if (res.error) console.error('[db] attendance update error:', res.error);
+      } catch (e) {
+        console.warn('[db] attendance error:', e);
+      }
+      const updated = existing.map(r => r.id === id ? Object.assign({}, r, updatePayload) : r);
+      lsSetRegs(updated);
       return updated;
     };
 
@@ -1201,7 +1272,6 @@
         const now = new Date().toISOString();
 
         let record = {
-          id: 'id-' + Date.now(),
           reg_id: regId,
           event_id: event.id,
           event_name: event.name,
@@ -1228,12 +1298,22 @@
             .map(m => ({ name: m.name.trim(), usn: m.usn.trim().toUpperCase() }));
         }
 
-        setTimeout(() => {
-          saveStoredRegistration(record);
-          setSubmittedRecord(record);
+        // Populate flat participant / USN arrays so any team member can be
+        // queried efficiently (e.g. by the participant Check Status search).
+        const memberArr = Array.isArray(record.members) ? record.members : [];
+        record.all_participants = [record.leader_name, ...memberArr.map(m => m.name)].filter(Boolean);
+        record.all_usns = [record.leader_usn, ...memberArr.map(m => m.usn)].filter(Boolean);
+
+        setSubmitting(true);
+        saveStoredRegistration(record).then((saved) => {
+          setSubmittedRecord(saved || record);
           setSubmitting(false);
           window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 500);
+        }).catch((err) => {
+          console.error('Registration save failed:', err);
+          alert('Registration failed: ' + err.message + '\n\nPlease try again.');
+          setSubmitting(false);
+        });
       };
 
       // PASS GENERATED / VERIFICATION VIEW
@@ -1261,6 +1341,15 @@
                   </div>
                 </div>
               </div>
+
+              {submittedRecord.__localOnly && (
+                <div className="p-4 border-3 border-black mb-6 font-mono text-xs bg-red-100 text-red-800">
+                  <div className="font-black text-sm mb-1">⚠️ REGISTRATION NOT SAVED TO DATABASE</div>
+                  <p>
+                    Your details were saved only on this device ({submittedRecord.__localOnlyReason}). The admin dashboard will NOT receive this registration until the Supabase database is repaired. Please contact the TECHNOTSAVA admin team with your Registration ID <b>{submittedRecord.reg_id}</b>.
+                  </p>
+                </div>
+              )}
 
               <div className={`p-4 border-3 border-black mb-6 font-mono text-xs ${isVerified ? 'bg-[#D4EDDA] text-[#155724]' : 'bg-[#FFF3CD] text-[#856404]'
                 }`}>
@@ -1332,9 +1421,11 @@
                 ) : (
                   <button
                     onClick={() => {
-                      const latest = getStoredRegistrations().find(r => r.reg_id === submittedRecord.reg_id);
-                      if (latest) setSubmittedRecord(latest);
-                      alert('Status checked! Current: ' + (latest?.status || 'pending').toUpperCase());
+                      getStoredRegistrations().then(all => {
+                        const latest = all.find(r => r.reg_id === submittedRecord.reg_id);
+                        if (latest) setSubmittedRecord(latest);
+                        alert('Status checked! Current: ' + (latest?.status || 'pending').toUpperCase());
+                      });
                     }}
                     className="brutal-btn px-6 py-3 bg-[#FFE600] text-black font-black text-sm flex items-center gap-2"
                   >
@@ -1899,19 +1990,19 @@
 
       useEffect(() => {
         if (authed) {
-          setRegs(getStoredRegistrations());
-          setSettings(getStoredSettings());
+          getStoredRegistrations().then(r => setRegs(r || []));
+          getStoredSettings().then(s => setSettings(s || {}));
         }
       }, [authed]);
 
       const handleLogin = (e) => {
         e.preventDefault();
-        if (pin.trim() === 'admin2026') {
+        if (pin.trim() === ADMIN_PASSCODE) {
           sessionStorage.setItem('tech26_admin', '1');
           setAuthed(true);
           setErr('');
         } else {
-          setErr('Invalid Passcode! (Default: admin2026)');
+          setErr('Invalid Passcode!');
         }
       };
 
@@ -1924,23 +2015,47 @@
       const handleToggle = (id) => {
         const updated = { ...settings, [id]: !settings[id] };
         setSettings(updated);
-        setStoredSettings(updated);
+        setStoredSettings(updated).catch(e => console.warn('toggle error', e));
       };
 
       const handleVerifyStatus = (id, newStatus) => {
-        const updated = updateRegistrationStatus(id, newStatus);
-        setRegs(updated);
-        if (viewModal?.id === id) {
-          setViewModal({ ...viewModal, status: newStatus });
+        const current = regs.find(r => r.id === id);
+        const approving = newStatus === 'completed' || newStatus === 'confirmed';
+        let newAttendanceCode = null;
+        if (approving && current && !current.attendance_code) {
+          const ev = EVENTS.find(e => e.id === current.event_id) || EVENTS[0];
+          newAttendanceCode = 'TN-' + (ev?.code || 'EVT') + '-' + Math.random().toString(36).slice(2, 8).toUpperCase();
         }
+
+        updateRegistrationStatus(id, newStatus, newAttendanceCode).then(updated => {
+          setRegs(updated);
+          const rec = updated.find(r => r.id === id);
+          if (viewModal?.id === id && rec) {
+            setViewModal({ ...viewModal, status: newStatus, attended: rec.attended, attended_at: rec.attended_at, attendance_code: rec.attendance_code });
+          }
+          if (approving && rec) {
+            alert(
+              '✓ APPROVED! Registration confirmed.\n\n' +
+              'Reg ID: ' + rec.reg_id + '\n' +
+              'Event: ' + rec.event_name + '\n' +
+              'Team/Squad: ' + (rec.team_name || 'Solo') + '\n' +
+              'Leader: ' + rec.leader_name + ' (' + (rec.leader_usn || '') + ')\n' +
+              'UTR / Ref: ' + (rec.utr_id || 'N/A') + '\n' +
+              'Entry Code: ' + (rec.attendance_code || '—') + '\n\n' +
+              'The participant can now see this verified pass under 🔍 CHECK STATUS.'
+            );
+          }
+        }).catch(e => console.error('status update error', e));
       };
 
       const handleAttendance = (id) => {
-        const updated = updateRegistrationAttendance(id);
-        setRegs(updated);
-        if (viewModal?.id === id) {
-          setViewModal({ ...viewModal, attended: !viewModal.attended, attended_at: viewModal.attended ? null : new Date().toISOString() });
-        }
+        updateRegistrationAttendance(id).then(updated => {
+          setRegs(updated);
+          if (viewModal?.id === id) {
+            const rec = updated.find(r => r.id === id);
+            if (rec) setViewModal({ ...viewModal, attended: rec.attended, attended_at: rec.attended_at });
+          }
+        }).catch(e => console.error('attendance error', e));
       };
 
       const handleCheckin = (e) => {
@@ -1957,9 +2072,10 @@
 
       const handleDelete = (id) => {
         if (confirm('Permanently delete this registration record?')) {
-          const u = deleteStoredRegistration(id);
-          setRegs(u);
-          if (viewModal?.id === id) setViewModal(null);
+          deleteStoredRegistration(id).then(u => {
+            setRegs(u);
+            if (viewModal?.id === id) setViewModal(null);
+          }).catch(e => console.error('delete error', e));
         }
       };
 
@@ -2003,7 +2119,7 @@
                   </label>
                   <input
                     type="password"
-                    placeholder="Enter passcode (admin2026)"
+                    placeholder="Enter master passcode"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="w-full brutal-input px-4 py-3 text-sm font-mono font-bold"
@@ -2541,25 +2657,31 @@
           return;
         }
         const ql = q.toLowerCase();
-        const all = getStoredRegistrations();
-        const found = all.filter(x =>
-          x.reg_id?.toLowerCase() === ql ||
-          x.leader_email?.toLowerCase() === ql ||
-          x.leader_usn?.toLowerCase() === ql
-        );
-        if (found.length === 1) {
-          setFoundRecord(found[0]);
-        } else if (found.length > 1) {
-          setMatches(found); // leader has multiple teams -> show picker
-        } else {
-          setSearchError('No registration found for "' + q + '". Search by Registration ID, Leader Email, or Leader USN.');
-        }
-      };
+        getStoredRegistrations().then(all => {
+          const found = all.filter(x =>
+            x.reg_id?.toLowerCase() === ql ||
+            x.leader_email?.toLowerCase() === ql ||
+            x.leader_usn?.toLowerCase() === ql ||
+            (Array.isArray(x.all_usns) && x.all_usns.some(u => String(u).toLowerCase() === ql))
+          );
+          if (found.length === 1) {
+            setFoundRecord(found[0]);
+          } else if (found.length > 1) {
+            setMatches(found); // leader has multiple teams -> show picker
+          } else {
+            setSearchError('No registration found for "' + q + '". Search by Registration ID, Leader Email, or Leader USN.');
+          }
+        });
+      }
 
-      const handleRefresh = () => {
+      const handleRefresh = async () => {
         if (foundRecord) {
-          const latest = getStoredRegistrations().find(r => r.reg_id === foundRecord.reg_id);
-          if (latest) setFoundRecord(latest);
+          const all = await getStoredRegistrations();
+          const latest = all.find(r => r.reg_id === foundRecord.reg_id);
+          if (latest) {
+            setFoundRecord(latest);
+            alert('Status refreshed! Current status: ' + (latest.status || 'pending').toUpperCase());
+          }
         }
       };
 
@@ -2744,6 +2866,12 @@
                     <div className="text-xs font-black uppercase text-slate-600 mb-0.5">SUBMITTED UTR / REF ID</div>
                     <div className="font-black text-sm text-[#0066FF]">{foundRecord.utr_id || 'N/A'}</div>
                   </div>
+                  {isVerified && foundRecord.attendance_code && (
+                    <div className="p-3 bg-[#00E575] border-2 border-black">
+                      <div className="text-xs font-black uppercase text-slate-700 mb-0.5">ENTRY / ATTENDANCE CODE</div>
+                      <div className="font-mono font-black text-base text-black">{foundRecord.attendance_code}</div>
+                    </div>
+                  )}
                   {foundRecord.leader_phone && (
                     <div className="p-3 bg-[#FFFDF0] border-2 border-black">
                       <div className="text-xs font-black uppercase text-slate-600 mb-0.5">CONTACT PHONE</div>
@@ -2872,6 +3000,12 @@
                           <div className="text-[11px] font-black uppercase text-slate-700 mb-1">REGISTRATION ID</div>
                           <div className="font-mono text-lg sm:text-xl font-black text-black">{foundRecord.reg_id}</div>
                         </div>
+                        {isVerified && foundRecord.attendance_code && (
+                          <div className="p-3 bg-[#00E575] border-2 border-black sm:col-span-2 text-center">
+                            <div className="text-[11px] font-black uppercase text-slate-700 mb-1">ENTRY / ATTENDANCE CODE</div>
+                            <div className="font-mono text-lg font-black text-black">{foundRecord.attendance_code}</div>
+                          </div>
+                        )}
                       </div>
 
                       {foundRecord.members && foundRecord.members.length > 0 && (
