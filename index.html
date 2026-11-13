@@ -1171,14 +1171,15 @@
             </div>
           </div>
 
-          {/* Guidelines Modal */}
-          {selectedRuleEvent && (
+          {/* Guidelines Modal (rendered via React Portal into document.body to break out of all parent stacking contexts & transforms) */}
+          {selectedRuleEvent && ReactDOM.createPortal(
             <div
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/80 overflow-y-auto"
+              className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-4 bg-black/80 overflow-y-auto"
+              style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', overscrollBehavior: 'contain' }}
               onClick={() => setSelectedRuleEvent(null)}
             >
               <div
-                className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-5 sm:p-8 relative z-[10000] my-auto max-h-[88vh] overflow-y-auto"
+                className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-5 sm:p-8 relative z-[1000000] my-auto max-h-[88vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -1219,7 +1220,8 @@
                   PROCEED TO REGISTER →
                 </button>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
         </section>
       );
@@ -3313,10 +3315,14 @@
               </div>
 
               {/* Pass Template Modal */}
-              {showTemplate && foundRecord && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 overflow-y-auto" onClick={() => setShowTemplate(false)}>
+              {showTemplate && foundRecord && ReactDOM.createPortal(
+                <div
+                  className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-4 bg-black/80 overflow-y-auto"
+                  style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', overscrollBehavior: 'contain' }}
+                  onClick={() => setShowTemplate(false)}
+                >
                   <div
-                    className="bg-white border-4 border-black brutal-shadow-xl max-w-2xl w-full p-6 sm:p-8 relative z-[10000] my-8 max-h-[90vh] overflow-y-auto"
+                    className="bg-white border-4 border-black brutal-shadow-xl max-w-2xl w-full p-6 sm:p-8 relative z-[1000000] my-auto max-h-[90vh] overflow-y-auto"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -3532,7 +3538,8 @@
                       </button>
                     </div>
                   </div>
-                </div>
+                </div>,
+                document.body
               )}
             </div>
           )}
