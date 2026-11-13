@@ -110,6 +110,41 @@ export const FEST_CONFIG = {
         branchYear: "TECHNOTSAVA 2026",
         phone: "+91 80505 73782",
         email: ""
+      },
+      {
+        name: "Kruthika MG",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 94485 49609",
+        email: ""
+      },
+      {
+        name: "Ruchitha L",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 63618 00423",
+        email: ""
+      },
+      {
+        name: "Tejas J V",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 72595 96177",
+        email: ""
+      },
+      {
+        name: "Brunda S",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 78994 09898",
+        email: ""
+      },
+      {
+        name: "Gowtham Gowda R M",
+        role: "Student Coordinator",
+        branchYear: "TECHNOTSAVA 2026",
+        phone: "+91 91489 96019",
+        email: ""
       }
     ]
   },
