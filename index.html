@@ -1045,6 +1045,16 @@
     function EventsSection({ onSelectEvent, eventSettings }) {
       const [selectedRuleEvent, setSelectedRuleEvent] = useState(null);
 
+      // Lock background body scroll while the guidelines modal is open on mobile
+      useEffect(() => {
+        if (selectedRuleEvent) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+      }, [selectedRuleEvent]);
+
       const colorPalette = ['bg-[#F2B705]', 'bg-[#00AEC9]', 'bg-[#E85E7E]', 'bg-[#00A878]', 'bg-[#ED6A2E]', 'bg-[#8E6FE8]'];
 
       return (
@@ -1163,18 +1173,26 @@
 
           {/* Guidelines Modal */}
           {selectedRuleEvent && (
-            <div className="fixed inset-0 z-50 flex p-4 bg-black/75 overflow-y-auto">
-              <div className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-6 sm:p-8 relative m-auto max-h-[90vh] overflow-y-auto">
+            <div
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/80 overflow-y-auto"
+              onClick={() => setSelectedRuleEvent(null)}
+            >
+              <div
+                className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-5 sm:p-8 relative z-[10000] my-auto max-h-[88vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
+                  type="button"
                   onClick={() => setSelectedRuleEvent(null)}
-                  className="absolute top-4 right-4 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center"
+                  className="sticky top-0 float-right -mr-2 -mt-2 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center z-20 cursor-pointer shadow-[2px_2px_0_0_#000]"
+                  aria-label="Close rules modal"
                 >
                   ✕
                 </button>
                 <div className="text-xs font-mono font-bold bg-[#FFE600] border-2 border-black px-2 py-0.5 inline-block mb-3">
                   {selectedRuleEvent.category} • {selectedRuleEvent.teamSizeText}
                 </div>
-                <h3 className="text-2xl font-display font-black text-black mb-2">{selectedRuleEvent.name}</h3>
+                <h3 className="text-2xl font-display font-black text-black mb-2 pr-8">{selectedRuleEvent.name}</h3>
                 <p className="text-sm font-medium text-slate-800 mb-6">{selectedRuleEvent.detailedDescription}</p>
                 <div className="mb-6">
                   <div className="text-xs font-mono font-black uppercase tracking-wider mb-2 bg-black text-white px-2 py-1 inline-block">
@@ -1190,12 +1208,13 @@
                   </ul>
                 </div>
                 <button
+                  type="button"
                   onClick={() => {
                     const ev = selectedRuleEvent;
                     setSelectedRuleEvent(null);
                     onSelectEvent(ev);
                   }}
-                  className="w-full brutal-btn bg-[#00E575] text-black py-3 font-mono font-black text-sm"
+                  className="w-full brutal-btn bg-[#00E575] text-black py-3 font-mono font-black text-sm sticky bottom-0 z-10 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]"
                 >
                   PROCEED TO REGISTER →
                 </button>
@@ -2728,7 +2747,7 @@
                 <span className="font-mono text-xs font-black bg-[#FF6B9D] px-2 py-0.5 border-2 border-black uppercase">
                   HOD OF CSE
                 </span>
-                <h3 className="font-display font-black text-2xl text-black">Dr. MANJUNATH KUMAR B H</h3>
+                <h3 className="font-display font-black text-2xl text-black">Dr. MUNJUNATHA KUMAR B.H.</h3>
                 <p className="font-mono text-xs font-bold text-slate-700">Head of Department – Computer Science & Engineering</p>
                 <p className="font-mono text-xs font-bold text-black pt-2">📍 CSE Department Block, SJCIT</p>
                 <p className="font-mono text-xs font-bold text-[#0066FF]">🏛 HOD – CSE, TECHNOTSAVA 2026</p>
@@ -2817,6 +2836,30 @@
                 <p className="font-mono text-[11px] text-slate-600 text-center pt-1 font-bold">
                   Tap any contact to call directly • Student Activity Center, SJCIT
                 </p>
+              </div>
+
+              <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
+                <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                  <span className="font-mono text-xs font-black bg-[#B7F34C] px-2.5 py-0.5 border-2 border-black uppercase text-black">
+                    DEVELOPED BY
+                  </span>
+                </div>
+                <h3 className="font-display font-black text-3xl text-black">Tech Team</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Website Development Crew – TECHNOTSAVA 2026</p>
+                <div className="pt-2 space-y-2">
+                  <p className="flex items-center gap-1.5 font-mono text-sm font-black text-black">
+                    <span>• Aman Raj</span>
+                    <span className="text-[9px] font-black bg-black text-white px-1 py-0.5 leading-none">SEM 3</span>
+                  </p>
+                  <p className="flex items-center gap-1.5 font-mono text-sm font-black text-black">
+                    <span>• Ayiman Tarannum</span>
+                    <span className="text-[9px] font-black bg-black text-white px-1 py-0.5 leading-none">SEM 3</span>
+                  </p>
+                  <p className="flex items-center gap-1.5 font-mono text-sm font-black text-black">
+                    <span>• Aniket</span>
+                    <span className="text-[9px] font-black bg-black text-white px-1 py-0.5 leading-none">SEM 3</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
