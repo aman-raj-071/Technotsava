@@ -123,9 +123,10 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
                   {/* Themes indicator for Ideathon */}
                   {event.themes && (
                     <div className="mb-5 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1">
-                      <div className="font-semibold text-amber-200">2 Selectable Themes:</div>
-                      <div className="text-[11px] text-slate-400">• Smart Campus & Student Life</div>
-                      <div className="text-[11px] text-slate-400">• Daily Life Productivity & Digital Utilities</div>
+                      <div className="font-semibold text-amber-200">Selectable Tracks:</div>
+                      {event.themes.map((th) => (
+                        <div key={th.id || th.title} className="text-[11px] text-slate-400">• {th.title}</div>
+                      ))}
                     </div>
                   )}
                 </div>

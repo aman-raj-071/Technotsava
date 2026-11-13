@@ -61,7 +61,7 @@ export const EVENTS = [
     maxTeamSize: 4,
     teamSizeText: "2–4 Participants",
     shortDescription:
-      "Architect and present visionary tech innovations tackling critical challenges in Smart Campus ecosystems or Daily Productivity utilities.",
+      "Architect and pitch breakthrough solutions in Open Innovation, Cyber Security, Agriculture, and Digital Utilities.",
     detailedDescription:
       "Ideathon provides a prestigious launchpad for student innovators to formulate breakthrough concepts, architectural wireframes, and business viability pitches evaluated by industry veterans and academic mentors.",
     accentColor: "from-amber-500 to-orange-600",
@@ -70,22 +70,36 @@ export const EVENTS = [
     icon: "Lightbulb",
     themes: [
       {
-        id: "smart-campus",
-        title: "Smart Campus & Student Life",
+        id: "open-innovation",
+        title: "Open Innovation",
         description:
-          "Transform educational ecosystems: automated attendance, campus safety, resource optimization, smart hostel logistics, or student collaboration hubs.",
-        icon: "GraduationCap"
+          "Pitch any original idea that solves a real problem, with no domain restrictions.",
+        icon: "Lightbulb"
       },
       {
-        id: "daily-productivity",
-        title: "Daily Life Productivity & Digital Utilities",
+        id: "cyber-security",
+        title: "Cyber Security",
         description:
-          "Streamline daily existence: AI personal organizers, sustainable lifestyle trackers, micro-task management, mental wellness utilities, or accessibility tools.",
+          "Build ideas that protect people, data and systems from online threats and fraud.",
+        icon: "Shield"
+      },
+      {
+        id: "agriculture-rural",
+        title: "Agriculture and Rural Development",
+        description:
+          "Use technology to improve farming, rural livelihoods and village-level services.",
+        icon: "Leaf"
+      },
+      {
+        id: "digital-utilities",
+        title: "Digital Life, Productivity and Digital Utilities",
+        description:
+          "Create tools that make everyday digital life, work and online services simpler and more efficient.",
         icon: "Cpu"
       }
     ],
     rules: [
-      "Team size must be between 2 and 4 participants including the team leader.",
+      "Team size must be between 2 and 4 participants including the team leader (or Solo).",
       "Teams must select exactly ONE theme during registration.",
       "Each team will be allotted 7 minutes to pitch followed by 3 minutes of Q&A with jury.",
       "Evaluation criteria: Innovation (30%), Technical Feasibility (30%), Impact (20%), Presentation (20%)."

@@ -394,24 +394,34 @@
         entryFeeText: "Entry Fee Applicable",
         badge: "Grand Innovation",
         shortDescription:
-          "Architect and pitch breakthrough solutions tackling Smart Campus innovations or Daily Life digital productivity utilities.",
+          "Architect and pitch breakthrough solutions in Open Innovation, Cyber Security, Agriculture, and Digital Utilities.",
         detailedDescription:
           "Ideathon empowers student visionaries to pitch transformative technical prototypes, business models, and system architectures in front of academic and industry juries.",
         themes: [
           {
-            id: "smart-campus",
-            title: "Smart Campus & Student Life",
-            description: "Automated attendance, campus security, energy optimization, smart lab scheduling, hostel logistics, and collaborative student platforms."
+            id: "open-innovation",
+            title: "Open Innovation",
+            description: "Pitch any original idea that solves a real problem, with no domain restrictions."
           },
           {
-            id: "daily-productivity",
-            title: "Daily Life Productivity & Digital Utilities",
-            description: "AI personal micro-agents, mental wellness tools, task automation, sustainable daily tracking, and accessibility tools."
+            id: "cyber-security",
+            title: "Cyber Security",
+            description: "Build ideas that protect people, data and systems from online threats and fraud."
+          },
+          {
+            id: "agriculture-rural",
+            title: "Agriculture and Rural Development",
+            description: "Use technology to improve farming, rural livelihoods and village-level services."
+          },
+          {
+            id: "digital-utilities",
+            title: "Digital Life, Productivity and Digital Utilities",
+            description: "Create tools that make everyday digital life, work and online services simpler and more efficient."
           }
         ],
         rules: [
-          "Team size must be between 2 and 4 participants.",
-          "Teams must choose exactly ONE of the two announced themes during registration.",
+          "Team size must be between 2 and 4 participants (or Solo).",
+          "Teams must choose exactly ONE of the announced themes during registration.",
           "Each team is allotted 7 minutes to pitch + 3 minutes of jury Q&A.",
           "Evaluation criteria: Innovation (30%), Technical Feasibility (30%), Impact (20%), Presentation (20%)."
         ]
@@ -1094,9 +1104,10 @@
 
                         {event.themes && (
                           <div className="p-3 bg-[#FFF9D2] border-2 border-black font-mono text-xs space-y-1 mb-4">
-                            <div className="font-extrabold text-black">SELECTABLE TRACKS:</div>
-                            <div className="text-slate-800">• Smart Campus Ecosystem</div>
-                            <div className="text-slate-800">• Daily Life Digital Utilities</div>
+                            <div className="font-extrabold text-black uppercase">SELECTABLE TRACKS:</div>
+                            {event.themes.map((th) => (
+                              <div key={th.id || th.title} className="text-slate-800">• {th.title}</div>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -1140,8 +1151,8 @@
 
           {/* Guidelines Modal */}
           {selectedRuleEvent && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75">
-              <div className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-6 sm:p-8 relative">
+            <div className="fixed inset-0 z-50 flex p-4 bg-black/75 overflow-y-auto">
+              <div className="bg-white border-4 border-black brutal-shadow-xl max-w-lg w-full p-6 sm:p-8 relative m-auto max-h-[90vh] overflow-y-auto">
                 <button
                   onClick={() => setSelectedRuleEvent(null)}
                   className="absolute top-4 right-4 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center"
@@ -1192,6 +1203,21 @@
     // ========================================================
     // REGISTRATION PAGE WITH UPI PAYMENT QR & UTR VERIFICATION
     // ========================================================
+
+    // Per-event participation & fee configuration (single source of truth for fees).
+    const EVENT_PARTICIPATION = {
+      'ideathon': { mode: 'solo-or-team', fees: { solo: 50, team: 200 }, minTeam: 2, maxTeam: 4 },
+      'tech-quiz': { mode: 'solo-or-pair', fees: { solo: 100, pair: 150 } }
+    };
+
+    // Ideathon themes — placeholder titles; replace with real theme names later.
+    const IDEATHON_THEMES = [
+      { id: 'theme-1', name: 'Open Innovation', description: 'Pitch any original idea that solves a real problem, with no domain restrictions.' },
+      { id: 'theme-2', name: 'Cyber Security', description: 'Build ideas that protect people, data and systems from online threats and fraud.' },
+      { id: 'theme-3', name: 'Agriculture and Rural Development', description: 'Use technology to improve farming, rural livelihoods and village-level services.' },
+      { id: 'theme-4', name: 'Digital Life, Productivity and Digital Utilities', description: 'Create tools that make everyday digital life, work and online services simpler and more efficient.' }
+    ];
+
     function RegistrationPage({ event, onBack, onRegisterAnother, onOpenCheckStatus, eventSettings = {} }) {
       const isClosed = eventSettings[event.id] === false;
       const [submitting, setSubmitting] = useState(false);
@@ -1229,18 +1255,29 @@
       // Ideathon Theme
       const [selectedTheme, setSelectedTheme] = useState('');
 
+      // Participation type (used by Ideathon & Tech Quiz)
+      const isSoloOrPairEvent = event.id === 'ideathon' || event.id === 'tech-quiz';
+      const [participationType, setParticipationType] = useState(isSoloOrPairEvent ? 'solo' : 'team');
+
       const [errors, setErrors] = useState({});
 
-      // Per-event entry fee rules (kept in sync with team size where fee is variable)
-      useEffect(() => {
-        if (event.id === 'ideathon') {
-          setPaidAmount('₹200');
-        } else if (event.id === 'digital-treasure-hunt') {
-          setPaidAmount('₹200'); // flat fee per team
-        } else if (event.id === 'logo-mania') {
-          setPaidAmount('₹100'); // flat fee per team
+      // Compute the live entry fee from event + participation type.
+      const computeFee = () => {
+        const cfg = EVENT_PARTICIPATION[event.id];
+        if (cfg && cfg.fees) {
+          const key = participationType === 'solo' ? 'solo' : (event.id === 'tech-quiz' ? 'pair' : 'team');
+          const amt = cfg.fees[key];
+          if (amt) return `₹${amt}`;
         }
-      }, [event.id, dynamicMembers.length]);
+        if (event.id === 'digital-treasure-hunt') return '₹200';
+        if (event.id === 'logo-mania') return '₹100';
+        if (event.id === 'videography-frame-the-fest') return participationType === 'solo' ? '₹100' : '₹150';
+        return '₹150';
+      };
+
+      useEffect(() => {
+        setPaidAmount(computeFee());
+      }, [event.id, participationType, dynamicMembers.length]);
 
       const isValidEmail = (em) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
       const isValidPhone = (ph) => ph.replace(/\D/g, '').length >= 10;
@@ -1268,7 +1305,6 @@
       const validate = () => {
         const errs = {};
         if (event.id === 'tech-quiz') {
-          if (!teamName.trim()) errs.teamName = 'Team Name is required';
           if (!leaderName.trim()) errs.leaderName = 'Member 1 Name is required';
           if (!leaderUsn.trim()) errs.leaderUsn = 'Member 1 USN is required';
           else if (!isValidUsn(leaderUsn)) errs.leaderUsn = 'Enter valid USN';
@@ -1277,13 +1313,13 @@
           if (!leaderPhone.trim()) errs.leaderPhone = 'Member 1 Phone is required';
           else if (!isValidPhone(leaderPhone)) errs.leaderPhone = 'Must be at least 10 digits';
 
-          if (!quizMember2Name.trim()) errs.quizMember2Name = 'Member 2 Name is required';
-          if (!quizMember2Usn.trim()) errs.quizMember2Usn = 'Member 2 USN is required';
-          else if (!isValidUsn(quizMember2Usn)) errs.quizMember2Usn = 'Enter valid USN';
-          if (!quizMember2Phone.trim()) errs.quizMember2Phone = 'Member 2 Phone is required';
-          else if (!isValidPhone(quizMember2Phone)) errs.quizMember2Phone = 'Must be at least 10 digits';
+          if (participationType === 'pair') {
+            if (!quizMember2Name.trim()) errs.quizMember2Name = 'Participant 2 Name is required';
+          }
         } else {
-          if (event.id !== 'videography-frame-the-fest' || teamName.trim()) {
+          if (event.id === 'ideathon' && participationType === 'solo') {
+            // Solo entry — no team name required.
+          } else if (event.id !== 'videography-frame-the-fest' || teamName.trim()) {
             if (!teamName.trim()) errs.teamName = 'Team Name is required';
           }
           if (!leaderName.trim()) errs.leaderName = 'Participant / Leader Name is required';
@@ -1299,8 +1335,10 @@
           }
 
           if (['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id)) {
-            if (!dynamicMembers[0].name.trim()) errs.member2Name = 'Member 2 Name is required (min 2 participants)';
-            if (!dynamicMembers[0].usn.trim()) errs.member2Usn = 'Member 2 USN is required';
+            if (!(event.id === 'ideathon' && participationType === 'solo')) {
+              if (!dynamicMembers[0].name.trim()) errs.member2Name = 'Member 2 Name is required (min 2 participants)';
+              if (!dynamicMembers[0].usn.trim()) errs.member2Usn = 'Member 2 USN is required';
+            }
           }
 
           // Free Fire: compulsory full team of 4 -> all slots must be present and filled.
@@ -1367,7 +1405,11 @@
         };
 
         if (event.id === 'tech-quiz') {
-          record.members = [{ name: quizMember2Name.trim(), usn: quizMember2Usn.trim().toUpperCase(), phone: quizMember2Phone.trim() }];
+          record.members = participationType === 'pair' && quizMember2Name.trim()
+            ? [{ name: quizMember2Name.trim(), usn: quizMember2Usn.trim().toUpperCase(), phone: quizMember2Phone.trim() }]
+            : [];
+        } else if (event.id === 'ideathon' && participationType === 'solo') {
+          record.members = [];
         } else {
           record.members = dynamicMembers
             .filter(m => m.name.trim() && m.usn.trim())
@@ -1601,7 +1643,7 @@
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-mono font-black text-black uppercase mb-1.5">
-                    Quiz Team Name *
+                    Quiz / Team Name (Optional)
                   </label>
                   <input
                     type="text"
@@ -1611,6 +1653,27 @@
                     className="w-full brutal-input px-4 py-3 text-sm font-bold"
                   />
                   {errors.teamName && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.teamName}</p>}
+                </div>
+
+                <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-3">
+                  <span className="font-mono font-black text-xs uppercase">Participation Mode</span>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setParticipationType('solo')}
+                      className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
+                    >
+                      INDIVIDUAL — ₹100
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setParticipationType('pair')}
+                      className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'pair' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
+                    >
+                      PAIR — ₹150
+                    </button>
+                  </div>
+                  <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> (₹100) or <strong>Pair</strong> (₹150).</p>
                 </div>
 
                 <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
@@ -1664,46 +1727,48 @@
                   </div>
                 </div>
 
-                <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
-                  <div className="flex items-center justify-between border-b-2 border-black pb-2">
-                    <span className="font-mono font-black text-xs bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
-                      Participant 2 (Partner) *
-                    </span>
-                    <span className="text-[11px] font-mono font-bold text-slate-600">COMPULSORY</span>
-                  </div>
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Participant 2 Full Name *"
-                      value={quizMember2Name}
-                      onChange={(e) => setQuizMember2Name(e.target.value)}
-                      className="w-full brutal-input px-4 py-2.5 text-sm"
-                    />
-                    {errors.quizMember2Name && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Name}</p>}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {participationType === 'pair' && (
+                  <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
+                    <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                      <span className="font-mono font-black text-xs bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
+                        Participant 2 (Partner)
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-slate-600">REQUIRED FOR PAIR</span>
+                    </div>
                     <div>
                       <input
                         type="text"
-                        placeholder="Participant 2 USN *"
-                        value={quizMember2Usn}
-                        onChange={(e) => setQuizMember2Usn(e.target.value.toUpperCase())}
-                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono uppercase font-bold"
+                        placeholder="Participant 2 Full Name *"
+                        value={quizMember2Name}
+                        onChange={(e) => setQuizMember2Name(e.target.value)}
+                        className="w-full brutal-input px-4 py-2.5 text-sm"
                       />
-                      {errors.quizMember2Usn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Usn}</p>}
+                      {errors.quizMember2Name && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Name}</p>}
                     </div>
-                    <div>
-                      <input
-                        type="tel"
-                        placeholder="Participant 2 Phone *"
-                        value={quizMember2Phone}
-                        onChange={(e) => setQuizMember2Phone(e.target.value)}
-                        className="w-full brutal-input px-4 py-2.5 text-sm font-mono"
-                      />
-                      {errors.quizMember2Phone && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Phone}</p>}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Participant 2 USN *"
+                          value={quizMember2Usn}
+                          onChange={(e) => setQuizMember2Usn(e.target.value.toUpperCase())}
+                          className="w-full brutal-input px-4 py-2.5 text-sm font-mono uppercase font-bold"
+                        />
+                        {errors.quizMember2Usn && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Usn}</p>}
+                      </div>
+                      <div>
+                        <input
+                          type="tel"
+                          placeholder="Participant 2 Phone *"
+                          value={quizMember2Phone}
+                          onChange={(e) => setQuizMember2Phone(e.target.value)}
+                          className="w-full brutal-input px-4 py-2.5 text-sm font-mono"
+                        />
+                        {errors.quizMember2Phone && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.quizMember2Phone}</p>}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -1725,42 +1790,70 @@
                 </div>
 
                 {event.id === 'ideathon' && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-mono font-black text-black uppercase">
-                        Select Innovation Track *
-                      </label>
-                      <span className="text-[11px] font-mono font-bold bg-[#FFE600] px-2 py-0.5 border border-black">
-                        PICK EXACTLY 1
-                      </span>
+                  <>
+                    <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-3">
+                      <span className="font-mono font-black text-xs uppercase">Participation Mode</span>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setParticipationType('solo')}
+                          className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
+                        >
+                          INDIVIDUAL — ₹50
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setParticipationType('team')}
+                          className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'team' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
+                        >
+                          TEAM (2–4) — ₹200
+                        </button>
+                      </div>
+                      <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> (₹50) or <strong>Team</strong> (2–4 members, ₹200).</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {event.themes && event.themes.map((th) => {
-                        const isChosen = selectedTheme === th.title;
-                        return (
-                          <div
-                            key={th.id}
-                            onClick={() => setSelectedTheme(th.title)}
-                            className={`p-4 border-3 border-black cursor-pointer transition-all ${isChosen
-                              ? 'bg-[#FFE600] brutal-shadow translate-x-[-2px] translate-y-[-2px]'
-                              : 'bg-[#FFFDF5] hover:bg-[#FFF9D2]'
-                              }`}
-                          >
-                            <div className="flex justify-between items-center mb-1.5">
-                              <span className="font-mono font-black text-xs uppercase px-2 py-0.5 bg-black text-white">
-                                {th.id}
-                              </span>
-                              <span className="text-base font-bold">{isChosen ? '☑ SELECTED' : '☐'}</span>
+                    <div className="space-y-3">
+                      <label className="block text-xs font-mono font-black text-black uppercase">
+                        Select Theme *
+                      </label>
+
+                      {/* Interactive Radio Cards with prominent descriptions */}
+                      <div className="grid grid-cols-1 gap-2.5">
+                        {IDEATHON_THEMES.map((th) => {
+                          const isPicked = selectedTheme === th.name;
+                          return (
+                            <div
+                              key={th.id}
+                              onClick={() => setSelectedTheme(th.name)}
+                              className={`p-3.5 border-2 border-black cursor-pointer transition-all ${isPicked
+                                ? 'bg-[#FFE600] brutal-shadow-sm translate-x-[-1px] translate-y-[-1px]'
+                                : 'bg-white hover:bg-[#FFFDF0]'
+                                }`}
+                            >
+                              <div className="flex items-start gap-2.5">
+                                <div
+                                  className={`w-4 h-4 rounded-full border-2 border-black mt-0.5 flex items-center justify-center shrink-0 ${isPicked ? 'bg-black' : 'bg-white'
+                                    }`}
+                                >
+                                  {isPicked && <div className="w-1.5 h-1.5 bg-[#FFE600] rounded-full" />}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-mono font-black text-sm text-black">
+                                    {th.name}
+                                  </div>
+                                  <div className="text-xs font-mono text-slate-700 mt-1 leading-snug">
+                                    {th.description}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <h4 className="font-display font-black text-base text-black mb-1">{th.title}</h4>
-                            <p className="text-xs font-medium text-slate-800 leading-snug">{th.description}</p>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
+
+                      {errors.theme && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.theme}</p>}
                     </div>
-                    {errors.theme && <p className="text-xs font-mono font-bold text-red-600 mt-1">⚠ {errors.theme}</p>}
-                  </div>
+                  </>
                 )}
 
                 <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
@@ -1822,100 +1915,102 @@
                   </div>
                 </div>
 
-                <div className="p-5 bg-white border-3 border-black brutal-shadow-sm space-y-4">
-                  <div className="flex justify-between items-center border-b-2 border-black pb-2">
-                    <span className="font-mono font-black text-xs uppercase bg-[#FFE600] px-2 py-0.5 border-2 border-black">
-                      {event.id === 'videography-frame-the-fest'
-                        ? 'Additional Crew Members (Optional, up to 3)'
-                        : event.id === 'logo-mania'
-                          ? 'Team Members (Exactly 2 participants)'
-                          : 'Squad Members (Min 2, Max 4 participants)'}
-                    </span>
-                    <span className="font-mono font-bold text-xs text-black">
-                      {dynamicMembers.length + 1} / {event.maxTeamSize || 4} Members Total
-                    </span>
-                  </div>
-
-                  <div className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-black text-black uppercase">
-                        Member 2 {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) ? '*' : '(Optional)'}
+                {!(event.id === 'ideathon' && participationType === 'solo') && (
+                  <div className="p-5 bg-white border-3 border-black brutal-shadow-sm space-y-4">
+                    <div className="flex justify-between items-center border-b-2 border-black pb-2">
+                      <span className="font-mono font-black text-xs uppercase bg-[#FFE600] px-2 py-0.5 border-2 border-black">
+                        {event.id === 'videography-frame-the-fest'
+                          ? 'Additional Crew Members (Optional, up to 3)'
+                          : event.id === 'logo-mania'
+                            ? 'Team Members (Exactly 2 participants)'
+                            : 'Squad Members (Min 2, Max 4 participants)'}
                       </span>
-                      {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) && (
-                        <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">
-                          COMPULSORY
-                        </span>
-                      )}
+                      <span className="font-mono font-bold text-xs text-black">
+                        {dynamicMembers.length + 1} / {event.maxTeamSize || 4} Members Total
+                      </span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="Member 2 Full Name"
-                        value={dynamicMembers[0].name}
-                        onChange={(e) => handleMemberChange(0, 'name', e.target.value)}
-                        className="w-full brutal-input px-3.5 py-2 text-sm"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Member 2 College USN"
-                        value={dynamicMembers[0].usn}
-                        onChange={(e) => handleMemberChange(0, 'usn', e.target.value.toUpperCase())}
-                        className="w-full brutal-input px-3.5 py-2 text-sm font-mono uppercase font-bold"
-                      />
-                    </div>
-                    {errors.member2Name && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Name}</p>}
-                    {errors.member2Usn && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Usn}</p>}
-                  </div>
 
-                  {dynamicMembers.slice(1).map((m, idx) => (
-                    <div key={idx} className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-mono font-black text-slate-800 uppercase">
-                          Member {idx + 3} {['gaming-free-fire', 'digital-treasure-hunt'].includes(event.id) ? '*' : '(Optional)'}
+                    <div className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono font-black text-black uppercase">
+                          Member 2 {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) ? '*' : '(Optional)'}
                         </span>
-                        {['gaming-free-fire', 'digital-treasure-hunt'].includes(event.id) ? (
-                          <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">COMPULSORY</span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveMember(idx + 1)}
-                            className="text-xs font-mono font-bold text-red-600 underline hover:text-black uppercase"
-                          >
-                            ✕ Remove Member
-                          </button>
+                        {['digital-treasure-hunt', 'ideathon', 'gaming-free-fire', 'logo-mania'].includes(event.id) && (
+                          <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">
+                            COMPULSORY
+                          </span>
                         )}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                           type="text"
-                          placeholder={`Member ${idx + 3} Full Name`}
-                          value={m.name}
-                          onChange={(e) => handleMemberChange(idx + 1, 'name', e.target.value)}
+                          placeholder="Member 2 Full Name"
+                          value={dynamicMembers[0].name}
+                          onChange={(e) => handleMemberChange(0, 'name', e.target.value)}
                           className="w-full brutal-input px-3.5 py-2 text-sm"
                         />
                         <input
                           type="text"
-                          placeholder={`Member ${idx + 3} College USN`}
-                          value={m.usn}
-                          onChange={(e) => handleMemberChange(idx + 1, 'usn', e.target.value.toUpperCase())}
+                          placeholder="Member 2 College USN"
+                          value={dynamicMembers[0].usn}
+                          onChange={(e) => handleMemberChange(0, 'usn', e.target.value.toUpperCase())}
                           className="w-full brutal-input px-3.5 py-2 text-sm font-mono uppercase font-bold"
                         />
                       </div>
-                      {errors[`member${idx + 3}Name`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Name`]}</p>}
-                      {errors[`member${idx + 3}Usn`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Usn`]}</p>}
+                      {errors.member2Name && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Name}</p>}
+                      {errors.member2Usn && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors.member2Usn}</p>}
                     </div>
-                  ))}
 
-                  {dynamicMembers.length < Math.max(1, (event.maxTeamSize || 4) - 1) && (
-                    <button
-                      type="button"
-                      onClick={handleAddMember}
-                      className="w-full py-2.5 bg-[#FFF9D2] hover:bg-[#FFE600] border-2 border-dashed border-black font-mono font-black text-xs text-black uppercase transition-all"
-                    >
-                      + ADD TEAM MEMBER ({dynamicMembers.length + 2} of {event.maxTeamSize || 4} max)
-                    </button>
-                  )}
-                </div>
+                    {dynamicMembers.slice(1).map((m, idx) => (
+                      <div key={idx} className="p-4 bg-[#FFFDF0] border-2 border-black space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-mono font-black text-slate-800 uppercase">
+                            Member {idx + 3} {['gaming-free-fire', 'digital-treasure-hunt'].includes(event.id) ? '*' : '(Optional)'}
+                          </span>
+                          {['gaming-free-fire', 'digital-treasure-hunt'].includes(event.id) ? (
+                            <span className="text-[10px] font-mono font-bold bg-[#FF5C00] text-white px-2 py-0.5 border border-black">COMPULSORY</span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMember(idx + 1)}
+                              className="text-xs font-mono font-bold text-red-600 underline hover:text-black uppercase"
+                            >
+                              ✕ Remove Member
+                            </button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            placeholder={`Member ${idx + 3} Full Name`}
+                            value={m.name}
+                            onChange={(e) => handleMemberChange(idx + 1, 'name', e.target.value)}
+                            className="w-full brutal-input px-3.5 py-2 text-sm"
+                          />
+                          <input
+                            type="text"
+                            placeholder={`Member ${idx + 3} College USN`}
+                            value={m.usn}
+                            onChange={(e) => handleMemberChange(idx + 1, 'usn', e.target.value.toUpperCase())}
+                            className="w-full brutal-input px-3.5 py-2 text-sm font-mono uppercase font-bold"
+                          />
+                        </div>
+                        {errors[`member${idx + 3}Name`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Name`]}</p>}
+                        {errors[`member${idx + 3}Usn`] && <p className="text-xs font-mono font-bold text-red-600">⚠ {errors[`member${idx + 3}Usn`]}</p>}
+                      </div>
+                    ))}
+
+                    {dynamicMembers.length < Math.max(1, (event.maxTeamSize || 4) - 1) && (
+                      <button
+                        type="button"
+                        onClick={handleAddMember}
+                        className="w-full py-2.5 bg-[#FFF9D2] hover:bg-[#FFE600] border-2 border-dashed border-black font-mono font-black text-xs text-black uppercase transition-all"
+                      >
+                        + ADD TEAM MEMBER ({dynamicMembers.length + 2} of {event.maxTeamSize || 4} max)
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -2617,6 +2712,16 @@
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
+                <span className="font-mono text-xs font-black bg-[#FF6B9D] px-2 py-0.5 border-2 border-black uppercase">
+                  HOD OF CSE
+                </span>
+                <h3 className="font-display font-black text-2xl text-black">Dr. MANJUNATH KUMAR B H</h3>
+                <p className="font-mono text-xs font-bold text-slate-700">Head of Department – Computer Science & Engineering</p>
+                <p className="font-mono text-xs font-bold text-black pt-2">📍 CSE Department Block, SJCIT</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">🏛 HOD – CSE, TECHNOTSAVA 2026</p>
+              </div>
+
               <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
                 <span className="font-mono text-xs font-black bg-[#00F0FF] px-2 py-0.5 border-2 border-black uppercase">
                   FACULTY COORDINATOR
