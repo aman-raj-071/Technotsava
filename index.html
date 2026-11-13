@@ -13,9 +13,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Unbounded:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <!-- Google Fonts are loaded via @import at the top of the <style> block below -->
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -63,6 +61,8 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Unbounded:wght@400;500;600;700;800;900&display=swap');
+
     body {
       background-color: #FBF8F0;
       color: #111111;
@@ -3123,6 +3123,132 @@
                       <div className="font-bold text-sm text-black">{foundRecord.leader_email}</div>
                     </div>
                   )}
+
+                  {(foundRecord.event_id === 'videography-frame-the-fest' || foundRecord.reg_id?.includes('-VID-') || foundRecord.event_name?.toLowerCase().includes('videography')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/videography-whatsapp-qr.jpg"
+                        alt="Videography WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> VIDEOGRAPHY WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Videography contestant group for updates & submissions.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'ideathon' || foundRecord.reg_id?.includes('-IDEA-') || foundRecord.event_name?.toLowerCase().includes('ideathon')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/ideathon-whatsapp-qr.jpg"
+                        alt="Ideathon WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> IDEATHON WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Ideathon contestant group for announcements, schedules, and pitching details.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'gaming-free-fire' || foundRecord.reg_id?.includes('-GAME-') || foundRecord.event_name?.toLowerCase().includes('gaming') || foundRecord.event_name?.toLowerCase().includes('free fire')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/gaming-whatsapp-qr.jpg"
+                        alt="Gaming WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> GAMING – FREE FIRE WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Gaming contestant group for custom room IDs, passwords, match timings, and rules.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'minute-to-win-it' || foundRecord.reg_id?.includes('-MWI-') || foundRecord.event_name?.toLowerCase().includes('minute to win it')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/minute-to-win-it-whatsapp-qr.jpg"
+                        alt="Minute to Win It WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> MINUTE TO WIN IT WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Minute to Win It contestant group for slot allocation, challenge briefs, and updates.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'tech-quiz' || foundRecord.reg_id?.includes('-QUIZ-') || foundRecord.event_name?.toLowerCase().includes('tech quiz') || foundRecord.event_name?.toLowerCase().includes('quiz')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/tech-quiz-whatsapp-qr.jpg"
+                        alt="Tech Quiz WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> TECH QUIZ WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Tech Quiz contestant group for prelims links, buzzer round rules, and schedules.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'digital-treasure-hunt' || foundRecord.reg_id?.includes('-DTH-') || foundRecord.event_name?.toLowerCase().includes('treasure hunt') || foundRecord.event_name?.toLowerCase().includes('tech hunt')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/digital-treasure-hunt-whatsapp-qr.jpg"
+                        alt="Digital Treasure Hunt WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> DIGITAL TREASURE HUNT WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Digital Treasure Hunt contestant group for clues, coordinates, checkpoints, and hints.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(foundRecord.event_id === 'logo-mania' || foundRecord.reg_id?.includes('-LOGO-') || foundRecord.event_name?.toLowerCase().includes('logo mania') || foundRecord.event_name?.toLowerCase().includes('logo')) && (
+                    <div className="p-4 bg-[#E8F5E9] border-2 border-black md:col-span-2 flex flex-col items-center gap-4 text-center">
+                      <img
+                        src="/logo-mania-whatsapp-qr.jpg"
+                        alt="Logo Mania WhatsApp Group QR"
+                        className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                      />
+                      <div>
+                        <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                          <span>📱</span> LOGO MANIA WHATSAPP GROUP
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                          Scan this QR code using the WhatsApp camera to join the official Logo Mania contestant group for round schedules, buzzer instructions, and updates.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Team Members */}
@@ -3239,6 +3365,132 @@
                           <div className="text-[11px] font-black uppercase text-slate-700 mb-1">REGISTRATION ID</div>
                           <div className="font-mono text-lg sm:text-xl font-black text-black">{foundRecord.reg_id}</div>
                         </div>
+
+                        {(foundRecord.event_id === 'videography-frame-the-fest' || foundRecord.reg_id?.includes('-VID-') || foundRecord.event_name?.toLowerCase().includes('videography')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/videography-whatsapp-qr.jpg"
+                              alt="Videography WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> VIDEOGRAPHY WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Videography contestant group for event updates, briefing, and video submissions.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'ideathon' || foundRecord.reg_id?.includes('-IDEA-') || foundRecord.event_name?.toLowerCase().includes('ideathon')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/ideathon-whatsapp-qr.jpg"
+                              alt="Ideathon WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> IDEATHON WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Ideathon contestant group for announcements, schedules, and pitching details.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'gaming-free-fire' || foundRecord.reg_id?.includes('-GAME-') || foundRecord.event_name?.toLowerCase().includes('gaming') || foundRecord.event_name?.toLowerCase().includes('free fire')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/gaming-whatsapp-qr.jpg"
+                              alt="Gaming WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> GAMING – FREE FIRE WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Gaming contestant group for custom room IDs, passwords, match timings, and rules.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'minute-to-win-it' || foundRecord.reg_id?.includes('-MWI-') || foundRecord.event_name?.toLowerCase().includes('minute to win it')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/minute-to-win-it-whatsapp-qr.jpg"
+                              alt="Minute to Win It WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> MINUTE TO WIN IT WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Minute to Win It contestant group for slot allocation, challenge briefs, and updates.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'tech-quiz' || foundRecord.reg_id?.includes('-QUIZ-') || foundRecord.event_name?.toLowerCase().includes('tech quiz') || foundRecord.event_name?.toLowerCase().includes('quiz')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/tech-quiz-whatsapp-qr.jpg"
+                              alt="Tech Quiz WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> TECH QUIZ WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Tech Quiz contestant group for prelims links, buzzer round rules, and schedules.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'digital-treasure-hunt' || foundRecord.reg_id?.includes('-DTH-') || foundRecord.event_name?.toLowerCase().includes('treasure hunt') || foundRecord.event_name?.toLowerCase().includes('tech hunt')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/digital-treasure-hunt-whatsapp-qr.jpg"
+                              alt="Digital Treasure Hunt WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> DIGITAL TREASURE HUNT WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Digital Treasure Hunt contestant group for clues, coordinates, checkpoints, and hints.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(foundRecord.event_id === 'logo-mania' || foundRecord.reg_id?.includes('-LOGO-') || foundRecord.event_name?.toLowerCase().includes('logo mania') || foundRecord.event_name?.toLowerCase().includes('logo')) && (
+                          <div className="p-4 bg-[#E8F5E9] border-2 border-black sm:col-span-2 flex flex-col items-center gap-4 text-center">
+                            <img
+                              src="/logo-mania-whatsapp-qr.jpg"
+                              alt="Logo Mania WhatsApp Group QR"
+                              className="w-52 h-52 object-contain border-[3px] border-black bg-white p-2 shrink-0 brutal-shadow-sm"
+                            />
+                            <div>
+                              <div className="text-xs font-black uppercase text-green-900 mb-1 flex items-center justify-center sm:justify-start gap-1">
+                                <span>📱</span> LOGO MANIA WHATSAPP GROUP
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                                Scan this QR code using the WhatsApp camera to join the official Logo Mania contestant group for round schedules, buzzer instructions, and updates.
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {foundRecord.members && foundRecord.members.length > 0 && (
