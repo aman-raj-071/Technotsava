@@ -31,6 +31,111 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 1b. ALL-TIME BACKUP REGISTRATIONS TABLE
+-- Every single registration (inserted or updated) is automatically copied here,
+-- plus any deleted records are preserved forever. No data is ever lost.
+CREATE TABLE IF NOT EXISTS public.registrations_backup (
+    id UUID PRIMARY KEY,
+    reg_id VARCHAR(50),
+    event_id VARCHAR(50),
+    event_name VARCHAR(100),
+    team_name VARCHAR(150),
+    leader_name VARCHAR(100),
+    leader_usn VARCHAR(50),
+    leader_email VARCHAR(150),
+    leader_phone VARCHAR(50),
+    members JSONB DEFAULT '[]'::jsonb,
+    all_participants TEXT[] DEFAULT '{}',
+    all_usns TEXT[] DEFAULT '{}',
+    theme VARCHAR(150),
+    status VARCHAR(50),
+    utr_id VARCHAR(100),
+    amount VARCHAR(20),
+    attendance_code VARCHAR(30),
+    attended BOOLEAN DEFAULT false,
+    attended_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    backup_action VARCHAR(50) DEFAULT 'INSERT',
+    backed_up_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 1c. AUTOMATIC POSTGRES TRIGGER TO SYNC EVERY REGISTRATION TO BACKUP TABLE
+CREATE OR REPLACE FUNCTION sync_registration_to_backup()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'DELETE') THEN
+        INSERT INTO public.registrations_backup (
+            id, reg_id, event_id, event_name, team_name, leader_name, leader_usn,
+            leader_email, leader_phone, members, all_participants, all_usns, theme,
+            status, utr_id, amount, attendance_code, attended, attended_at, created_at,
+            backup_action, backed_up_at
+        ) VALUES (
+            OLD.id, OLD.reg_id, OLD.event_id, OLD.event_name, OLD.team_name, OLD.leader_name, OLD.leader_usn,
+            OLD.leader_email, OLD.leader_phone, OLD.members, OLD.all_participants, OLD.all_usns, OLD.theme,
+            OLD.status, OLD.utr_id, OLD.amount, OLD.attendance_code, OLD.attended, OLD.attended_at, OLD.created_at,
+            'DELETED_BACKUP', NOW()
+        )
+        ON CONFLICT (id) DO UPDATE SET
+            status = EXCLUDED.status,
+            backup_action = 'DELETED_BACKUP',
+            backed_up_at = NOW();
+        RETURN OLD;
+    ELSE
+        INSERT INTO public.registrations_backup (
+            id, reg_id, event_id, event_name, team_name, leader_name, leader_usn,
+            leader_email, leader_phone, members, all_participants, all_usns, theme,
+            status, utr_id, amount, attendance_code, attended, attended_at, created_at,
+            backup_action, backed_up_at
+        ) VALUES (
+            NEW.id, NEW.reg_id, NEW.event_id, NEW.event_name, NEW.team_name, NEW.leader_name, NEW.leader_usn,
+            NEW.leader_email, NEW.leader_phone, NEW.members, NEW.all_participants, NEW.all_usns, NEW.theme,
+            NEW.status, NEW.utr_id, NEW.amount, NEW.attendance_code, NEW.attended, NEW.attended_at, NEW.created_at,
+            TG_OP, NOW()
+        )
+        ON CONFLICT (id) DO UPDATE SET
+            reg_id = EXCLUDED.reg_id,
+            event_id = EXCLUDED.event_id,
+            event_name = EXCLUDED.event_name,
+            team_name = EXCLUDED.team_name,
+            leader_name = EXCLUDED.leader_name,
+            leader_usn = EXCLUDED.leader_usn,
+            leader_email = EXCLUDED.leader_email,
+            leader_phone = EXCLUDED.leader_phone,
+            members = EXCLUDED.members,
+            all_participants = EXCLUDED.all_participants,
+            all_usns = EXCLUDED.all_usns,
+            theme = EXCLUDED.theme,
+            status = EXCLUDED.status,
+            utr_id = EXCLUDED.utr_id,
+            amount = EXCLUDED.amount,
+            attendance_code = EXCLUDED.attendance_code,
+            attended = EXCLUDED.attended,
+            attended_at = EXCLUDED.attended_at,
+            backup_action = TG_OP,
+            backed_up_at = NOW();
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_sync_registration_backup ON public.registrations;
+CREATE TRIGGER trg_sync_registration_backup
+AFTER INSERT OR UPDATE OR DELETE ON public.registrations
+FOR EACH ROW EXECUTE FUNCTION sync_registration_to_backup();
+
+-- Also copy existing data immediately if any exists
+INSERT INTO public.registrations_backup (
+    id, reg_id, event_id, event_name, team_name, leader_name, leader_usn,
+    leader_email, leader_phone, members, all_participants, all_usns, theme,
+    status, utr_id, amount, created_at, backup_action, backed_up_at
+)
+SELECT 
+    id, reg_id, event_id, event_name, team_name, leader_name, leader_usn,
+    leader_email, leader_phone, members, all_participants, all_usns, theme,
+    status, utr_id, amount, created_at, 'INITIAL_SYNC', NOW()
+FROM public.registrations
+ON CONFLICT (id) DO NOTHING;
+
 -- 2. EVENT SETTINGS TABLE (Enable / Disable events dynamically from Admin)
 CREATE TABLE IF NOT EXISTS public.event_settings (
     event_id VARCHAR(50) PRIMARY KEY,
@@ -97,6 +202,34 @@ WITH CHECK (true);
 DROP POLICY IF EXISTS "Allow delete registrations" ON public.registrations;
 CREATE POLICY "Allow delete registrations" 
 ON public.registrations 
+FOR DELETE 
+USING (true);
+
+-- ── BACKUP REGISTRATIONS RLS POLICIES ─────────────────────────────────
+ALTER TABLE public.registrations_backup ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow insert backup registrations" ON public.registrations_backup;
+CREATE POLICY "Allow insert backup registrations" 
+ON public.registrations_backup 
+FOR INSERT 
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow select backup registrations" ON public.registrations_backup;
+CREATE POLICY "Allow select backup registrations" 
+ON public.registrations_backup 
+FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Allow update backup registrations" ON public.registrations_backup;
+CREATE POLICY "Allow update backup registrations" 
+ON public.registrations_backup 
+FOR UPDATE 
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow delete backup registrations" ON public.registrations_backup;
+CREATE POLICY "Allow delete backup registrations" 
+ON public.registrations_backup 
 FOR DELETE 
 USING (true);
 

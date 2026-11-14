@@ -650,7 +650,20 @@
     };
 
     const saveStoredRegistration = async (record) => {
+      // Primary write to registrations
       const res = await sb.from('registrations').insert([record]).select().single();
+      
+      // Dual-write to registrations_backup so backup is immediately created even before DB triggers run
+      try {
+        const backupRow = Object.assign({}, record, {
+          backup_action: 'INSERT',
+          backed_up_at: new Date().toISOString()
+        });
+        await sb.from('registrations_backup').upsert(backupRow, { onConflict: 'id' });
+      } catch (bkErr) {
+        console.warn('[db] Dual-write to registrations_backup failed:', bkErr);
+      }
+
       if (res.error) {
         console.error('[db] INSERT FAILED:', res.error.message, res.error.code);
         // If the DB rejects the insert because the table is missing a column
@@ -692,8 +705,11 @@
         try {
           const archived = lsGetArchived();
           rec.__deleted_at = new Date().toISOString();
+          rec.__deleted_by = 'admin';
           archived.unshift(rec);
           localStorage.setItem(LOCAL_ARCHIVED_KEY, JSON.stringify(archived));
+          // Also persist this backup to the shared database so it survives cleared browser storage.
+          await pushArchivedToDB(rec);
         } catch (e) {
           console.warn('[db] archive error:', e);
         }
@@ -701,6 +717,20 @@
       const updated = lsGetRegs().filter(r => r.id !== id);
       lsSetRegs(updated);
       return updated;
+    };
+
+    // Persist an archived (deleted) registration to the shared Supabase DB so backups are never lost.
+    const pushArchivedToDB = async (rec) => {
+      try {
+        const row = Object.assign({}, rec, {
+          backup_action: 'DELETED_BACKUP',
+          backed_up_at: new Date().toISOString()
+        });
+        const res = await sb.from('registrations_backup').upsert(row, { onConflict: 'id' });
+        if (res.error) console.warn('[db] backup->DB warn:', res.error.message);
+      } catch (e) {
+        console.warn('[db] backup->DB error:', e);
+      }
     };
 
     const updateRegistrationStatus = async (id, newStatus) => {
@@ -716,6 +746,16 @@
           }
         }
         if (res.error) console.error('[db] status update error:', res.error);
+
+        // Keep registrations_backup synchronized on status update
+        try {
+          await sb.from('registrations_backup').update(Object.assign({}, updatePayload, {
+            backup_action: 'STATUS_UPDATE',
+            backed_up_at: new Date().toISOString()
+          })).eq('id', id);
+        } catch (bkErr) {
+          console.warn('[db] backup status sync error:', bkErr);
+        }
       } catch (e) {
         console.warn('[db] status error:', e);
       }

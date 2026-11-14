@@ -62,10 +62,11 @@ const lsSetSettings = (map) => {
 
 // ── Backup / Archive ───────────────────────────────────────────────────────
 // Every delete is archived here so no data is ever permanently lost.
-// This is the local "backup folder" (persisted in the browser's localStorage,
-// downloadable as a JSON file from the admin dashboard).
+// Backups are stored in TWO places:
+//   1. Browser localStorage (offline cache + instant download)
+//   2. Supabase `archived_registrations` table (database backup folder)
 
-/** Read the archived (deleted) registrations. */
+/** Read the local (localStorage) archived registrations. */
 export const getBackups = () => {
   try {
     const raw = localStorage.getItem(LS_BACKUP_REGISTRATIONS);
@@ -83,7 +84,52 @@ const lsSetBackups = (list) => {
   }
 };
 
-/** Archive an array of records (dedupes by id). */
+/**
+ * Insert records into the Supabase `registrations_backup` table.
+ * Silently tolerates failures so a DB hiccup never blocks an operation.
+ */
+const pushBackupsToDB = async (records, action = 'DELETED_BACKUP') => {
+  if (!records || records.length === 0 || !isSupabaseConfigured() || !supabase) {
+    return;
+  }
+  try {
+    const rows = records.map((r) => ({
+      id: r.id,
+      reg_id: r.reg_id,
+      event_id: r.event_id,
+      event_name: r.event_name,
+      team_name: r.team_name || null,
+      leader_name: r.leader_name || null,
+      leader_usn: r.leader_usn || '',
+      leader_email: r.leader_email || null,
+      leader_phone: r.leader_phone || null,
+      members: r.members || [],
+      all_participants: r.all_participants || [],
+      all_usns: r.all_usns || [],
+      theme: r.theme || null,
+      status: r.status || 'confirmed',
+      utr_id: r.utr_id || null,
+      amount: r.amount || r.registration_fee || null,
+      attendance_code: r.attendance_code || null,
+      attended: r.attended || false,
+      attended_at: r.attended_at || null,
+      created_at: r.created_at || new Date().toISOString(),
+      backup_action: action,
+      backed_up_at: new Date().toISOString(),
+    }));
+    const { error } = await supabase
+      .from('registrations_backup')
+      .upsert(rows, { onConflict: 'id' });
+    if (error) console.warn('[db] pushBackupsToDB error:', error.message);
+  } catch (err) {
+    console.warn('[db] pushBackupsToDB network error:', err);
+  }
+};
+
+/**
+ * Archive an array of records (dedupes by id). Writes to localStorage AND
+ * pushes to the database backup table. Fire-and-forget DB sync.
+ */
 export const backupRegistrations = (records) => {
   if (!records || records.length === 0) return;
   const existing = getBackups();
@@ -92,6 +138,37 @@ export const backupRegistrations = (records) => {
   if (fresh.length) {
     lsSetBackups([...existing, ...fresh]);
   }
+  // Persist to the database (async, non-blocking).
+  pushBackupsToDB(fresh);
+};
+
+/**
+ * Pull all archived registrations from the database into the local cache.
+ * Returns the full archived list (DB-backed).
+ */
+export const syncBackupsFromDB = async () => {
+  if (!isSupabaseConfigured() || !supabase) {
+    return getBackups();
+  }
+  try {
+    const { data, error } = await supabase
+      .from('archived_registrations')
+      .select('*')
+      .order('archived_at', { ascending: false });
+    if (!error && Array.isArray(data)) {
+      // Merge DB rows into local cache (dedupe by id).
+      const local = getBackups();
+      const byId = new Map();
+      [...data, ...local].forEach((r) => byId.set(r.id, r));
+      const merged = Array.from(byId.values());
+      lsSetBackups(merged);
+      return merged;
+    }
+    console.warn('[db] syncBackupsFromDB error:', error?.message);
+  } catch (err) {
+    console.warn('[db] syncBackupsFromDB network error:', err);
+  }
+  return getBackups();
 };
 
 /** Build a downloadable JSON backup object (current + archived). */
@@ -268,6 +345,9 @@ export const saveRegistration = async (formData, event) => {
 
     console.log('[db] ✅ Registration saved to Supabase:', data.reg_id);
 
+    // Dual-write to backup table for absolute data safety
+    pushBackupsToDB([data], 'INSERT');
+
     // Mirror the server-confirmed record to local cache
     const existing = lsGetRegistrations();
     existing.unshift(data);
@@ -310,13 +390,30 @@ export const getAllRegistrations = async () => {
 
 /**
  * Delete a registration by its UUID.
- * Removes from Supabase and local cache, then returns the refreshed list.
+ * Archives the record into the backup store (localStorage + database) BEFORE
+ * removing it, so the data is never lost even after a delete. Then removes it
+ * from Supabase and the local cache, and returns the refreshed list.
  */
 export const deleteRegistration = async (id) => {
-  // Archive the record into the backup store BEFORE removing it, so the
-  // data is never lost even after a delete.
-  const doomed = lsGetRegistrations().filter((r) => r.id === id);
-  if (doomed.length) backupRegistrations(doomed);
+  // Locate the record: prefer the local cache, else fetch from Supabase.
+  let doomed = lsGetRegistrations().filter((r) => r.id === id);
+
+  if (doomed.length === 0 && isSupabaseConfigured() && supabase) {
+    try {
+      const { data } = await supabase
+        .from('registrations')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (data) doomed = [data];
+    } catch { /* ignore */ }
+  }
+
+  // Archive first (localStorage + database backup table).
+  if (doomed.length) {
+    await pushBackupsToDB(doomed);
+    backupRegistrations(doomed);
+  }
 
   if (isSupabaseConfigured() && supabase) {
     try {

@@ -37,3 +37,20 @@ browser. Suggested naming: `TECHNOTSAV_2026_Backup_2026-04-08.json`.
   even if browser storage is cleared.
 - The archive is per-browser; do not rely on it as the only copy — use the
   manual Backup download for durable storage.
+
+### 4. Database backup folder (Supabase)
+The `src/` app also persists every archived record to the **Supabase
+`archived_registrations` table** — a permanent backup in the cloud that
+survives cleared browsers, lost laptops, and re-deploys.
+
+- On **delete**, the record is inserted (upsert) into
+  `archived_registrations` **and** mirrored to localStorage.
+- The table stores the full row (`reg_id`, `leader_name`, `members`,
+  `registration_fee`, `total_members`, `archived_at`, …).
+- Apply `supabase-schema.sql` (section 1b + RLS policies) to create the
+  table on your Supabase project.
+- `syncBackupsFromDB()` pulls DB archives into the local cache so the Backup
+  download always reflects everything in the database.
+
+So every deletion now has **three** copies: the database archive, the browser
+localStorage archive, and the downloadable JSON — you will never lose data.
