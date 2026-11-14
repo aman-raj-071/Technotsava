@@ -2302,6 +2302,36 @@
         if (onSettingsChange) onSettingsChange(updated);
       };
 
+      // Helper to determine the expected registration fee for any record
+      const getRecordFee = (r) => {
+        if (r.amount && r.amount !== 'Free') return r.amount.startsWith('₹') ? r.amount : `₹${r.amount}`;
+        if (r.registration_fee) return `₹${r.registration_fee}`;
+        const total = 1 + (Array.isArray(r.members) ? r.members.length : 0);
+        const evId = r.event_id || '';
+        if (evId === 'digital-treasure-hunt' || r.reg_id?.includes('-DTH-')) {
+          return total <= 2 ? '₹100 (2 mem)' : '₹150 (4 mem)';
+        }
+        if (evId === 'tech-quiz' || r.reg_id?.includes('-QUIZ-')) {
+          return total <= 1 ? '₹100 (Solo)' : '₹150 (Pair)';
+        }
+        if (evId === 'ideathon' || r.reg_id?.includes('-IDEA-')) {
+          return total <= 1 ? '₹50 (Solo)' : '₹200 (Team)';
+        }
+        if (evId === 'gaming-free-fire' || r.reg_id?.includes('-GAME-')) {
+          return '₹150 (Squad)';
+        }
+        if (evId === 'minute-to-win-it' || r.reg_id?.includes('-MWI-')) {
+          return '₹150 (Team)';
+        }
+        if (evId === 'videography-frame-the-fest' || r.reg_id?.includes('-VID-')) {
+          return total <= 1 ? '₹100 (Solo)' : '₹150 (Pair)';
+        }
+        if (evId === 'logo-mania' || r.reg_id?.includes('-LOGO-')) {
+          return '₹100 (Pair)';
+        }
+        return '₹150';
+      };
+
       const handleVerifyStatus = (id, newStatus) => {
         const approving = newStatus === 'completed' || newStatus === 'confirmed';
 
@@ -2312,11 +2342,13 @@
             setViewModal({ ...viewModal, status: newStatus, attended: rec.attended, attended_at: rec.attended_at });
           }
           if (approving && rec) {
+            const feeStr = getRecordFee(rec);
             alert(
               '✓ APPROVED! Registration confirmed.\n\n' +
               'Reg ID: ' + rec.reg_id + '\n' +
               'Event: ' + rec.event_name + '\n' +
-              'Team/Squad: ' + (rec.team_name || 'Solo') + '\n' +
+              'Expected Fee: ' + feeStr + '\n' +
+              'Team/Squad: ' + (rec.team_name || 'Solo') + ' (' + (1 + (rec.members?.length || 0)) + ' members)\n' +
               'Leader: ' + rec.leader_name + ' (' + (rec.leader_usn || '') + ')\n' +
               'UTR / Ref: ' + (rec.utr_id || 'N/A') + '\n\n' +
               'The participant can now see this verified pass under 🔍 CHECK STATUS.'
@@ -2699,6 +2731,7 @@
                       <th className="p-3.5">REG ID</th>
                       <th className="p-3.5">STATUS</th>
                       <th className="p-3.5">UTR / REF ID</th>
+                      <th className="p-3.5">FEE</th>
                       <th className="p-3.5">EVENT ARENA</th>
                       <th className="p-3.5">TEAM / SQUAD</th>
                       <th className="p-3.5">LEAD / PARTICIPANT</th>
@@ -2725,6 +2758,11 @@
                           </span>
                         </td>
                         <td className="p-3.5 font-mono font-black text-[#0066FF]">{r.utr_id || 'N/A'}</td>
+                        <td className="p-3.5 font-mono font-black text-black">
+                          <span className="px-2 py-0.5 bg-[#D4EDDA] border border-black text-emerald-950 font-black">
+                            {getRecordFee(r)}
+                          </span>
+                        </td>
                         <td className="p-3.5 font-bold text-black">{r.event_name}</td>
                         <td className="p-3.5 font-bold text-[#0066FF]">{r.team_name || 'Solo'}</td>
                         <td className="p-3.5 font-bold text-black">{r.leader_name}</td>
@@ -2807,8 +2845,17 @@
                   </div>
                 )}
 
-                <div className="p-3.5 bg-[#FFF3CD] border-3 border-black font-mono text-xs mb-4 space-y-1">
+                <div className="p-3.5 bg-[#FFF3CD] border-3 border-black font-mono text-xs mb-4 space-y-2">
                   <div className="font-black text-black">PAYMENT VERIFICATION:</div>
+                  <div className="p-2.5 bg-white border-2 border-black flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-600">Expected Registration Fee:</div>
+                      <div className="text-base font-black text-emerald-700">{getRecordFee(viewModal)}</div>
+                    </div>
+                    <span className="text-[11px] font-bold bg-[#FFE600] px-2 py-0.5 border border-black">
+                      {1 + (viewModal.members?.length || 0)} Total Participants
+                    </span>
+                  </div>
                   <div>Submitted UTR ID: <span className="font-black text-sm text-[#0066FF]">{viewModal.utr_id || 'N/A'}</span></div>
                   <div>Status: <span className="font-black uppercase">{viewModal.status || 'pending'}</span></div>
                   <div className="pt-2 flex gap-2">
