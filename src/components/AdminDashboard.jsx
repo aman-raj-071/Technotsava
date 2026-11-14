@@ -4,7 +4,9 @@ import {
   deleteRegistration,
   getEventSettings,
   toggleEventStatus,
-  exportRegistrationsToCSV
+  exportRegistrationsToCSV,
+  getBackups,
+  buildBackupJSON
 } from '../lib/db';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { EVENTS } from '../data/eventsData';
@@ -28,6 +30,12 @@ export const AdminDashboard = ({ onBackToFest }) => {
   const [viewingRecord, setViewingRecord] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
+
+  // Delete confirmation (password-protected)
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id }
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [pwdDeleting, setPwdDeleting] = useState(false);
 
   const configuredPasscode = import.meta.env.VITE_ADMIN_PASSCODE || 'techfestcse@2026&';
 
@@ -93,24 +101,56 @@ export const AdminDashboard = ({ onBackToFest }) => {
     }
   };
 
-  // Delete Registration
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this registration? This action cannot be undone.')) {
-      setDeletingId(id);
-      try {
-        await deleteRegistration(id);
-        // Re-fetch from Supabase so local list stays in sync with the cloud
-        const refreshed = await getAllRegistrations();
-        setRegistrations(refreshed || []);
-        if (viewingRecord?.id === id) setViewingRecord(null);
-        setStatusMessage('Registration deleted successfully.');
-        setTimeout(() => setStatusMessage(null), 3000);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setDeletingId(null);
-      }
+  // Delete Registration — opens the password-protected confirmation modal.
+  const handleDelete = (id) => {
+    setDeleteError('');
+    setDeletePassword('');
+    setDeleteTarget({ id });
+  };
+
+  // Performs the actual delete AFTER the admin password is verified.
+  const confirmDelete = async () => {
+    setDeleteError('');
+    if (!deleteTarget) return;
+
+    if (deletePassword.trim() !== configuredPasscode) {
+      setDeleteError('Incorrect admin password. Deletion blocked.');
+      return;
     }
+
+    setPwdDeleting(true);
+    const { id } = deleteTarget;
+    try {
+      await deleteRegistration(id);   // archives the record first
+      const refreshed = await getAllRegistrations();
+      setRegistrations(refreshed || []);
+      if (viewingRecord?.id === id) setViewingRecord(null);
+      setDeleteTarget(null);
+      setDeletePassword('');
+      setStatusMessage('Registration deleted (backup saved).');
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      setDeleteError('Delete failed. Please try again.');
+    } finally {
+      setPwdDeleting(false);
+      setDeletingId(null);
+    }
+  };
+
+  // Download a full JSON backup (current + archived/deleted records).
+  const handleDownloadBackup = () => {
+    const backup = buildBackupJSON();
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `TECHNOTSAV_2026_Backup_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Export to CSV
@@ -232,8 +272,8 @@ export const AdminDashboard = ({ onBackToFest }) => {
               </span>
               <span
                 className={`text-xs font-mono px-2.5 py-0.5 rounded-full flex items-center gap-1.5 ${isSupabaseConfigured()
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                   }`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured() ? 'bg-emerald-400' : 'bg-amber-400'}`} />
@@ -255,6 +295,17 @@ export const AdminDashboard = ({ onBackToFest }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               <span>Refresh</span>
+            </button>
+
+            <button
+              onClick={handleDownloadBackup}
+              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-gradient-to-r from-amber-400 to-orange-400 hover:opacity-90 rounded-lg transition-opacity flex items-center gap-1.5 shadow-md"
+              title="Download full backup (current + deleted records)"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              <span>Backup</span>
             </button>
 
             <button
@@ -359,8 +410,8 @@ export const AdminDashboard = ({ onBackToFest }) => {
                   <button
                     onClick={() => handleToggleEvent(ev.id, isActive)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 ${isActive
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
-                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30'
                       }`}
                   >
                     <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-rose-400'}`} />
@@ -408,8 +459,8 @@ export const AdminDashboard = ({ onBackToFest }) => {
             <button
               onClick={() => setSelectedEventFilter('all')}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${selectedEventFilter === 'all'
-                  ? 'bg-cyan-500 text-slate-950 font-bold'
-                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-cyan-500 text-slate-950 font-bold'
+                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
             >
               All Events ({totalCount})
@@ -419,8 +470,8 @@ export const AdminDashboard = ({ onBackToFest }) => {
                 key={ev.id}
                 onClick={() => setSelectedEventFilter(ev.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${selectedEventFilter === ev.id
-                    ? 'bg-cyan-500 text-slate-950 font-bold'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  ? 'bg-cyan-500 text-slate-950 font-bold'
+                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                   }`}
               >
                 {ev.name} ({eventCounts[ev.id] || 0})
@@ -458,6 +509,7 @@ export const AdminDashboard = ({ onBackToFest }) => {
                     <th className="py-3 px-4">Team / Participant</th>
                     <th className="py-3 px-4">Leader / Contact</th>
                     <th className="py-3 px-4">Members</th>
+                    <th className="py-3 px-4">Fee</th>
                     <th className="py-3 px-4">Registered At</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
@@ -487,8 +539,17 @@ export const AdminDashboard = ({ onBackToFest }) => {
                       </td>
                       <td className="py-3.5 px-4 font-mono">
                         <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                          {1 + (Array.isArray(reg.members) ? reg.members.length : 0)} pax
+                          {reg.total_members ?? (1 + (Array.isArray(reg.members) ? reg.members.length : 0))} pax
                         </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-mono">
+                        {reg.registration_fee != null ? (
+                          <span className="px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-bold">
+                            ₹{reg.registration_fee}
+                          </span>
+                        ) : (
+                          <span className="text-slate-500">—</span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 font-mono text-[11px] text-slate-400">
                         {new Date(reg.created_at).toLocaleDateString()}
@@ -556,6 +617,21 @@ export const AdminDashboard = ({ onBackToFest }) => {
               </div>
             )}
 
+            {/* Registration Fee */}
+            {viewingRecord.registration_fee != null && (
+              <div className="mb-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs flex items-center justify-between">
+                <div>
+                  <div className="font-mono uppercase text-emerald-400 font-semibold mb-0.5">Payable Fee</div>
+                  <div className="text-emerald-100/80">
+                    {viewingRecord.total_members ?? '1+'} member{viewingRecord.total_members > 1 ? 's' : ''}
+                  </div>
+                </div>
+                <div className="text-2xl font-tech font-extrabold text-emerald-300">
+                  ₹{viewingRecord.registration_fee}
+                </div>
+              </div>
+            )}
+
             {/* Leader Details */}
             <div className="mb-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
               <div className="font-mono uppercase text-cyan-400 font-semibold mb-1">
@@ -600,6 +676,83 @@ export const AdminDashboard = ({ onBackToFest }) => {
                 className="px-3 py-1.5 rounded bg-rose-950/60 text-rose-300 border border-rose-500/30 font-mono"
               >
                 Delete Record
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation — requires admin password */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-rose-500/30 shadow-2xl relative">
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800/60"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                ⚠️ Delete Registration
+              </span>
+            </div>
+
+            <h3 className="text-lg font-display font-bold text-white mb-1">
+              Confirm Deletion
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">
+              This action permanently removes the record from the main list.
+              The record is automatically archived to the backup store before
+              deletion. Enter the <span className="text-rose-300 font-semibold">admin password</span> to continue.
+            </p>
+
+            <input
+              type="password"
+              placeholder="Enter admin password"
+              value={deletePassword}
+              onChange={(e) => {
+                setDeletePassword(e.target.value);
+                setDeleteError('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && confirmDelete()}
+              autoFocus
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-rose-400 text-white placeholder-slate-500 text-sm focus:outline-none mb-3"
+            />
+
+            {deleteError && (
+              <p className="text-xs text-rose-400 mb-3">{deleteError}</p>
+            )}
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={pwdDeleting}
+                className="flex-1 px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={pwdDeleting}
+                className="flex-1 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 border border-rose-500 transition-colors flex items-center justify-center gap-2"
+              >
+                {pwdDeleting ? (
+                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete Permanently
+                  </>
+                )}
               </button>
             </div>
           </div>

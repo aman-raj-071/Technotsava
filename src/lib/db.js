@@ -18,6 +18,7 @@ import { EVENTS } from '../data/eventsData';
 // ── localStorage keys ────────────────────────────────────────────────────
 const LS_REGISTRATIONS = 'technotsav_2026_registrations';
 const LS_EVENT_SETTINGS = 'technotsav_2026_event_settings';
+const LS_BACKUP_REGISTRATIONS = 'technotsav_2026_backup_registrations';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -57,6 +58,51 @@ const lsSetSettings = (map) => {
   try {
     localStorage.setItem(LS_EVENT_SETTINGS, JSON.stringify(map));
   } catch { /* ignore */ }
+};
+
+// ── Backup / Archive ───────────────────────────────────────────────────────
+// Every delete is archived here so no data is ever permanently lost.
+// This is the local "backup folder" (persisted in the browser's localStorage,
+// downloadable as a JSON file from the admin dashboard).
+
+/** Read the archived (deleted) registrations. */
+export const getBackups = () => {
+  try {
+    const raw = localStorage.getItem(LS_BACKUP_REGISTRATIONS);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+const lsSetBackups = (list) => {
+  try {
+    localStorage.setItem(LS_BACKUP_REGISTRATIONS, JSON.stringify(list));
+  } catch (e) {
+    console.warn('[db] backup write failed:', e);
+  }
+};
+
+/** Archive an array of records (dedupes by id). */
+export const backupRegistrations = (records) => {
+  if (!records || records.length === 0) return;
+  const existing = getBackups();
+  const ids = new Set(existing.map((r) => r.id));
+  const fresh = records.filter((r) => !ids.has(r.id));
+  if (fresh.length) {
+    lsSetBackups([...existing, ...fresh]);
+  }
+};
+
+/** Build a downloadable JSON backup object (current + archived). */
+export const buildBackupJSON = () => {
+  return {
+    exported_at: new Date().toISOString(),
+    total_current: lsGetRegistrations().length,
+    current_registrations: lsGetRegistrations(),
+    total_archived: getBackups().length,
+    archived_deleted_registrations: getBackups(),
+  };
 };
 
 // ── Event Settings ────────────────────────────────────────────────────────
@@ -174,14 +220,22 @@ export const saveRegistration = async (formData, event) => {
       event.type === 'individual'
         ? []
         : formData.members || (
-            formData.member2Name
-              ? [{
-                  name: formData.member2Name,
-                  usn: formData.member2Usn?.toUpperCase() || '',
-                  phone: formData.member2Phone || null,
-                }]
-              : []
-          ),
+          formData.member2Name
+            ? [{
+              name: formData.member2Name,
+              usn: formData.member2Usn?.toUpperCase() || '',
+              phone: formData.member2Phone || null,
+            }]
+            : []
+        ),
+    total_members:
+      formData.total_members ??
+      (event.type === 'individual'
+        ? 1
+        : event.type === 'pair'
+          ? 2
+          : 1 + (Array.isArray(formData.members) ? formData.members.length : 0)),
+    registration_fee: formData.registration_fee ?? null,
     all_participants: allParticipants.filter(Boolean),
     all_usns: allUsns.filter(Boolean),
     theme: formData.theme || null,
@@ -259,6 +313,11 @@ export const getAllRegistrations = async () => {
  * Removes from Supabase and local cache, then returns the refreshed list.
  */
 export const deleteRegistration = async (id) => {
+  // Archive the record into the backup store BEFORE removing it, so the
+  // data is never lost even after a delete.
+  const doomed = lsGetRegistrations().filter((r) => r.id === id);
+  if (doomed.length) backupRegistrations(doomed);
+
   if (isSupabaseConfigured() && supabase) {
     try {
       const { error } = await supabase
@@ -297,6 +356,7 @@ export const exportRegistrationsToCSV = (registrations) => {
     'Email Address',
     'Phone Number',
     'Total Members',
+    'Registration Fee (₹)',
     'All Participants',
     'All USNs',
     'Ideathon Theme',
@@ -315,6 +375,7 @@ export const exportRegistrationsToCSV = (registrations) => {
       escape(reg.leader_email || 'N/A'),
       escape(reg.leader_phone || 'N/A'),
       totalMembers,
+      escape(reg.registration_fee ?? 'N/A'),
       escape((reg.all_participants || []).join('; ')),
       escape((reg.all_usns || []).join('; ')),
       escape(reg.theme || 'N/A'),

@@ -20,11 +20,21 @@ export const EVENTS = [
     glowColor: "rgba(6, 182, 212, 0.4)",
     badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
     icon: "Compass",
+    fee: {
+      fee2: "₹100 / 2 members",
+      fee4: "₹150 / 4 members",
+      text: "₹100 / 2 members • ₹150 / 4 members",
+      tiers: [
+        { size: 2, amount: 100 },
+        { size: 4, amount: 150 },
+      ],
+    },
     rules: [
       "Each team must consist of 2 to 4 participants including the team leader.",
       "A laptop or smartphone with high-speed internet connection is required.",
       "The use of unauthorized external automation tools or bot scripts will result in immediate disqualification.",
-      "Time is critical: ties will be broken based on exact submission timestamps."
+      "Time is critical: ties will be broken based on exact submission timestamps.",
+      "Registration fee: ₹100 for 2 members, ₹150 for 4 members."
     ]
   },
   {
@@ -211,3 +221,19 @@ export const EVENTS = [
 ];
 
 export const getEventById = (id) => EVENTS.find((e) => e.id === id);
+
+/**
+ * Compute the payable registration fee (₹) for a team of `memberCount`
+ * participants, based on the event's fee tiers. Falls back to the lowest
+ * tier if no tier matches. Returns null when the event has no fee.
+ */
+export const getRegistrationFee = (event, memberCount) => {
+  if (!event?.fee || !Array.isArray(event.fee.tiers) || event.fee.tiers.length === 0) {
+    return null;
+  }
+  let chosen = event.fee.tiers[0];
+  for (const tier of event.fee.tiers) {
+    if (memberCount >= tier.size) chosen = tier;
+  }
+  return chosen.amount;
+};

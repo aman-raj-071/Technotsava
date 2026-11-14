@@ -59,6 +59,8 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <!-- canvas-confetti for celebration effects -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Vercel Web Analytics -->
+  <script defer src="/_vercel/insights/script.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Unbounded:wght@400;500;600;700;800;900&display=swap');
@@ -217,23 +219,52 @@
 
     @media print {
 
-      /* Hide the whole app; only the cloned sheet holder is printed. */
-      body.is-printing #root {
+      /* Hide the whole app, background, and any portaled modals; ONLY the cloned sheet holder is printed. */
+      html,
+      body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+
+      body.is-printing #root,
+      body.is-printing>*:not(#__print-holder) {
         display: none !important;
       }
 
       #__print-holder {
         display: block !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
 
       #__print-holder * {
         visibility: visible !important;
       }
 
+      /* Compact pass layout when printing to ensure it fits perfectly on 1 single page */
+      #__print-holder #printable-template,
+      #__print-holder #printable-ticket {
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      #__print-holder #printable-template img,
+      #__print-holder #printable-ticket img {
+        max-height: 110px !important;
+        width: auto !important;
+      }
+
       @page {
-        margin: 12mm;
+        margin: 8mm 10mm;
+        size: A4 portrait;
       }
     }
   </style>
@@ -375,7 +406,8 @@
         maxTeamSize: 4,
         teamSizeText: "2–4 Participants",
         duration: "45–60 minutes",
-        entryFeeText: "Entry Fee Applicable",
+        entryFeeText: "₹100 (2 mem) • ₹150 (4 mem)",
+        fee: { fee2: "₹100 / 2 members", fee4: "₹150 / 4 members" },
         badge: "Must-Have Flagship",
         shortDescription:
           "Teams solve QR codes, riddles and technical clues to find the final destination across the campus grounds.",
@@ -390,7 +422,7 @@
           "All clues and challenges must be completed in the given order; do not enter restricted or unsafe areas.",
           "Team members must work together and stay within the allowed area.",
           "The team that completes all challenges/clues first and correctly wins; the organizers' decision is final.",
-          "Registration fee: ₹200 per team."
+          "Registration fee: ₹100 for 2 members, ₹150 for 4 members."
         ]
       },
       {
@@ -565,6 +597,22 @@
     };
     const lsSetSettingsLocal = (map) => { try { localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(map)); } catch (e) { } };
 
+    // ---- BACKUP / ARCHIVE LAYER ----
+    const LOCAL_ARCHIVED_KEY = 'technotsav_2026_archived';
+    const lsGetArchived = () => { try { return JSON.parse(localStorage.getItem(LOCAL_ARCHIVED_KEY) || '[]'); } catch (e) { return []; } };
+    const buildBackupJSON = (records) => {
+      return {
+        app: 'TECHNOTSAVA-2026',
+        exported_at: new Date().toISOString(),
+        counts: {
+          registrations: records.length,
+          deletedArchive: lsGetArchived().length,
+        },
+        registrations: records,
+        archived_deleted: lsGetArchived(),
+      };
+    };
+
     const generateRegId = (code) => 'TECH26-' + (code || 'REG') + '-' + Math.floor(1000 + Math.random() * 9000);
 
     const getStoredSettings = async () => {
@@ -638,6 +686,17 @@
         }
       } catch (e) {
         console.warn('[db] delete error:', e);
+      }
+      // Always archive before removal so a deleted record is never permanently lost.
+      if (rec) {
+        try {
+          const archived = lsGetArchived();
+          rec.__deleted_at = new Date().toISOString();
+          archived.unshift(rec);
+          localStorage.setItem(LOCAL_ARCHIVED_KEY, JSON.stringify(archived));
+        } catch (e) {
+          console.warn('[db] archive error:', e);
+        }
       }
       const updated = lsGetRegs().filter(r => r.id !== id);
       lsSetRegs(updated);
@@ -1303,7 +1362,11 @@
           const amt = cfg.fees[key];
           if (amt) return `₹${amt}`;
         }
-        if (event.id === 'digital-treasure-hunt') return '₹200';
+        if (event.id === 'digital-treasure-hunt') {
+          // 2 members (lead + 1 dynamic) = ₹100; more members (e.g. 3 or 4) = ₹150
+          const totalMembers = dynamicMembers.length + 1;
+          return totalMembers <= 2 ? '₹100' : '₹150';
+        }
         if (event.id === 'logo-mania') return '₹100';
         if (event.id === 'videography-frame-the-fest') return participationType === 'solo' ? '₹100' : '₹150';
         return '₹150';
@@ -2145,6 +2208,9 @@
       const [checkinCode, setCheckinCode] = useState('');
       const [checkinResult, setCheckinResult] = useState(null);
       const [dbSyncError, setDbSyncError] = useState('');
+      const [confirmTarget, setConfirmTarget] = useState(null);
+      const [deletePin, setDeletePin] = useState('');
+      const [deleting, setDeleting] = useState(false);
 
       useEffect(() => {
         if (sessionStorage.getItem('tech26_admin') === '1') {
@@ -2258,11 +2324,27 @@
       };
 
       const handleDelete = (id) => {
-        if (confirm('Permanently delete this registration record?')) {
-          deleteStoredRegistration(id).then(u => {
-            setRegs(u);
-            if (viewModal?.id === id) setViewModal(null);
-          }).catch(e => console.error('delete error', e));
+        setConfirmTarget(id);
+        setDeletePin('');
+      };
+
+      const confirmDelete = async () => {
+        if (deletePin.trim() !== ADMIN_PASSCODE) {
+          alert('❌ Incorrect admin password. Deletion blocked.\n\nOnly the master coordinator passcode can delete a participant record.');
+          return;
+        }
+        setDeleting(true);
+        try {
+          const u = await deleteStoredRegistration(confirmTarget);
+          setRegs(u);
+          if (viewModal?.id === confirmTarget) setViewModal(null);
+          setConfirmTarget(null);
+          setDeletePin('');
+          alert('✓ Registration deleted. A copy was saved to the backup archive.');
+        } catch (e) {
+          console.error('delete error', e);
+        } finally {
+          setDeleting(false);
         }
       };
 
@@ -2277,6 +2359,18 @@
         a.href = URL.createObjectURL(blob);
         a.download = `TECHNOTSAVA_Registrations_${Date.now()}.csv`;
         a.click();
+      };
+
+      const handleDownloadBackup = () => {
+        if (!regs.length && !lsGetArchived().length) return alert('No registration data to back up yet.');
+        const payload = buildBackupJSON(regs);
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        const d = new Date().toISOString().slice(0, 10);
+        a.download = `TECHNOTSAV_2026_Backup_${d}.json`;
+        a.click();
+        alert(`💾 Backup downloaded.\n\nContains ${payload.counts.registrations} live registrations + ${payload.counts.deletedArchive} archived (deleted) records.\n\nStore it safely in the /backups folder.`);
       };
 
       // PASSCODE GATE (ADMIN LOGIN)
@@ -2373,6 +2467,13 @@
                   className="brutal-btn px-4 py-2 bg-[#00E575] text-black text-xs font-black"
                 >
                   📥 EXPORT CSV
+                </button>
+                <button
+                  onClick={handleDownloadBackup}
+                  className="brutal-btn px-4 py-2 bg-[#FFB700] text-black text-xs font-black"
+                  title="Download full backup: live registrations + deleted/archived records"
+                >
+                  💾 BACKUP
                 </button>
                 <button
                   onClick={handleLogout}
@@ -2722,6 +2823,56 @@
               </div>
             </div>
           )}
+
+          {/* DELETE CONFIRMATION — PASSWORD GATED */}
+          {confirmTarget && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75">
+              <form
+                onSubmit={(e) => { e.preventDefault(); confirmDelete(); }}
+                className="bg-white border-4 border-black brutal-shadow-xl max-w-sm w-full p-6 relative"
+              >
+                <button
+                  type="button"
+                  onClick={() => { setConfirmTarget(null); setDeletePin(''); }}
+                  className="absolute top-4 right-4 bg-black text-white hover:bg-red-500 w-8 h-8 font-black text-sm border-2 border-black flex items-center justify-center"
+                >
+                  ✕
+                </button>
+                <div className="font-mono text-xs font-black bg-[#FF4D8D] text-white px-2 py-0.5 border-2 border-black inline-block mb-2">
+                  ⚠ DELETE PROTECTED
+                </div>
+                <h3 className="text-2xl font-display font-black text-black mb-1">Confirm Deletion</h3>
+                <p className="text-xs font-mono text-slate-600 mb-4">
+                  Enter the master coordinator passcode to permanently delete this record.
+                  It will be archived to the backup store first.
+                </p>
+                <input
+                  type="password"
+                  autoFocus
+                  value={deletePin}
+                  onChange={(e) => setDeletePin(e.target.value)}
+                  placeholder="Enter admin password"
+                  className="w-full brutal-input px-4 py-2.5 text-sm font-semibold border-2 border-black mb-3"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={deleting}
+                    className="brutal-btn flex-1 px-4 py-2 bg-[#FF4D8D] text-white text-xs font-black disabled:opacity-50"
+                  >
+                    {deleting ? 'DELETING…' : '🗑 DELETE RECORD'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setConfirmTarget(null); setDeletePin(''); }}
+                    className="brutal-btn px-4 py-2 bg-white text-black text-xs font-bold"
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       );
     }
@@ -2748,12 +2899,14 @@
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">
                 <span className="font-mono text-xs font-black bg-[#FF6B9D] px-2 py-0.5 border-2 border-black uppercase">
-                  HOD OF CSE
+                  DEAN & HOD
                 </span>
-                <h3 className="font-display font-black text-2xl text-black">Dr. MUNJUNATHA KUMAR B.H.</h3>
-                <p className="font-mono text-xs font-bold text-slate-700">Head of Department – Computer Science & Engineering</p>
-                <p className="font-mono text-xs font-bold text-black pt-2">📍 CSE Department Block, SJCIT</p>
-                <p className="font-mono text-xs font-bold text-[#0066FF]">🏛 HOD – CSE, TECHNOTSAVA 2026</p>
+                <h3 className="font-display font-black text-2xl text-black">Dr. MANJUNATHA KUMAR B.H.</h3>
+                <div className="inline-block bg-[#FFF9D2] border-2 border-black px-2.5 py-1 font-mono text-xs font-black text-black uppercase tracking-wide">
+                  Dean Academics & HOD of CSE
+                </div>
+                <p className="font-mono text-xs font-bold text-black pt-1">📍 CSE Department Block, SJCIT</p>
+                <p className="font-mono text-xs font-bold text-[#0066FF]">🏛 Chief Patron & Mentor, TECHNOTSAVA 2026</p>
               </div>
 
               <div className="bg-white border-4 border-black brutal-shadow p-6 space-y-2">

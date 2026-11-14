@@ -90,166 +90,176 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-bl-full pointer-events-none group-hover:from-cyan-500/20 transition-all duration-300" />
 
                 <div>
-                  {/* Top Bar: Category & Team Size Badge */}
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-800/80 text-cyan-300 border border-cyan-500/20">
-                      {event.category}
-                    </span>
-                    <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-purple-950/60 text-purple-300 border border-purple-500/30">
-                      {event.teamSizeText}
-                    </span>
-                  </div>
-
-                  {/* Icon & Event Name */}
-                  <div className="flex items-start gap-4 mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0 group-hover:border-cyan-400/60 transition-colors shadow-md">
-                      {renderIcon(event.id)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-display font-bold text-white group-hover:text-cyan-400 transition-colors">
-                        {event.name}
-                      </h3>
-                      <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">
-                        Code: {event.code}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Short Description */}
-                  <p className="text-sm text-slate-300 leading-relaxed mb-6 font-normal">
-                    {event.shortDescription}
-                  </p>
-
-                  {/* Themes indicator for Ideathon */}
-                  {event.themes && (
-                    <div className="mb-5 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1">
-                      <div className="font-semibold text-amber-200">Selectable Tracks:</div>
-                      {event.themes.map((th) => (
-                        <div key={th.id || th.title} className="text-[11px] text-slate-400">• {th.title}</div>
-                      ))}
+                  {/* Registration Fee Banner */}
+                  {event.fee && (
+                    <div className="mb-3 p-2.5 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-between">
+                      <span className="text-[11px] font-mono uppercase tracking-widest text-slate-400">Registration Fee</span>
+                      <span className="text-xs font-bold text-cyan-300">
+                        {event.fee.fee2} • {event.fee.fee4}
+                      </span>
                     </div>
                   )}
-                </div>
+                  <div>
+                    {/* Top Bar: Category & Team Size Badge */}
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-800/80 text-cyan-300 border border-cyan-500/20">
+                        {event.category}
+                      </span>
+                      <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-purple-950/60 text-purple-300 border border-purple-500/30">
+                        {event.teamSizeText}
+                      </span>
+                    </div>
 
-                {/* Bottom Actions */}
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
-                  {/* View Rules Modal Trigger */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedRuleEvent(event);
-                    }}
-                    className="text-xs text-slate-400 hover:text-white font-mono hover:underline flex items-center gap-1 py-1"
-                  >
-                    <span>Guidelines</span>
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
+                    {/* Icon & Event Name */}
+                    <div className="flex items-start gap-4 mb-3">
+                      <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0 group-hover:border-cyan-400/60 transition-colors shadow-md">
+                        {renderIcon(event.id)}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-display font-bold text-white group-hover:text-cyan-400 transition-colors">
+                          {event.name}
+                        </h3>
+                        <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">
+                          Code: {event.code}
+                        </div>
+                      </div>
+                    </div>
 
-                  {/* Register Button */}
-                  {isActive ? (
+                    {/* Short Description */}
+                    <p className="text-sm text-slate-300 leading-relaxed mb-6 font-normal">
+                      {event.shortDescription}
+                    </p>
+
+                    {/* Themes indicator for Ideathon */}
+                    {event.themes && (
+                      <div className="mb-5 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1">
+                        <div className="font-semibold text-amber-200">Selectable Tracks:</div>
+                        {event.themes.map((th) => (
+                          <div key={th.id || th.title} className="text-[11px] text-slate-400">• {th.title}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Actions */}
+                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                    {/* View Rules Modal Trigger */}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onSelectEvent(event);
+                        setSelectedRuleEvent(event);
                       }}
-                      className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition-all duration-200 shadow-md flex items-center gap-1.5 group-hover:scale-105"
+                      className="text-xs text-slate-400 hover:text-white font-mono hover:underline flex items-center gap-1 py-1"
                     >
-                      <span>Register Now</span>
-                      <svg
-                        className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <span>Guidelines</span>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </button>
-                  ) : (
-                    <span className="px-3 py-1.5 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">
-                      Registration Closed
-                    </span>
-                  )}
+
+                    {/* Register Button */}
+                    {isActive ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectEvent(event);
+                        }}
+                        className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition-all duration-200 shadow-md flex items-center gap-1.5 group-hover:scale-105"
+                      >
+                        <span>Register Now</span>
+                        <svg
+                          className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <span className="px-3 py-1.5 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">
+                        Registration Closed
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
+                );
           })}
-        </div>
+              </div>
       </div>
 
-      {/* Rules / Guidelines Modal */}
-      {selectedRuleEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="glass-panel max-w-lg w-full rounded-2xl p-6 sm:p-8 border border-cyan-500/30 shadow-2xl relative">
-            <button
-              onClick={() => setSelectedRuleEvent(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800/60"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                {selectedRuleEvent.category}
-              </span>
-              <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30">
-                {selectedRuleEvent.teamSizeText}
-              </span>
-            </div>
-
-            <h3 className="text-2xl font-display font-bold text-white mb-2">
-              {selectedRuleEvent.name}
-            </h3>
-            <p className="text-sm text-slate-300 mb-6">
-              {selectedRuleEvent.detailedDescription}
-            </p>
-
-            <div className="mb-6">
-              <h4 className="text-xs font-mono uppercase tracking-wider text-cyan-400 mb-3">
-                Rules & Eligibility Criteria:
-              </h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
-                {selectedRuleEvent.rules.map((rule, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-cyan-400 font-bold">•</span>
-                    <span>{rule}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+        {/* Rules / Guidelines Modal */}
+        {selectedRuleEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="glass-panel max-w-lg w-full rounded-2xl p-6 sm:p-8 border border-cyan-500/30 shadow-2xl relative">
               <button
                 onClick={() => setSelectedRuleEvent(null)}
-                className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800/60"
               >
-                Close
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-              {eventSettings[selectedRuleEvent.id] !== false ? (
-                <button
-                  onClick={() => {
-                    const ev = selectedRuleEvent;
-                    setSelectedRuleEvent(null);
-                    onSelectEvent(ev);
-                  }}
-                  className="px-5 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 rounded-lg shadow-lg"
-                >
-                  Proceed to Register
-                </button>
-              ) : (
-                <span className="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">
-                  Registration Closed
+
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                  {selectedRuleEvent.category}
                 </span>
-              )}
+                <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                  {selectedRuleEvent.teamSizeText}
+                </span>
+              </div>
+
+              <h3 className="text-2xl font-display font-bold text-white mb-2">
+                {selectedRuleEvent.name}
+              </h3>
+              <p className="text-sm text-slate-300 mb-6">
+                {selectedRuleEvent.detailedDescription}
+              </p>
+
+              <div className="mb-6">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-cyan-400 mb-3">
+                  Rules & Eligibility Criteria:
+                </h4>
+                <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
+                  {selectedRuleEvent.rules.map((rule, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-cyan-400 font-bold">•</span>
+                      <span>{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                <button
+                  onClick={() => setSelectedRuleEvent(null)}
+                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                >
+                  Close
+                </button>
+                {eventSettings[selectedRuleEvent.id] !== false ? (
+                  <button
+                    onClick={() => {
+                      const ev = selectedRuleEvent;
+                      setSelectedRuleEvent(null);
+                      onSelectEvent(ev);
+                    }}
+                    className="px-5 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 rounded-lg shadow-lg"
+                  >
+                    Proceed to Register
+                  </button>
+                ) : (
+                  <span className="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">
+                    Registration Closed
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </section>
   );
 };

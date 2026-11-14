@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { saveRegistration, getEventSettings } from '../lib/db';
 import { RegistrationSuccess } from '../components/RegistrationSuccess';
+import { getRegistrationFee } from '../data/eventsData';
 
 export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) => {
   // Common states
@@ -219,7 +220,9 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
           leaderEmail: leaderEmail.trim(),
           leaderPhone: leaderPhone.trim(),
           members: validMembers,
-          theme: event.id === 'ideathon' ? selectedTheme : null
+          theme: event.id === 'ideathon' ? selectedTheme : null,
+          total_members: validMembers.length + 1,
+          registration_fee: payableFee
         };
       }
 
@@ -244,6 +247,15 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
       />
     );
   }
+
+  // Live fee calc: how many members are in the team right now?  // The fee is derived from the current team size so participants see
+  // exactly what they will pay, and the same amount is stored on the
+  // record for the admin dashboard.
+  const currentTeamSize =
+    event.id === 'minute-to-win-it' ? 1 :
+      event.id === 'tech-quiz' ? 2 :
+        1 + dynamicMembers.length;
+  const payableFee = getRegistrationFee(event, currentTeamSize);
 
   // If the event is closed (admin turned it off), block registration.
   if (settingsChecked && isClosed) {
@@ -271,6 +283,25 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 relative z-10">
       <div className="max-w-3xl mx-auto">
+        {/* Live Registration Fee Panel — updates with selected team size */}
+        {payableFee !== null && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-mono uppercase tracking-wider text-emerald-300 mb-1">
+                Registration Fee
+              </div>
+              <div className="text-sm text-emerald-100">
+                {currentTeamSize} member{currentTeamSize > 1 ? 's' : ''} → ₹{payableFee}
+              </div>
+              <div className="text-[11px] text-emerald-400/80 mt-0.5">
+                {event.fee?.text}
+              </div>
+            </div>
+            <div className="text-3xl font-tech font-extrabold text-emerald-300">
+              ₹{payableFee}
+            </div>
+          </div>
+        )}
         {/* Navigation & Event Header */}
         <div className="mb-8">
           <button
@@ -295,6 +326,11 @@ export const RegistrationPage = ({ event, onBackToEvents, onRegisterAnother }) =
             <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30">
               {event.teamSizeText}
             </span>
+            {event.fee && (
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                Fee: {event.fee.fee2} • {event.fee.fee4}
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-tech font-extrabold text-white mb-2">
