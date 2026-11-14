@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { CyberParticles } from './components/CyberParticles';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -166,6 +167,9 @@ export default function App() {
           }
         }}
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
