@@ -652,7 +652,7 @@
     const saveStoredRegistration = async (record) => {
       // Primary write to registrations
       const res = await sb.from('registrations').insert([record]).select().single();
-      
+
       // Dual-write to registrations_backup so backup is immediately created even before DB triggers run
       try {
         const backupRow = Object.assign({}, record, {
@@ -1126,11 +1126,19 @@
                   <div className="text-sm font-bold text-black">{FEST_CONFIG.venue}</div>
                 </div>
               </div>
-              <div className="bg-white border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#00A878] border-2 border-black flex items-center justify-center font-bold text-xl">🎟️</div>
+              <div className="relative bg-gradient-to-br from-[#FFF2C6] to-[#FFDF7E] border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3 overflow-hidden">
+                <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_85%_20%,rgba(242,183,5,0.45),transparent_60%)]" />
+                <div className="relative w-10 h-10 bg-[#00A878] border-2 border-black flex items-center justify-center font-bold text-xl">🎟️</div>
                 <div>
-                  <div className="text-[11px] font-mono uppercase font-bold text-slate-600">Event Entry</div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="text-[11px] font-mono uppercase font-bold text-black">Event Entry</div>
+                    <span className="px-1.5 py-0.5 bg-[#F2B705] border border-black rounded-sm text-[9px] font-black uppercase tracking-wide text-black animate-pulse">⚡ 50% OFF</span>
+                  </div>
                   <div className="text-sm font-bold text-black">Entry Fee Applicable per Event</div>
+                  <div className="mt-1 text-[11px] font-extrabold text-orange-700 leading-tight">
+                    🎉 Flat 50% OFF on registration fees!
+                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 18 November, 2:00 PM IST.</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1217,7 +1225,7 @@
                             {event.badge || 'Official Event'}
                           </span>
                           <span className="text-[10px] font-mono font-extrabold bg-[#00E575] text-black px-2 py-0.5 border-2 border-black">
-                            💰 {event.entryFeeText || 'Entry Fee Applicable'}
+                            💰 {renderFeeLabel(event.entryFeeText || 'Entry Fee Applicable')}
                           </span>
                         </div>
                         <p className="text-sm font-medium text-slate-800 leading-relaxed mb-4">
@@ -1350,6 +1358,57 @@
       { id: 'theme-3', name: 'Agriculture and Rural Development', description: 'Use technology to improve farming, rural livelihoods and village-level services.' },
       { id: 'theme-4', name: 'Digital Life, Productivity and Digital Utilities', description: 'Create tools that make everyday digital life, work and online services simpler and more efficient.' }
     ];
+
+    // ---- EARLY-BIRD 50% FEE DISCOUNT (until 18 Nov 2026, 2:00 PM IST) ----
+    const FEE_DISCOUNT_DEADLINE = new Date('2026-11-18T14:00:00+05:30'); // 2:00 PM IST
+    function isFeeDiscountActive(now) {
+      return (now || new Date()).getTime() < FEE_DISCOUNT_DEADLINE.getTime();
+    }
+    function discountedFee(n) {
+      const num = typeof n === 'number' ? n : Number(String(n).replace(/[^0-9.]/g, ''));
+      return isFeeDiscountActive() && Number.isFinite(num) ? Math.round(num * 0.5) : num;
+    }
+    // Render a rupee amount string ("₹150") as original (struck through) + discounted when active.
+    function renderFeeAmount(amountStr) {
+      const m = String(amountStr).match(/(₹\s*\d+(?:\.\d+)?)/);
+      if (isFeeDiscountActive() && m) {
+        const orig = m[1];
+        const num = Number(orig.replace(/[^0-9.]/g, ''));
+        const disc = '₹' + Math.round(num * 0.5);
+        return (
+          <span className="inline-flex items-center gap-1.5 align-middle">
+            <span className="line-through opacity-60">{orig}</span>
+            <span className="font-black bg-[#FFE600] border-2 border-black px-1.5 py-0.5 brutal-shadow-sm text-black">{disc}</span>
+          </span>
+        );
+      }
+      return <span>{amountStr}</span>;
+    }
+    // Render a composite fee label (may contain one or more "₹…" amounts) with strikethrough on originals.
+    function renderFeeLabel(label) {
+      const active = isFeeDiscountActive();
+      const re = /(₹\s*\d+(?:\.\d+)?)/g;
+      const parts = [];
+      let last = 0, m;
+      while ((m = re.exec(String(label)))) {
+        if (m.index > last) parts.push(<span key={'p' + parts.length}>{String(label).slice(last, m.index)}</span>);
+        const orig = m[1];
+        const num = Number(orig.replace(/[^0-9.]/g, ''));
+        parts.push(
+          active ? (
+            <span key={'a' + parts.length} className="inline-block mx-0.5 align-middle">
+              <span className="line-through opacity-60 mr-1">{orig}</span>
+              <span className="font-black text-[#FF5C00]">₹{Math.round(num * 0.5)}</span>
+            </span>
+          ) : (
+            <span key={'a' + parts.length}>{orig}</span>
+          )
+        );
+        last = m.index + m[0].length;
+      }
+      if (last < String(label).length) parts.push(<span key={'p' + parts.length}>{String(label).slice(last)}</span>);
+      return <span>{parts}</span>;
+    }
 
     function RegistrationPage({ event, onBack, onRegisterAnother, onOpenCheckStatus, eventSettings = {} }) {
       const isClosed = eventSettings[event.id] === false;
@@ -1745,7 +1804,7 @@
                     ⏱ {event.duration}
                   </span>
                   <span className="px-2.5 py-0.5 bg-[#FF4D8D] text-white border-2 border-black font-mono font-extrabold text-xs">
-                    💰 {event.entryFeeText}
+                    💰 {renderFeeLabel(event.entryFeeText)}
                   </span>
                 </div>
                 <h1 className="text-3xl sm:text-5xl font-display font-black text-black">
@@ -1800,17 +1859,17 @@
                       onClick={() => setParticipationType('solo')}
                       className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                     >
-                      INDIVIDUAL — ₹100
+                      INDIVIDUAL — {renderFeeAmount('₹100')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setParticipationType('pair')}
                       className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'pair' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                     >
-                      PAIR — ₹150
+                      PAIR — {renderFeeAmount('₹150')}
                     </button>
                   </div>
-                  <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> (₹100) or <strong>Pair</strong> (₹150).</p>
+                  <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> ({renderFeeAmount('₹100')}) or <strong>Pair</strong> ({renderFeeAmount('₹150')}).</p>
                 </div>
 
                 <div className="p-5 bg-[#FFFDF0] border-3 border-black brutal-shadow-sm space-y-4">
@@ -1936,17 +1995,17 @@
                           onClick={() => setParticipationType('solo')}
                           className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                         >
-                          INDIVIDUAL — ₹50
+                          INDIVIDUAL — {renderFeeAmount('₹50')}
                         </button>
                         <button
                           type="button"
                           onClick={() => setParticipationType('team')}
                           className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'team' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                         >
-                          TEAM (2–4) — ₹200
+                          TEAM (2–4) — {renderFeeAmount('₹200')}
                         </button>
                       </div>
-                      <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> (₹50) or <strong>Team</strong> (2–4 members, ₹200).</p>
+                      <p className="text-[11px] font-mono font-bold text-slate-600">Choose <strong>Individual</strong> ({renderFeeAmount('₹50')}) or <strong>Team</strong> (2–4 members, {renderFeeAmount('₹200')}).</p>
                     </div>
 
                     <div className="space-y-3">
@@ -2165,7 +2224,7 @@
                 <div className="text-right font-mono">
                   <span className="text-xs font-bold text-slate-700 uppercase">FEE PER TEAM / ENTRY</span>
                   <div className="text-xl font-black text-black bg-[#FFE600] px-3 py-1 border-2 border-black brutal-shadow-sm inline-block">
-                    {paidAmount}
+                    {renderFeeAmount(paidAmount)}
                   </div>
                 </div>
               </div>

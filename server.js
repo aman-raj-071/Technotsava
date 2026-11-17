@@ -58,6 +58,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Vercel analytics/telemetry endpoints: never serve HTML here (local only).
+  if (urlPath.startsWith('/_vercel/')) {
+    res.writeHead(204, { 'Access-Control-Allow-Origin': '*' });
+    res.end();
+    return;
+  }
+
   if (urlPath === '/' || urlPath === '') {
     urlPath = '/preview.html';
   }
