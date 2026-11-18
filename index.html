@@ -1156,7 +1156,7 @@
                   <div className="text-sm font-bold text-black">Entry Fee Applicable per Event</div>
                   <div className="mt-1 text-[11px] font-extrabold text-orange-700 leading-tight">
                     🎉 Flat 50% OFF on registration fees!
-                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 18 November, 2:00 PM IST.</span>
+                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 19 November, 4:00 PM IST.</span>
                   </div>
                 </div>
               </div>
@@ -1378,8 +1378,8 @@
       { id: 'theme-4', name: 'Digital Life, Productivity and Digital Utilities', description: 'Create tools that make everyday digital life, work and online services simpler and more efficient.' }
     ];
 
-    // ---- EARLY-BIRD 50% FEE DISCOUNT (until 18 Nov 2026, 2:00 PM IST) ----
-    const FEE_DISCOUNT_DEADLINE = new Date('2026-11-18T14:00:00+05:30'); // 2:00 PM IST
+    // ---- EARLY-BIRD 50% FEE DISCOUNT (until 19 Nov 2026, 4:00 PM IST) ----
+    const FEE_DISCOUNT_DEADLINE = new Date('2026-11-19T16:00:00+05:30'); // 4:00 PM IST
     function isFeeDiscountActive(now) {
       return (now || new Date()).getTime() < FEE_DISCOUNT_DEADLINE.getTime();
     }
