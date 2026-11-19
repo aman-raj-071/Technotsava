@@ -1030,6 +1030,15 @@
               </div>
             </div>
           )}
+                  {/* Integrated 50% OFF scrolling marquee ticker at bottom of Navbar */}
+          <div className="mt-3.5 -mb-3.5 bg-[#F2B705] border-t-2 border-b-2 border-black overflow-hidden whitespace-nowrap py-1.5 font-mono font-black text-xs uppercase tracking-wider text-black select-none">
+            <div className="marquee-content">
+              ⚡ 50% OFF ON EVERY EVENT REGISTRATION • FLAT 50% DISCOUNT APPLIED AT CHECKOUT • LIMITED TIME OFFER • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ 50% OFF ON EVERY EVENT REGISTRATION • FLAT 50% DISCOUNT APPLIED AT CHECKOUT • LIMITED TIME OFFER • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
+            </div>
+            <div className="marquee-content" aria-hidden="true">
+              ⚡ 50% OFF ON EVERY EVENT REGISTRATION • FLAT 50% DISCOUNT APPLIED AT CHECKOUT • LIMITED TIME OFFER • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ 50% OFF ON EVERY EVENT REGISTRATION • FLAT 50% DISCOUNT APPLIED AT CHECKOUT • LIMITED TIME OFFER • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
+            </div>
+          </div>
         </nav>
       );
     }
@@ -1041,11 +1050,11 @@
     // ========================================================
     function Hero({ onExplore, onRegister }) {
       return (
-        <section id="hero" className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section id="hero" className="relative pt-36 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 bg-[#F2B705]/30 rounded-full blur-3xl animate-pulse" />
           <div aria-hidden="true" className="pointer-events-none absolute bottom-0 -left-24 w-80 h-80 bg-[#00AEC9]/25 rounded-full blur-3xl animate-pulse" />
           <div className="max-w-6xl mx-auto relative">
-            {/* Top Badges */}
+{/* Top Badges */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="brutal-badge px-3.5 py-1.5 bg-[#F2B705] text-black text-xs font-mono font-extrabold flex items-center gap-2">
                 <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
@@ -1156,7 +1165,7 @@
                   <div className="text-sm font-bold text-black">Entry Fee Applicable per Event</div>
                   <div className="mt-1 text-[11px] font-extrabold text-orange-700 leading-tight">
                     🎉 Flat 50% OFF on registration fees!
-                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 19 November, 4:00 PM IST.</span>
+                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 19 November, 6:00 PM IST.</span>
                   </div>
                 </div>
               </div>
@@ -1378,8 +1387,8 @@
       { id: 'theme-4', name: 'Digital Life, Productivity and Digital Utilities', description: 'Create tools that make everyday digital life, work and online services simpler and more efficient.' }
     ];
 
-    // ---- EARLY-BIRD 50% FEE DISCOUNT (until 19 Nov 2026, 4:00 PM IST) ----
-    const FEE_DISCOUNT_DEADLINE = new Date('2026-11-19T16:00:00+05:30'); // 4:00 PM IST
+    // ---- EARLY-BIRD 50% FEE DISCOUNT (until 19 Nov 2026, 6:00 PM IST) ----
+    const FEE_DISCOUNT_DEADLINE = new Date('2026-11-19T18:00:00+05:30'); // 6:00 PM IST
     function isFeeDiscountActive(now) {
       return (now || new Date()).getTime() < FEE_DISCOUNT_DEADLINE.getTime();
     }
@@ -3067,10 +3076,11 @@
           tag: 'OFFICIAL SPONSOR'
         },
         {
-          type: 'placeholder',
-          src: '',
-          title: 'Sponsor Slot 03',
-          tag: 'COMING SOON'
+          type: 'video',
+          src: '/sponsor-cakelab.mp4',
+          poster: '/sponsor-cakelab.jpg',
+          title: 'Cake Lab • Official Sponsor Showcase',
+          tag: 'OFFICIAL SPONSOR'
         },
         {
           type: 'placeholder',
@@ -4124,6 +4134,8 @@
             onCheckStatus={() => { setView('check-status'); location.hash = '#check-status'; }}
             onNavigateSection={handleNavSection}
           />
+
+
 
           <main className="relative z-10 min-h-[calc(100vh-250px)] pb-20">
             {view === 'home' && (
