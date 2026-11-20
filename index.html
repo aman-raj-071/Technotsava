@@ -1030,13 +1030,13 @@
               </div>
             </div>
           )}
-                  {/* Integrated 50% OFF scrolling marquee ticker at bottom of Navbar */}
+                  {/* Integrated Announcement Ticker at bottom of Navbar */}
           <div className="mt-3.5 -mb-3.5 bg-[#FF5C00] border-t-2 border-b-2 border-black overflow-hidden whitespace-nowrap py-1.5 font-mono font-black text-xs uppercase tracking-wider text-white select-none">
             <div className="marquee-content">
-              ⚡ 50% OFF ON EVERY EVENT REGISTRATION • ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • LIMITED TIME 50% DISCOUNT • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ 50% OFF ON EVERY EVENT REGISTRATION • ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • LIMITED TIME 50% DISCOUNT • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
+              ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
             </div>
             <div className="marquee-content" aria-hidden="true">
-              ⚡ 50% OFF ON EVERY EVENT REGISTRATION • ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • LIMITED TIME 50% DISCOUNT • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ 50% OFF ON EVERY EVENT REGISTRATION • ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • LIMITED TIME 50% DISCOUNT • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
+              ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
             </div>
           </div>
         </nav>
@@ -1154,21 +1154,12 @@
                   <div className="text-sm font-bold text-black">{FEST_CONFIG.venue}</div>
                 </div>
               </div>
-              <div className="relative bg-gradient-to-br from-[#FFF2C6] to-[#FFDF7E] border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3 overflow-hidden">
-                <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_85%_20%,rgba(242,183,5,0.45),transparent_60%)]" />
-                <div className="relative w-10 h-10 bg-[#00A878] border-2 border-black flex items-center justify-center font-bold text-xl">🎟️</div>
+              <div className="bg-white border-3 border-black brutal-shadow-sm p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#00A878] border-2 border-black flex items-center justify-center font-bold text-xl">🎟️</div>
                 <div>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <div className="text-[11px] font-mono uppercase font-bold text-black">Event Entry</div>
-                    <span className="px-1.5 py-0.5 bg-[#F2B705] border border-black rounded-sm text-[9px] font-black uppercase tracking-wide text-black animate-pulse">⚡ 50% OFF</span>
-                  </div>
-                  <div className="text-sm font-bold text-black">Entry Fee Applicable per Event</div>
-                  <div className="mt-1 text-[11px] font-extrabold text-orange-700 leading-tight">
-                    🎉 Flat 50% OFF on registration fees!
-                    <span className="block text-[10px] font-semibold text-slate-700 mt-0.5">Valid until 20 November, 4:00 PM IST.</span>
-                  </div>
-                </div>
-              </div>
+                  <div className="text-[11px] font-mono uppercase font-bold text-slate-600">Event Entry</div>
+                  <div className="text-sm font-bold text-black">{FEST_CONFIG.registrationFee}</div>
+                </div></div>
             </div>
           </div>
         </section>
@@ -1253,7 +1244,7 @@
                             {event.badge || 'Official Event'}
                           </span>
                           <span className="text-[10px] font-mono font-extrabold bg-[#00E575] text-black px-2 py-0.5 border-2 border-black">
-                            💰 {renderFeeLabel(event.entryFeeText || 'Entry Fee Applicable')}
+                            💰 {event.entryFeeText || 'Entry Fee Applicable'}
                           </span>
                         </div>
                         <p className="text-sm font-medium text-slate-800 leading-relaxed mb-4">
@@ -1390,7 +1381,7 @@
     // ---- EARLY-BIRD 50% FEE DISCOUNT (until 20 Nov 2026, 4:00 PM IST) ----
     const FEE_DISCOUNT_DEADLINE = new Date('2026-11-20T16:00:00+05:30'); // 4:00 PM IST
     function isFeeDiscountActive(now) {
-      return (now || new Date()).getTime() < FEE_DISCOUNT_DEADLINE.getTime();
+      return false; // 50% discount concluded
     }
     function discountedFee(n) {
       const num = typeof n === 'number' ? n : Number(String(n).replace(/[^0-9.]/g, ''));
@@ -1832,7 +1823,7 @@
                     ⏱ {event.duration}
                   </span>
                   <span className="px-2.5 py-0.5 bg-[#FF4D8D] text-white border-2 border-black font-mono font-extrabold text-xs">
-                    💰 {renderFeeLabel(event.entryFeeText)}
+                    💰 {event.entryFeeText}
                   </span>
                 </div>
                 <h1 className="text-3xl sm:text-5xl font-display font-black text-black">
@@ -1887,14 +1878,14 @@
                       onClick={() => setParticipationType('solo')}
                       className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                     >
-                      INDIVIDUAL — {renderFeeAmount('₹100')}
+                      INDIVIDUAL — ₹100
                     </button>
                     <button
                       type="button"
                       onClick={() => setParticipationType('pair')}
                       className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'pair' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                     >
-                      PAIR — {renderFeeAmount('₹150')}
+                      PAIR — ₹150
                     </button>
                   </div>
                 </div>
@@ -2022,14 +2013,14 @@
                           onClick={() => setParticipationType('solo')}
                           className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'solo' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                         >
-                          INDIVIDUAL — {renderFeeAmount('₹50')}
+                          INDIVIDUAL — ₹50
                         </button>
                         <button
                           type="button"
                           onClick={() => setParticipationType('team')}
                           className={`py-2.5 border-2 border-black font-mono font-black text-xs uppercase transition-all ${participationType === 'team' ? 'bg-[#FFE600] brutal-shadow-sm' : 'bg-white hover:bg-[#FFF9D2]'}`}
                         >
-                          TEAM (2–4) — {renderFeeAmount('₹200')}
+                          TEAM (2–4) — ₹200
                         </button>
                       </div>
                     </div>
@@ -2250,7 +2241,7 @@
                 <div className="text-right font-mono">
                   <span className="text-xs font-bold text-slate-700 uppercase">FEE PER TEAM / ENTRY</span>
                   <div className="text-xl font-black text-black bg-[#FFE600] px-3 py-1 border-2 border-black brutal-shadow-sm inline-block">
-                    {renderFeeAmount(paidAmount)}
+                    {paidAmount}
                   </div>
                 </div>
               </div>
@@ -2853,7 +2844,7 @@
                         <td className="p-3.5 font-mono font-black text-[#0066FF]">{r.utr_id || 'N/A'}</td>
                         <td className="p-3.5 font-mono font-black text-black">
                           <span className="px-2 py-0.5 bg-[#D4EDDA] border border-black text-emerald-950 font-black">
-                            {renderFeeAmount(getRecordFee(r))}
+                            {getRecordFee(r)}
                           </span>
                         </td>
                         <td className="p-3.5 font-bold text-black">{r.event_name}</td>
@@ -2943,7 +2934,7 @@
                   <div className="p-2.5 bg-white border-2 border-black flex items-center justify-between">
                     <div>
                       <div className="text-[10px] uppercase font-bold text-slate-600">Expected Registration Fee:</div>
-                      <div className="text-base font-black text-emerald-700">{renderFeeAmount(getRecordFee(viewModal))}</div>
+                      <div className="text-base font-black text-emerald-700">{getRecordFee(viewModal)}</div>
                     </div>
                     <span className="text-[11px] font-bold bg-[#FFE600] px-2 py-0.5 border border-black">
                       {1 + (viewModal.members?.length || 0)} Total Participants
