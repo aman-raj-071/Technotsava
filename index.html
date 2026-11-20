@@ -1030,16 +1030,7 @@
               </div>
             </div>
           )}
-                  {/* Integrated Announcement Ticker at bottom of Navbar */}
-          <div className="mt-3.5 -mb-3.5 bg-[#FF5C00] border-t-2 border-b-2 border-black overflow-hidden whitespace-nowrap py-1.5 font-mono font-black text-xs uppercase tracking-wider text-white select-none">
-            <div className="marquee-content">
-              ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
-            </div>
-            <div className="marquee-content" aria-hidden="true">
-              ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • ⚡ ON-SPOT REGISTRATION IS AVAILABLE AT VENUE • TECHNOTSAVA 2026 TODAY • SJC INSTITUTE OF TECHNOLOGY • CSE DEPT • 
-            </div>
-          </div>
-        </nav>
+                  </nav>
       );
     }
 
@@ -1050,7 +1041,7 @@
     // ========================================================
     function Hero({ onExplore, onRegister }) {
       return (
-        <section id="hero" className="relative pt-36 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section id="hero" className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 bg-[#F2B705]/30 rounded-full blur-3xl animate-pulse" />
           <div aria-hidden="true" className="pointer-events-none absolute bottom-0 -left-24 w-80 h-80 bg-[#00AEC9]/25 rounded-full blur-3xl animate-pulse" />
           <div className="max-w-6xl mx-auto relative">
@@ -1205,7 +1196,9 @@
             {/* Event Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {EVENTS.map((event, idx) => {
-                const isActive = eventSettings[event.id] !== false;
+                const isActive = (event.id === 'videography-frame-the-fest'
+                  ? (eventSettings['videography-frame-the-fest'] !== false && eventSettings['video-editing'] !== false)
+                  : eventSettings[event.id] !== false);
                 const headerColor = colorPalette[idx % colorPalette.length];
 
                 return (
@@ -1430,7 +1423,9 @@
     }
 
     function RegistrationPage({ event, onBack, onRegisterAnother, onOpenCheckStatus, eventSettings = {} }) {
-      const isClosed = eventSettings[event.id] === false;
+      const isClosed = (event.id === 'videography-frame-the-fest'
+        ? (eventSettings['videography-frame-the-fest'] === false || eventSettings['video-editing'] === false)
+        : eventSettings[event.id] === false);
       const [submitting, setSubmitting] = useState(false);
       const [submittedRecord, setSubmittedRecord] = useState(null);
 
@@ -3080,6 +3075,13 @@
           poster: '/sponsor-mookambika-travels.jpg',
           title: 'Sri Mookambika Travels • Chikkaballapur',
           tag: 'TRAVEL PARTNER'
+        },
+        {
+          type: 'image',
+          src: '/sponsor-nanjundeshwara-csc.jpg',
+          poster: '/sponsor-nanjundeshwara-csc.jpg',
+          title: 'Sri Nanjundeshwara CSC Center • Bagepalli',
+          tag: 'DIGITAL PARTNER'
         }
       ];
 
