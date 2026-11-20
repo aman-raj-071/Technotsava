@@ -3061,9 +3061,10 @@
           tag: 'TITLE SPONSOR'
         },
         {
-          type: 'image',
-          src: '/sponsor-innovative-builders.jpg',
-          title: 'Innovative Builders & Interiors',
+          type: 'video',
+          src: '/sponsor-innovative-builders.mp4',
+          poster: '/sponsor-innovative-builders.jpg',
+          title: 'Innovative Builders & Interiors • Sponsor Showcase',
           tag: 'OFFICIAL SPONSOR'
         },
         {
@@ -3074,10 +3075,11 @@
           tag: 'OFFICIAL SPONSOR'
         },
         {
-          type: 'placeholder',
-          src: '',
-          title: 'Sponsor Slot 04',
-          tag: 'COMING SOON'
+          type: 'video',
+          src: '/sponsor-slot-4.mp4',
+          poster: '/sponsor-mookambika-travels.jpg',
+          title: 'Sri Mookambika Travels • Chikkaballapur',
+          tag: 'TRAVEL PARTNER'
         }
       ];
 
@@ -3128,7 +3130,7 @@
                       muted
                       loop
                       playsInline
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${activeItem.src.includes('innovative-builders') ? 'object-contain bg-black' : 'object-cover'}`}
                     />
                   ) : activeItem.type === 'image' ? (
                     <div className="w-full h-full bg-[#FAF7F2] flex items-center justify-center p-8">
