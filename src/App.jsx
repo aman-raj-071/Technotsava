@@ -11,13 +11,15 @@ import { Footer } from './components/Footer';
 import { RegistrationPage } from './pages/RegistrationPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ParticipantDashboard } from './components/ParticipantDashboard';
+import { CertificatePortal } from './components/CertificatePortal';
 import { getEventSettings } from './lib/db';
 import { EVENTS } from './data/eventsData';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'register' | 'admin' | 'status'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'register' | 'admin' | 'status' | 'certificate'
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventSettings, setEventSettings] = useState({});
+  const [certSeed, setCertSeed] = useState(null); // full registration record passed for team-roster auto-fetch
 
   // Load event enable/disable settings on mount
   useEffect(() => {
@@ -40,6 +42,8 @@ export default function App() {
         setCurrentView('admin');
       } else if (hash === '#check-status') {
         setCurrentView('status');
+      } else if (hash.startsWith('#certificate')) {
+        setCurrentView('certificate');
       } else if (hash.startsWith('#register/')) {
         const eventId = hash.replace('#register/', '');
         const ev = EVENTS.find((e) => e.id === eventId);
@@ -83,6 +87,20 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenCertificate = (payload = '') => {
+    setCurrentView('certificate');
+    if (payload && typeof payload === 'object') {
+      // Full registration record (from ParticipantDashboard) – enables team roster auto-fetch
+      setCertSeed(payload);
+      window.location.hash = '#certificate';
+    } else {
+      setCertSeed(null);
+      const key = typeof payload === 'string' ? payload : '';
+      window.location.hash = key ? `#certificate?key=${encodeURIComponent(key)}` : '#certificate';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleRegisterAnother = () => {
     setCurrentView('home');
     setSelectedEvent(null);
@@ -104,6 +122,7 @@ export default function App() {
         onGoHome={handleGoHome}
         onOpenAdmin={handleOpenAdmin}
         onOpenParticipant={handleOpenParticipant}
+        onOpenCertificate={handleOpenCertificate}
         onSelectEvent={handleSelectEvent}
       />
 
@@ -120,6 +139,7 @@ export default function App() {
                 const el = document.getElementById('events');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
+              onClaimCertificate={() => handleOpenCertificate()}
             />
             <About />
             <EventsSection
@@ -147,13 +167,19 @@ export default function App() {
           <ParticipantDashboard
             onBackToFest={handleGoHome}
             onRegisterAnother={handleRegisterAnother}
+            onOpenCertificate={handleOpenCertificate}
           />
+        )}
+
+        {currentView === 'certificate' && (
+          <CertificatePortal onBackToFest={handleGoHome} seedRecord={certSeed} />
         )}
       </main>
 
       {/* Global Footer */}
       <Footer
         onOpenAdmin={handleOpenAdmin}
+        onOpenCertificate={handleOpenCertificate}
         onSelectSection={(sectionId) => {
           if (currentView !== 'home') {
             handleGoHome();

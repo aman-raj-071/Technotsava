@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FEST_CONFIG } from '../data/festConfig';
 
-export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOpenParticipant }) => {
+export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOpenParticipant, onOpenCertificate }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -111,6 +111,28 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
                 />
               </svg>
               <span>Check Status</span>
+            </button>
+
+            {/* Certificate Button */}
+            <button
+              onClick={onOpenCertificate}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/30 hover:border-emerald-400/60 rounded-lg transition-all shadow-sm"
+              title="Download your Technotsav Certificate"
+            >
+              <svg
+                className="w-3.5 h-3.5 text-emerald-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span>Certificate</span>
             </button>
 
             {/* Admin Portal Button */}
@@ -260,6 +282,15 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
               className="flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-cyan-300 bg-cyan-950/50 border border-cyan-500/30 rounded-lg"
             >
               Check Registration Status
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenCertificate();
+              }}
+              className="flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-emerald-300 bg-emerald-950/50 border border-emerald-500/30 rounded-lg"
+            >
+              Download Certificate
             </button>
             <button
               onClick={() => {

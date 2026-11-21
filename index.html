@@ -13,6 +13,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:wght@600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <!-- Google Fonts are loaded via @import at the top of the <style> block below -->
 
   <!-- Tailwind CSS CDN -->
@@ -57,6 +60,10 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <!-- Supabase JS Client -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- jsPDF for Certificate generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- JSZip for Bulk Certificate Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <!-- canvas-confetti for celebration effects -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <!-- Vercel Web Analytics -->
@@ -922,7 +929,7 @@
     // ========================================================
     // NAVBAR COMPONENT
     // ========================================================
-    function Navbar({ onOpenAdmin, onCheckStatus, currentView, onGoHome, onNavigateSection }) {
+    function Navbar({ onOpenAdmin, onCheckStatus, onOpenCertificate, currentView, onGoHome, onNavigateSection }) {
       const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
       const [scrolled, setScrolled] = useState(false);
       useEffect(() => {
@@ -980,6 +987,10 @@
                   setMobileMenuOpen(false);
                   onCheckStatus();
                 }} className="px-3 py-1.5 bg-[#F2B705] border-2 border-black brutal-shadow-sm font-mono font-bold text-xs text-black">🔍 CHECK STATUS</button>
+                <button onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenCertificate();
+                }} className="px-3 py-1.5 bg-[#00E575] border-2 border-black brutal-shadow-sm font-mono font-bold text-xs text-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all">🎓 CERTIFICATE</button>
                 <button onClick={() => handleNav('contact')} className="px-3 py-1.5 hover:bg-[#FFE600] border-2 border-transparent hover:border-black hover:brutal-shadow-sm transition-all">CONTACT</button>
               </div>
 
@@ -1023,6 +1034,7 @@
 
               <button onClick={() => handleNav('events')} className="block w-full text-left p-2.5 bg-[#00A878] border-2 border-black brutal-shadow-sm">EVENTS (7)</button>
               <button onClick={() => { setMobileMenuOpen(false); onCheckStatus(); }} className="block w-full text-left p-2.5 bg-[#F2B705] border-2 border-black brutal-shadow-sm">🔍 CHECK STATUS</button>
+              <button onClick={() => { setMobileMenuOpen(false); onOpenCertificate(); }} className="block w-full text-left p-2.5 bg-[#00E575] border-2 border-black brutal-shadow-sm">🎓 CERTIFICATE</button>
               <button onClick={() => handleNav('contact')} className="block w-full text-left p-2.5 bg-white border-2 border-black brutal-shadow-sm">CONTACT</button>
               <div className="pt-2 flex gap-2">
                 <button onClick={onOpenAdmin} className="w-1/2 p-2 bg-[#E85E7E] border-2 border-black brutal-shadow-sm text-center">ADMIN</button>
@@ -1030,7 +1042,7 @@
               </div>
             </div>
           )}
-                  </nav>
+        </nav>
       );
     }
 
@@ -1039,13 +1051,13 @@
     // ========================================================
     // HERO COMPONENT
     // ========================================================
-    function Hero({ onExplore, onRegister }) {
+    function Hero({ onExplore, onRegister, onOpenCertificate }) {
       return (
         <section id="hero" className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div aria-hidden="true" className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 bg-[#F2B705]/30 rounded-full blur-3xl animate-pulse" />
           <div aria-hidden="true" className="pointer-events-none absolute bottom-0 -left-24 w-80 h-80 bg-[#00AEC9]/25 rounded-full blur-3xl animate-pulse" />
           <div className="max-w-6xl mx-auto relative">
-{/* Top Badges */}
+            {/* Top Badges */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="brutal-badge px-3.5 py-1.5 bg-[#F2B705] text-black text-xs font-mono font-extrabold flex items-center gap-2">
                 <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
@@ -1085,9 +1097,9 @@
                     <div className="flex justify-center items-center py-1">
                       <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-4 border-black brutal-shadow overflow-hidden bg-white flex items-center justify-center p-0 hover:scale-105 transition-transform">
                         <img
-                          src="/technotsava-logo.jpg"
+                          src="/technotsava-logo.png"
                           alt="Technotsava 2K26 Logo"
-                          className="w-full h-full object-cover scale-[1.78]"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     </div>
@@ -1100,9 +1112,15 @@
                     </div>
                     <button
                       onClick={onRegister}
-                      className="w-full brutal-btn bg-[#ED6A2E] text-white py-3 font-mono font-black text-sm"
+                      className="w-full brutal-btn bg-[#ED6A2E] text-white py-3 font-mono font-black text-sm mb-2"
                     >
                       CLAIM SPOT NOW →
+                    </button>
+                    <button
+                      onClick={onOpenCertificate}
+                      className="w-full brutal-btn bg-[#00E575] text-black py-2.5 font-mono font-black text-xs hover:bg-[#00c965]"
+                    >
+                      🎓 SEARCH CERTIFICATE →
                     </button>
                   </div>
                 </div>
@@ -3165,8 +3183,8 @@
                       key={idx}
                       onClick={() => setActiveIndex(idx)}
                       className={`relative aspect-[16/10] rounded-md overflow-hidden transition-all text-left block w-full ${isActive
-                          ? 'ring-2 ring-[#ED6A2E] shadow-md z-10'
-                          : 'opacity-70 hover:opacity-100 hover:shadow-sm'
+                        ? 'ring-2 ring-[#ED6A2E] shadow-md z-10'
+                        : 'opacity-70 hover:opacity-100 hover:shadow-sm'
                         }`}
                     >
                       {item.type === 'video' || item.type === 'image' ? (
@@ -3302,7 +3320,7 @@
     // ========================================================
     // PARTICIPANT STATUS DASHBOARD
     // ========================================================
-    function ParticipantDashboard({ onBack, onRegisterAnother }) {
+    function ParticipantDashboard({ onBack, onRegisterAnother, onOpenCertificate }) {
       const [regIdInput, setRegIdInput] = useState('');
       const [searchError, setSearchError] = useState('');
       const [foundRecord, setFoundRecord] = useState(null);
@@ -3729,6 +3747,14 @@
                     🔄 REFRESH VERIFICATION STATUS
                   </button>
                 )}
+                {foundRecord?.attended && (
+                  <button
+                    onClick={() => onOpenCertificate && onOpenCertificate(foundRecord.reg_id || foundRecord.leader_usn)}
+                    className="px-6 py-3 bg-[#00E575] text-black font-black text-sm border-3 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all flex items-center gap-2"
+                  >
+                    🎓 DOWNLOAD CERTIFICATE
+                  </button>
+                )}
                 <button
                   onClick={onRegisterAnother}
                   className="px-5 py-3 bg-[#00F0FF] text-black font-black text-sm border-3 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all"
@@ -3742,7 +3768,6 @@
                   RETURN TO HOME
                 </button>
               </div>
-
               {/* Pass Template Modal */}
               {showTemplate && foundRecord && ReactDOM.createPortal(
                 <div
@@ -3971,8 +3996,9 @@
                 document.body
               )}
             </div>
-          )}
-        </div>
+          )
+          }
+        </div >
       );
     }
 
@@ -4009,6 +4035,516 @@
 
 
     // ========================================================
+
+    // ========================================================
+    // CERTIFICATE SEARCH & DOWNLOAD PORTAL
+    // ========================================================
+    function CertificatePortal({ onBack }) {
+      const [keyInput, setKeyInput] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [errorMsg, setErrorMsg] = useState('');
+      const [successMsg, setSuccessMsg] = useState('');
+
+      // Team & members data
+      const [teamRecord, setTeamRecord] = useState(null);
+      const [membersList, setMembersList] = useState([]); // [{ name, usn, role, college }]
+      const [selectedMember, setSelectedMember] = useState(null);
+      const [isRendering, setIsRendering] = useState(false);
+      const [downloadingAll, setDownloadingAll] = useState(false);
+      const [downloadProgress, setDownloadProgress] = useState('');
+
+      const canvasRef = React.useRef(null);
+      const templateImgRef = React.useRef(null);
+
+      // Preload certificate template image for fast instant switching
+      useEffect(() => {
+        const img = new Image();
+        img.src = '/certificate-template.svg';
+        img.onload = () => { templateImgRef.current = img; };
+      }, []);
+
+      useEffect(() => {
+        const hash = location.hash;
+        if (hash.includes('?')) {
+          const qs = hash.split('?')[1];
+          const sp = new URLSearchParams(qs);
+          const k = sp.get('key') || sp.get('usn');
+          if (k) {
+            setKeyInput(k);
+            handleFetch(k);
+          }
+        }
+      }, []);
+
+      const fitText = (ctx, text, cx, baseline, maxW, initialSize) => {
+        let size = initialSize;
+        ctx.font = '600 ' + size + 'px Poppins, sans-serif';
+        while (ctx.measureText(text).width > maxW && size > 16) {
+          size -= 1;
+          ctx.font = '600 ' + size + 'px Poppins, sans-serif';
+        }
+        ctx.textAlign = 'center';
+        ctx.fillText(text, cx, baseline);
+      };
+
+            let svgTemplateCache = null;
+      const getSvgTemplate = async () => {
+        if (!svgTemplateCache) {
+          const res = await fetch('/certificate-template.svg');
+          svgTemplateCache = await res.text();
+        }
+        return svgTemplateCache;
+      };
+
+      const renderCertificateToCanvas = async (member) => {
+        if (!member) return;
+        const cv = canvasRef.current;
+        if (!cv) return;
+        const ctx = cv.getContext('2d');
+        setIsRendering(true);
+
+        try {
+          const rawSvg = await getSvgTemplate();
+          const name = member.name || 'Participant';
+          const college = member.college || 'S J C Institute of Technology';
+
+          let filledSvg = rawSvg;
+          filledSvg = filledSvg.replace(
+            /<text id="name"[^>]*><\/text>/,
+            '<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + name + '</text>'
+          );
+          filledSvg = filledSvg.replace(
+            /<tspan id="college-tspan"[^>]*><\/tspan>/,
+            '<tspan id="college-tspan" font-weight="700" fill="#8A5A12">' + college + '</tspan>'
+          );
+
+          const blob = new Blob([filledSvg], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.src = url;
+          await img.decode();
+
+          cv.width = 2400;
+          cv.height = 1696;
+          ctx.fillStyle = '#F2F2F2';
+          ctx.fillRect(0, 0, 2400, 1696);
+          ctx.drawImage(img, 0, 0, 2400, 1696);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error('Error rendering certificate:', err);
+        } finally {
+          setIsRendering(false);
+        }
+      };
+
+      // When selected member changes, re-render certificate preview
+      useEffect(() => {
+        if (selectedMember) {
+          renderCertificateToCanvas(selectedMember);
+        }
+      }, [selectedMember]);
+
+      const handleFetch = async (queryVal) => {
+        const k = (queryVal || keyInput).trim();
+        if (!k) return;
+
+        setErrorMsg('');
+        setSuccessMsg('');
+        setTeamRecord(null);
+        setMembersList([]);
+        setSelectedMember(null);
+        setLoading(true);
+
+        const cleanKey = k.toLowerCase();
+
+        try {
+          const allRegs = await getStoredRegistrations();
+          const match = allRegs.find((r) => {
+            const regId = (r.reg_id || '').toLowerCase();
+            const leaderUsn = (r.leader_usn || '').toLowerCase();
+            const allUsns = (r.all_usns || []).map((u) => String(u).toLowerCase());
+            return regId === cleanKey || leaderUsn === cleanKey || allUsns.includes(cleanKey);
+          });
+
+          if (!match) {
+            setLoading(false);
+            setErrorMsg('No registration record found for "' + k + '". Please check your Registration ID or USN.');
+            return;
+          }
+
+          if (!match.attended) {
+            setLoading(false);
+            setErrorMsg('Registration found for ' + (match.leader_name || 'Team') + ', but attendance is NOT marked yet. Please get attendance verified at the desk to unlock certificates.');
+            return;
+          }
+
+          // Build list of all team members
+          const collegeName = match.college || 'S J C Institute of Technology';
+          const members = [];
+
+          // 1. Leader
+          if (match.leader_name) {
+            members.push({
+              id: 'leader',
+              name: match.leader_name,
+              usn: match.leader_usn || 'N/A',
+              role: 'Team Leader',
+              college: collegeName,
+              event: match.event_name
+            });
+          }
+
+          // 2. Dynamic Team Members (from JSONB array or dynamic fields)
+          if (Array.isArray(match.members) && match.members.length > 0) {
+            match.members.forEach((m, idx) => {
+              if (m && (m.name || m.usn)) {
+                members.push({
+                  id: 'member-' + (idx + 1),
+                  name: m.name || ('Team Member ' + (idx + 1)),
+                  usn: m.usn || 'N/A',
+                  role: 'Team Member ' + (idx + 1),
+                  college: collegeName,
+                  event: match.event_name
+                });
+              }
+            });
+          }
+
+          // 3. Tech quiz member 2 fallback if stored in separate fields
+          if (match.member2_name && !members.some(m => m.name === match.member2_name)) {
+            members.push({
+              id: 'member-2',
+              name: match.member2_name,
+              usn: match.member2_usn || 'N/A',
+              role: 'Team Member',
+              college: collegeName,
+              event: match.event_name
+            });
+          }
+
+          setTeamRecord(match);
+          setMembersList(members);
+
+          // Auto-select searched member if query was a USN, otherwise default to leader
+          let defaultSelect = members[0];
+          const matchedByUsn = members.find(m => String(m.usn).toLowerCase() === cleanKey);
+          if (matchedByUsn) {
+            defaultSelect = matchedByUsn;
+          }
+
+          setSelectedMember(defaultSelect);
+          setSuccessMsg('🎉 Verified! ' + members.length + ' Certificate' + (members.length > 1 ? 's' : '') + ' available for this registration.');
+          setLoading(false);
+
+          // Trigger confetti celebration!
+          if (window.confetti) {
+            try {
+              window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+            } catch (e) { }
+          }
+        } catch (err) {
+          setLoading(false);
+          console.error(err);
+          setErrorMsg('An unexpected error occurred while fetching certificates.');
+        }
+      };
+
+      const handleDownloadSinglePdf = (memberToDownload) => {
+        const targetMember = memberToDownload || selectedMember;
+        if (!targetMember) return;
+        const cv = canvasRef.current;
+        if (!cv) return;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [cv.width, cv.height]
+        });
+        pdf.addImage(cv.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, cv.width, cv.height);
+        const cleanName = (targetMember.name || 'Certificate').replace(/\s+/g, '_');
+        const cleanUsn = (targetMember.usn || '').replace(/\s+/g, '_');
+        pdf.save('Technotsava_Certificate_' + cleanName + (cleanUsn ? '_' + cleanUsn : '') + '.pdf');
+      };
+
+      // Bulk download ALL team members in a single ZIP file
+      const handleDownloadAllZip = async () => {
+        if (!membersList || membersList.length === 0) return;
+        if (!window.JSZip) {
+          alert('ZIP library loading, please try again in a second.');
+          return;
+        }
+
+        setDownloadingAll(true);
+        setDownloadProgress('Generating certificates for ' + membersList.length + ' members...');
+
+        try {
+          const zip = new window.JSZip();
+          const { jsPDF } = window.jspdf;
+          let img = templateImgRef.current;
+          if (!img || !img.complete) {
+            img = new Image();
+            img.src = '/certificate-template.svg';
+            await img.decode();
+          }
+
+          // Offscreen working canvas
+          const offCv = document.createElement('canvas');
+          offCv.width = 2400;
+          offCv.height = 1696;
+          const offCtx = offCv.getContext('2d');
+          const rawSvgBulk = await getSvgTemplate();
+
+          for (let i = 0; i < membersList.length; i++) {
+            const m = membersList[i];
+            setDownloadProgress('Creating (' + (i + 1) + '/' + membersList.length + '): ' + m.name);
+
+            // Fill name and college into the SVG template
+            let mSvg = rawSvgBulk;
+            mSvg = mSvg.replace(
+              /<text id="name"[^>]*><\/text>/,
+              '<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + (m.name || 'Participant') + '</text>'
+            );
+            mSvg = mSvg.replace(
+              /<tspan id="college-tspan"[^>]*><\/tspan>/,
+              '<tspan id="college-tspan" font-weight="700" fill="#8A5A12">' + (m.college || 'S J C Institute of Technology') + '</tspan>'
+            );
+            const mBlob = new Blob([mSvg], { type: 'image/svg+xml;charset=utf-8' });
+            const mUrl = URL.createObjectURL(mBlob);
+            const mImg = new Image();
+            mImg.src = mUrl;
+            await mImg.decode();
+
+            offCtx.clearRect(0, 0, offCv.width, offCv.height);
+            offCtx.drawImage(mImg, 0, 0, 2400, 1696);
+            URL.revokeObjectURL(mUrl);
+
+            const pdf = new jsPDF({
+              orientation: 'landscape',
+              unit: 'px',
+              format: [offCv.width, offCv.height]
+            });
+            pdf.addImage(offCv.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, offCv.width, offCv.height);
+            const pdfBlob = pdf.output('blob');
+
+            const fileName = (i + 1) + '_' + m.name.replace(/\s+/g, '_') + '_' + (m.usn || '').replace(/\s+/g, '_') + '.pdf';
+            zip.file(fileName, pdfBlob);
+          }
+
+          setDownloadProgress('Packaging ZIP bundle...');
+          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          const zipUrl = URL.createObjectURL(zipBlob);
+          const a = document.createElement('a');
+          a.href = zipUrl;
+          const regName = (teamRecord?.reg_id || 'Team').replace(/\s+/g, '_');
+          a.download = 'Technotsava_Certificates_' + regName + '.zip';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(zipUrl);
+
+          setDownloadProgress('Done!');
+          setTimeout(() => {
+            setDownloadingAll(false);
+            setDownloadProgress('');
+          }, 1500);
+        } catch (err) {
+          console.error('ZIP generation failed:', err);
+          alert('Failed to generate ZIP. You can still download certificates individually.');
+          setDownloadingAll(false);
+          setDownloadProgress('');
+        }
+      };
+
+      return (
+        <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto font-mono">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={onBack}
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border-3 border-black brutal-shadow-sm font-bold text-xs text-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all mb-4"
+            >
+              ← RETURN TO FEST HOME
+            </button>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="inline-block bg-[#00E575] border-2 border-black brutal-shadow-sm px-3 py-1 text-xs font-black uppercase text-black">
+                🎓 OFFICIAL CERTIFICATION PORTAL
+              </span>
+              <span className="inline-block bg-[#FFE600] border-2 border-black brutal-shadow-sm px-3 py-1 text-xs font-black uppercase text-black">
+                ALL TEAM MEMBERS SUPPORTED
+              </span>
+            </div>
+            <h1 className="font-display font-black text-3xl sm:text-5xl text-black uppercase mb-2">
+              CLAIM PARTICIPATION CERTIFICATES
+            </h1>
+            <p className="font-mono text-xs sm:text-sm text-slate-700 max-w-3xl">
+              Enter your <span className="font-bold text-black underline">Unique Registration Code</span> (e.g. TECH26-...) or <span className="font-bold text-black underline">USN</span>. If your team attended, certificates for <strong>all team members</strong> will be fetched and ready to preview or download!
+            </p>
+          </div>
+
+          {/* Search Card */}
+          <form onSubmit={(e) => { e.preventDefault(); handleFetch(); }} className="bg-white border-4 border-black brutal-shadow-lg p-6 sm:p-8 mb-8">
+            <label className="block font-mono font-black text-xs uppercase tracking-wider text-black mb-2">
+              ENTER UNIQUE REGISTRATION CODE OR USN *
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="e.g. TECH26-MWI-8427 or 1SJ21CS001"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value.toUpperCase())}
+                className="flex-1 px-4 py-3.5 font-mono font-bold text-base bg-[#FFFDF5] border-3 border-black text-black placeholder-slate-400 focus:outline-none focus:border-[#0066FF] uppercase"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading || !keyInput.trim()}
+                className="px-7 py-3.5 font-mono font-black text-sm bg-[#00E575] text-black border-3 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <span className="animate-spin inline-block">⏳</span>
+                    <span>VERIFYING ATTENDANCE...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🎓</span>
+                    <span>FETCH ALL CERTIFICATES</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {errorMsg && (
+              <div className="mt-4 p-4 bg-[#FFE0E0] border-3 border-[#FF0000] font-mono font-bold text-xs text-[#CC0000] flex items-center gap-2">
+                <span className="text-base">⚠</span>
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            {successMsg && (
+              <div className="mt-4 p-4 bg-[#E6F9F0] border-3 border-[#00A878] font-mono font-bold text-xs text-[#00A878] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">✔</span>
+                  <span>{successMsg}</span>
+                </div>
+              </div>
+            )}
+          </form>
+
+          {/* INTERACTIVE TEAM MEMBERS HUB */}
+          {teamRecord && membersList.length > 0 && (
+            <div className="space-y-8 animate-in fade-in duration-300">
+              {/* Team Overview Card */}
+              <div className="bg-[#FFFDF5] border-4 border-black brutal-shadow p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-3 border-black">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-[#F2B705] border-2 border-black font-black text-[11px] text-black">
+                        REG ID: {teamRecord.reg_id}
+                      </span>
+                      <span className="px-2 py-0.5 bg-[#00A878] border-2 border-black font-black text-[11px] text-white">
+                        ✓ ATTENDED & VERIFIED
+                      </span>
+                    </div>
+                    <h2 className="font-display font-black text-2xl text-black">
+                      {teamRecord.team_name ? teamRecord.team_name : (teamRecord.leader_name + "'s Registration")}
+                    </h2>
+                    <p className="font-mono text-xs text-slate-700 mt-1">
+                      Event: <strong className="text-black">{teamRecord.event_name}</strong> • Total Team Members: <strong className="text-black">{membersList.length}</strong>
+                    </p>
+                  </div>
+
+                  {/* Bulk Download Button */}
+                  {membersList.length > 1 && (
+                    <button
+                      onClick={handleDownloadAllZip}
+                      disabled={downloadingAll}
+                      className="px-5 py-3 bg-[#FF90E8] text-black font-black text-xs border-3 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      title="Download a single ZIP with certificates of all team members"
+                    >
+                      <span>📦</span>
+                      <span>{downloadingAll ? (downloadProgress || 'GENERATING ZIP...') : 'DOWNLOAD ALL (' + membersList.length + ' CERTIFICATES IN .ZIP)'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Member Selector Pills / Cards */}
+                <div className="mt-6">
+                  <div className="font-mono font-black text-xs uppercase tracking-wider text-black mb-3">
+                    SELECT A MEMBER TO PREVIEW & DOWNLOAD:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {membersList.map((m) => {
+                      const isSelected = selectedMember?.id === m.id;
+                      return (
+                        <div
+                          key={m.id}
+                          onClick={() => setSelectedMember(m)}
+                          className={'cursor-pointer p-4 border-3 border-black brutal-shadow-sm transition-all ' +
+                            (isSelected
+                              ? 'bg-[#00E575] translate-x-[-2px] translate-y-[-2px] shadow-[4px_4px_0_0_#000] ring-2 ring-black'
+                              : 'bg-white hover:bg-slate-50 hover:translate-y-[-2px]')
+                          }
+                        >
+                          <div className="flex items-center justify-between text-[10px] font-black uppercase mb-1">
+                            <span className={isSelected ? 'text-black' : 'text-slate-500'}>{m.role}</span>
+                            {isSelected && <span className="bg-black text-[#00E575] px-1.5 py-0.2 rounded">ACTIVE</span>}
+                          </div>
+                          <div className="font-display font-black text-sm text-black truncate mb-1" title={m.name}>
+                            {m.name}
+                          </div>
+                          <div className="font-mono text-xs text-slate-700">
+                            USN: <strong className="text-black">{m.usn}</strong>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Canvas Certificate Preview */}
+              <div className="bg-white border-4 border-black brutal-shadow-lg p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b-3 border-dashed border-black mb-4">
+                  <div>
+                    <span className="font-mono font-black text-xs uppercase bg-[#FFE600] border-2 border-black px-2.5 py-1">
+                      CERTIFICATE PREVIEW
+                    </span>
+                    <span className="font-mono font-bold text-xs text-slate-700 ml-2">
+                      Viewing for: <strong className="text-black underline">{selectedMember?.name}</strong> ({selectedMember?.usn})
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleDownloadSinglePdf(selectedMember)}
+                      className="px-6 py-2.5 bg-[#00E575] text-black font-black text-xs border-2 border-black brutal-shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_0_#000] transition-all flex items-center gap-2"
+                    >
+                      <span>📥</span>
+                      <span>DOWNLOAD {selectedMember?.name?.split(' ')[0]?.toUpperCase()}'S PDF</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Canvas Container */}
+                <div className="relative overflow-x-auto flex justify-center bg-slate-900/5 p-2 rounded border-2 border-black">
+                  {isRendering && (
+                    <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center font-mono font-bold text-xs text-black">
+                      Rendering live preview...
+                    </div>
+                  )}
+                  <canvas
+                    ref={canvasRef}
+                    className="max-w-full h-auto border-3 border-black shadow-xl"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      );
+    }
+
     function App() {
       const [view, setView] = useState('home');
       const [selectedEvent, setSelectedEvent] = useState(null);
@@ -4020,6 +4556,7 @@
         const handleHash = () => {
           if (location.hash === '#admin') setView('admin');
           else if (location.hash === '#check-status') setView('check-status');
+          else if (location.hash.startsWith('#certificate')) setView('certificate');
         };
         handleHash();
         window.addEventListener('hashchange', handleHash);
@@ -4127,6 +4664,7 @@
             onGoHome={handleGoHome}
             onOpenAdmin={() => { setView('admin'); location.hash = '#admin'; }}
             onCheckStatus={() => { setView('check-status'); location.hash = '#check-status'; }}
+            onOpenCertificate={(k) => { setView('certificate'); location.hash = k ? '#certificate?key=' + encodeURIComponent(k) : '#certificate'; }}
             onNavigateSection={handleNavSection}
           />
 
@@ -4138,6 +4676,7 @@
                 <Hero
                   onExplore={() => handleNavSection('events')}
                   onRegister={() => handleNavSection('events')}
+                  onOpenCertificate={() => { setView('certificate'); location.hash = '#certificate'; }}
                 />
                 <div className="marquee-container">
                   <div className="marquee-content">
@@ -4173,7 +4712,12 @@
               <ParticipantDashboard
                 onBack={handleGoHome}
                 onRegisterAnother={() => handleNavSection('events')}
+                onOpenCertificate={(k) => { setView('certificate'); location.hash = k ? '#certificate?key=' + encodeURIComponent(k) : '#certificate'; }}
               />
+            )}
+
+            {view === 'certificate' && (
+              <CertificatePortal onBack={handleGoHome} />
             )}
           </main>
 
@@ -4195,6 +4739,9 @@
               <div className="flex flex-col sm:flex-row justify-between items-center text-xs font-bold gap-4">
                 <div>© 2026 TECHNOTSAVA COMMITTEE. ALL RIGHTS RESERVED.</div>
                 <div className="flex items-center gap-3">
+                  <button onClick={() => { setView('certificate'); location.hash = '#certificate'; }} className="underline hover:text-green-800 font-black mr-4">
+                    🎓 CLAIM CERTIFICATE ↗
+                  </button>
                   <button onClick={() => { setView('admin'); location.hash = '#admin'; }} className="underline hover:text-blue-700 font-black">
                     ADMIN LOGIN ↗
                   </button>

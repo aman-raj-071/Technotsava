@@ -1,7 +1,7 @@
 import React from 'react';
 import { FEST_CONFIG } from '../data/festConfig';
 
-export const Hero = ({ onExploreEvents, onQuickRegister }) => {
+export const Hero = ({ onExploreEvents, onQuickRegister, onClaimCertificate }) => {
   return (
     <section
       id="hero"
@@ -141,6 +141,17 @@ export const Hero = ({ onExploreEvents, onQuickRegister }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </span>
+          </button>
+
+          {/* Claim Certificate Button */}
+          <button
+            onClick={onClaimCertificate}
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 hover:border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all duration-300 flex items-center justify-center gap-2 group"
+          >
+            <svg className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Claim Certificate</span>
           </button>
         </div>
 

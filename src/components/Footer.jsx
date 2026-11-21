@@ -1,7 +1,7 @@
 import React from 'react';
 import { FEST_CONFIG } from '../data/festConfig';
 
-export const Footer = ({ onOpenAdmin, onSelectSection }) => {
+export const Footer = ({ onOpenAdmin, onSelectSection, onOpenCertificate }) => {
   return (
     <footer className="border-t border-slate-800 bg-[#04060d] text-slate-400 text-xs relative z-10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,6 +68,14 @@ export const Footer = ({ onOpenAdmin, onSelectSection }) => {
                   className="hover:text-cyan-400 transition-colors"
                 >
                   Coordinators & Helpdesk
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onOpenCertificate}
+                  className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium"
+                >
+                  ★ Claim Certificate
                 </button>
               </li>
             </ul>

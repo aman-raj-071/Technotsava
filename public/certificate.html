@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Download Certificate | Technotsava 8.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #060813;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box {
+      max-width: 560px;
+      width: 100%;
+      margin: 20px auto;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 16px;
+      padding: 30px 24px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    p.subtitle {
+      margin: 0 0 20px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    input {
+      font: inherit;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: rgba(6, 8, 19, 0.8);
+      color: #fff;
+      outline: none;
+      width: min(320px, 100%);
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+
+    button {
+      font: inherit;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      color: #04060d;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    #msg {
+      min-height: 24px;
+      margin: 16px 0 0;
+      font-size: 14px;
+      color: #38bdf8;
+    }
+
+    #msg.error {
+      color: #f87171;
+    }
+
+    #msg.success {
+      color: #4ade80;
+    }
+
+    .actions {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-dl {
+      background: linear-gradient(135deg, #10b981, #34d399);
+      color: #022c22;
+    }
+
+    canvas {
+      max-width: 900px;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: none;
+      margin-bottom: 40px;
+    }
+
+    .back-link {
+      margin-top: 14px;
+      display: inline-block;
+      color: #64748b;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h2>Technotsava 8.0 – Certificate</h2>
+    <p class="subtitle">Enter your USN or Unique Registration ID to fetch your certificate</p>
+
+    <div class="input-group">
+      <input id="key" placeholder="Enter USN or Registration ID" autocomplete="off" autocorrect="off">
+      <button id="go">Get Certificate</button>
+    </div>
+
+    <div id="msg"></div>
+
+    <div class="actions">
+      <button id="dl" class="btn-dl" style="display:none">Download PDF</button>
+    </div>
+
+    <div>
+      <a href="/" class="back-link">← Back to Technotsav Portal</a>
+    </div>
+  </div>
+
+  <canvas id="cv"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // ====== CONFIG (Pre-configured from Technotsav 2026 Supabase) ======
+    const SUPABASE_URL = "https://pylcrhjlyvtotivbnlro.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5bGNyaGpseXZ0b3RpdmJubHJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0NjE5MjUsImV4cCI6MjExMDAzNzkyNX0.0seCMeEH-iSdziD2F_d1Kx1PMqt7CeWd2Wsm85LvsRs";
+    const TEMPLATE = "/certificate-template.svg";
+    // ===================================================================
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = id => document.getElementById(id);
+    const cv = $("cv"), ctx = cv.getContext("2d");
+    let fileName = "certificate";
+
+    // A4 landscape @ 300 DPI = 3508 x 2480 (print grade).
+    const BASE_W = 2400, BASE_H = 1696;
+    const RENDER_W = 3508, RENDER_H = 2480;
+    const SCALE = RENDER_W / BASE_W;
+
+    function fitText(text, cx, baseline, maxW, size) {
+      const s = SCALE;
+      let f = size * s;
+      ctx.font = `600 ${f}px Poppins`;
+      while (ctx.measureText(text).width > maxW * s && f > 18 * s) {
+        f -= 1;
+        ctx.font = `600 ${f}px Poppins`;
+      }
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(text, cx * s, baseline * s);
+    }
+
+    let svgTemplateCache = null;
+    async function getSvgTemplate() {
+      if (!svgTemplateCache) {
+        const res = await fetch("/certificate-template.svg");
+        svgTemplateCache = await res.text();
+      }
+      return svgTemplateCache;
+    }
+
+    async function draw(name, college) {
+      try {
+        const rawSvg = await getSvgTemplate();
+        let filledSvg = rawSvg;
+        filledSvg = filledSvg.replace(
+          /<text id="name"[^>]*><\/text>/,
+          '<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + name + '</text>'
+        );
+        filledSvg = filledSvg.replace(
+          /<tspan id="college-tspan"[^>]*><\/tspan>/,
+          '<tspan id="college-tspan" font-weight="700" fill="#8A5A12">' + college + '</tspan>'
+        );
+
+        const blob = new Blob([filledSvg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+
+        cv.width = 2400;
+        cv.height = 1696;
+        ctx.fillStyle = "#F2F2F2";
+        ctx.fillRect(0, 0, 2400, 1696);
+        ctx.drawImage(img, 0, 0, 2400, 1696);
+        URL.revokeObjectURL(url);
+        cv.style.display = "block";
+      } catch (e) {
+        console.error("Error drawing SVG certificate:", e);
+      }
+    }
+
+    $("go").onclick = async () => {
+      const key = $("key").value.trim();
+      if (!key) return;
+
+      $("msg").className = "";
+      $("msg").textContent = "Verifying attendance & generating preview...";
+      $("dl").style.display = "none";
+      cv.style.display = "none";
+      $("go").disabled = true;
+
+      try {
+        const cleanKey = key.toLowerCase();
+
+        // Direct query to registrations table
+        const { data: allRegs, error } = await sb.from("registrations").select("*");
+
+        $("go").disabled = false;
+
+        if (error) {
+          $("msg").className = "error";
+          $("msg").textContent = "Database connection error: " + (error.message || "Unable to reach registrations table.");
+          console.error(error);
+          return;
+        }
+
+        const match = (allRegs || []).find(r => {
+          const regId = (r.reg_id || "").toLowerCase();
+          const leaderUsn = (r.leader_usn || "").toLowerCase();
+          const allUsns = (r.all_usns || []).map(u => String(u).toLowerCase());
+          return regId === cleanKey || leaderUsn === cleanKey || allUsns.includes(cleanKey);
+        });
+
+        if (!match) {
+          $("msg").className = "error";
+          $("msg").textContent = `No registration record found for "${key}". Please check your Registration ID or USN.`;
+          return;
+        }
+
+        if (!match.attended) {
+          $("msg").className = "error";
+          $("msg").textContent = `Registration found for ${match.leader_name || "Team"}, but attendance is NOT marked yet. Please get attendance verified at the desk to unlock certificates.`;
+          return;
+        }
+
+        // Build members list
+        const collegeName = match.college || "S J C Institute of Technology";
+        const members = [];
+        if (match.leader_name) {
+          members.push({ name: match.leader_name, usn: match.leader_usn || "", college: collegeName });
+        }
+        if (Array.isArray(match.members) && match.members.length > 0) {
+          match.members.forEach((m, idx) => {
+            if (m && (m.name || m.usn)) {
+              members.push({ name: m.name || `Member ${idx + 1}`, usn: m.usn || "", college: collegeName });
+            }
+          });
+        }
+        if (match.member2_name && !members.some(m => m.name === match.member2_name)) {
+          members.push({ name: match.member2_name, usn: match.member2_usn || "", college: collegeName });
+        }
+
+        // Target member matching USN or default to leader
+        let target = members.find(m => String(m.usn).toLowerCase() === cleanKey) || members[0] || { name: match.leader_name || "Participant", college: collegeName };
+
+        const name = target.name || "Participant";
+        const college = target.college || collegeName;
+
+        fileName = `Technotsava_Certificate_${name.replace(/\s+/g, "_")}`;
+        await draw(name, college);
+
+        $("msg").className = "success";
+        $("msg").textContent = `🎉 Certificate verified for ${name}! (${members.length} team member${members.length > 1 ? "s" : ""})`;
+        $("dl").style.display = "inline-block";
+      } catch (err) {
+        $("go").disabled = false;
+        $("msg").className = "error";
+        $("msg").textContent = "Unexpected error occurred. Please check console.";
+        console.error(err);
+      }
+    };
+
+    $("dl").onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: [297, 210]
+      });
+      pdf.addImage(cv.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, 297, 210);
+      pdf.save(fileName + ".pdf");
+    };
+
+    $("key").addEventListener("keydown", e => e.key === "Enter" && $("go").click());
+
+    // Auto-fill from query parameter if present: certificate.html?usn=1SJ...
+    const urlParams = new URLSearchParams(window.location.search);
+    const qKey = urlParams.get("key") || urlParams.get("usn") || urlParams.get("reg_id");
+    if (qKey) {
+      $("key").value = qKey;
+      $("go").click();
+    }
+  </script>
+</body>
+
+</html>

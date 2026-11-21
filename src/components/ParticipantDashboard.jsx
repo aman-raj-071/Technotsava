@@ -7,7 +7,7 @@ import { FEST_CONFIG } from '../data/festConfig';
  * Lets a registered participant look up their pass by Registration ID
  * (or USN / email), see verification status, and download/print the pass.
  */
-export const ParticipantDashboard = ({ onBackToFest, onRegisterAnother }) => {
+export const ParticipantDashboard = ({ onBackToFest, onRegisterAnother, onOpenCertificate }) => {
   const [regIdInput, setRegIdInput] = useState('');
   const [searchError, setSearchError] = useState('');
   const [foundRecord, setFoundRecord] = useState(null);
@@ -214,20 +214,18 @@ export const ParticipantDashboard = ({ onBackToFest, onRegisterAnother }) => {
           <div className="space-y-6">
             {/* Status banner */}
             <div
-              className={`rounded-3xl p-6 border shadow-2xl ${
-                isVerified
+              className={`rounded-3xl p-6 border shadow-2xl ${isVerified
                   ? 'bg-emerald-950/40 border-emerald-500/40'
                   : 'bg-amber-950/40 border-amber-500/40'
-              }`}
+                }`}
             >
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <span
-                    className={`inline-block text-xs font-mono px-3 py-1 rounded-full border font-bold mb-2 ${
-                      isVerified
+                    className={`inline-block text-xs font-mono px-3 py-1 rounded-full border font-bold mb-2 ${isVerified
                         ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
                         : 'bg-amber-500/20 text-amber-300 border-amber-500/50 animate-pulse'
-                    }`}
+                      }`}
                   >
                     {isVerified ? '✓ Pass Verified & Confirmed' : '⏳ Pending Admin Verification'}
                   </span>
@@ -389,11 +387,10 @@ export const ParticipantDashboard = ({ onBackToFest, onRegisterAnother }) => {
                 </div>
                 <div className="text-right">
                   <div
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono font-medium text-xs border ${
-                      isVerified
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono font-medium text-xs border ${isVerified
                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                         : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                    }`}
+                      }`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${isVerified ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                     {isVerified ? 'Confirmed & Active' : 'Pending Verification'}
@@ -423,6 +420,23 @@ export const ParticipantDashboard = ({ onBackToFest, onRegisterAnother }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   <span>Refresh Verification Status</span>
+                </button>
+              )}
+
+              {/* Certificate Download Action if Attended */}
+              {foundRecord?.attended && (
+                <button
+                  onClick={() => {
+                    if (onOpenCertificate) {
+                      onOpenCertificate(foundRecord);
+                    }
+                  }}
+                  className="px-6 py-3 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 hover:opacity-95 transition-all shadow-[0_0_25px_rgba(52,211,153,0.4)] flex items-center gap-2 text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Claim / Download Certificate</span>
                 </button>
               )}
 
