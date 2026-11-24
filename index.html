@@ -4596,19 +4596,43 @@ function CertificatePortal({ onBack }) {
           {/* Mode Toggle */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <button
-              onClick={() => { setMode('participation'); setErrorMsg(''); setSuccessMsg(''); }}
+              onClick={() => {
+                setMode('participation');
+                setKeyInput('');
+                setErrorMsg('');
+                setSuccessMsg('');
+                setTeamRecord(null);
+                setMembersList([]);
+                setSelectedMember(null);
+              }}
               className={mode === 'participation' ? 'px-4 py-2 font-mono font-black text-xs bg-[#00E575] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
             >
               🏅 PARTICIPATION CERTIFICATE
             </button>
             <button
-              onClick={() => { setMode('coordinator'); setErrorMsg(''); setSuccessMsg(''); }}
+              onClick={() => {
+                setMode('coordinator');
+                setKeyInput('');
+                setErrorMsg('');
+                setSuccessMsg('');
+                setTeamRecord(null);
+                setMembersList([]);
+                setSelectedMember(null);
+              }}
               className={mode === 'coordinator' ? 'px-4 py-2 font-mono font-black text-xs bg-[#FFE600] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
             >
               🎓 STUDENT COORDINATOR CERTIFICATE
             </button>
             <button
-              onClick={() => { setMode('faculty'); setErrorMsg(''); setSuccessMsg(''); }}
+              onClick={() => {
+                setMode('faculty');
+                setKeyInput('');
+                setErrorMsg('');
+                setSuccessMsg('');
+                setTeamRecord(null);
+                setMembersList([]);
+                setSelectedMember(null);
+              }}
               className={mode === 'faculty' ? 'px-4 py-2 font-mono font-black text-xs bg-[#FFB3D9] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
             >
               👩‍🏫 FACULTY COORDINATOR CERTIFICATE
