@@ -6,5 +6,14 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
+  },
+  // The React app lives in /src; build from its own HTML shell so the
+  // standalone root index.html (CDN/Babel app) is not bundled as a Vite entry.
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'src/index.html'
+      }
+    }
   }
 });

@@ -20,8 +20,8 @@ export const CyberParticles = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Particle pool
-    const particleCount = Math.min(Math.floor(width / 18), 70);
+    // Particle pool (kept smaller + capped so the O(n^2) linking stays cheap)
+    const particleCount = Math.min(Math.floor(width / 22), 46);
     const particles = [];
     const colors = ['#38bdf8', '#818cf8', '#c084fc', '#06b6d4'];
 
@@ -37,54 +37,71 @@ export const CyberParticles = () => {
       });
     }
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+    const LINK_DIST_2 = 130 * 130;
+    let lastTime = 0;
 
-      // Draw particles and connection lines
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+    const render = (ts) => {
+      // Throttle to ~30fps so the animation stops hogging the main thread
+      // (React renders/button clicks no longer queue behind every frame).
+      if (ts - lastTime >= 33) {
+        lastTime = ts;
+        ctx.clearRect(0, 0, width, height);
 
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
 
-        // Draw node
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.fill();
+          if (p.x < 0) p.x = width;
+          else if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          else if (p.y > height) p.y = 0;
 
-        // Connect nearby nodes
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          // Draw node
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.fill();
 
-          if (dist < 130) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = p.color;
-            ctx.globalAlpha = (1 - dist / 130) * 0.18;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
+          // Connect nearby nodes (distance-squared, avoid per-pair sqrt)
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx = p.x - q.x;
+            const dy = p.y - q.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < LINK_DIST_2) {
+              const a = 1 - Math.sqrt(d2) / 130;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = p.color;
+              ctx.globalAlpha = a * 0.18;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
           }
         }
+        ctx.globalAlpha = 1;
       }
-
-      ctx.globalAlpha = 1;
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    animationFrameId = requestAnimationFrame(render);
+
+    // Pause entirely when the tab is hidden (saves CPU on background tabs)
+    const onVisibility = () => {
+      cancelAnimationFrame(animationFrameId);
+      if (!document.hidden) {
+        lastTime = 0;
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibility);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

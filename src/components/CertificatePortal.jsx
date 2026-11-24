@@ -6,6 +6,13 @@ import fontkit from '@pdf-lib/fontkit';
 import { COORDINATORS } from '../data/coordinators';
 import { FACULTY_COORDINATORS } from '../data/facultyCoordinators';
 
+// Module-level caches: these survive re-renders so the large SVG templates and
+// the Poppins font are fetched/decoded only once (not on every render).
+const svgTemplateCache = {};
+const templateBytesCache = {};
+let fontPromiseCache = null;
+let fontRegistered = false;
+
 export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' }) => {
   const [mode, setMode] = useState(initialMode === 'coordinator' || initialMode === 'faculty' ? initialMode : 'participation');
   const [query, setQuery] = useState('');
@@ -62,7 +69,6 @@ export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' 
   // Register the LOCAL TTF via FontFace so the canvas always uses the real
   // Poppins-Medium glyphs (independent of the Google Fonts CDN), which keeps
   // both the metrics and the rendered strokes crisp and consistent.
-  let fontRegistered = false;
   const ensureFonts = async () => {
     try {
       if (!fontRegistered) {
@@ -204,7 +210,6 @@ export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' 
   // Draw the premium vector background + SVG decorative overlays + text.
   // We use separate SVG templates for Participant vs Student Coordinator to ensure
   // exact layout, distinct wording, and zero interference with participant certificates.
-  let svgTemplateCache = {};
   const getSvgTemplateText = async (targetMode = mode) => {
     if (!svgTemplateCache[targetMode]) {
       const templateFile =
@@ -272,7 +277,6 @@ export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' 
   };
 
   // ---- pdf-lib VECTOR-TEXT export (crisp at any zoom, selectable) ----
-  let fontPromiseCache = null;
   const getPoppinsFont = () => {
     if (!fontPromiseCache) {
       fontPromiseCache = fetch('/fonts/Poppins-Medium.ttf')
@@ -288,7 +292,6 @@ export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' 
     return fontPromiseCache;
   };
 
-  let templateBytesCache = {};
   const getTemplateBytes = async () => {
     // The PDF background is the same premium vector design + decorative SVG
     // overlays (crest, logos, seal, signatures) as the canvas preview,
