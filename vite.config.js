@@ -10,9 +10,16 @@ export default defineConfig({
   // The React app lives in /src; build from its own HTML shell so the
   // standalone root index.html (CDN/Babel app) is not bundled as a Vite entry.
   build: {
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       input: {
         main: 'src/index.html'
+      },
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          analytics: ['@vercel/analytics/react']
+        }
       }
     }
   }

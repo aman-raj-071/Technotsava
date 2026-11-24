@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { CyberParticles } from './components/CyberParticles';
 import { Navbar } from './components/Navbar';
@@ -10,11 +10,21 @@ import { ScheduleSection } from './components/ScheduleSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { RegistrationPage } from './pages/RegistrationPage';
-import { AdminDashboard } from './components/AdminDashboard';
-import { ParticipantDashboard } from './components/ParticipantDashboard';
-import { CertificatePortal } from './components/CertificatePortal';
 import { getEventSettings } from './lib/db';
 import { EVENTS } from './data/eventsData';
+
+// Lazy-load heavy, non-home views so the initial bundle only ships the landing page
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const ParticipantDashboard = lazy(() => import('./components/ParticipantDashboard'));
+const CertificatePortal = lazy(() => import('./components/CertificatePortal'));
+
+function ViewLoader({ children }) {
+  return (
+    <Suspense fallback={null}>
+      {children}
+    </Suspense>
+  );
+}
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'register' | 'admin' | 'status' | 'certificate'
@@ -176,19 +186,25 @@ export default function App() {
         )}
 
         {currentView === 'admin' && (
-          <AdminDashboard onBackToFest={handleGoHome} />
+          <ViewLoader>
+            <AdminDashboard onBackToFest={handleGoHome} />
+          </ViewLoader>
         )}
 
         {currentView === 'status' && (
-          <ParticipantDashboard
-            onBackToFest={handleGoHome}
-            onRegisterAnother={handleRegisterAnother}
-            onOpenCertificate={handleOpenCertificate}
-          />
+          <ViewLoader>
+            <ParticipantDashboard
+              onBackToFest={handleGoHome}
+              onRegisterAnother={handleRegisterAnother}
+              onOpenCertificate={handleOpenCertificate}
+            />
+          </ViewLoader>
         )}
 
         {currentView === 'certificate' && (
-          <CertificatePortal onBackToFest={handleGoHome} seedRecord={certSeed} />
+          <ViewLoader>
+            <CertificatePortal onBackToFest={handleGoHome} seedRecord={certSeed} />
+          </ViewLoader>
         )}
       </main>
 
