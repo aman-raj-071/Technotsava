@@ -1,0 +1,58 @@
+L  63 ind= 6 open=1 close=0 | <div className="max-w-7xl mx-auto">
+L  65 ind= 8 open=1 close=0 | <div className="text-center max-w-3xl mx-auto mb-16">
+L  66 ind=10 open=1 close=0 | <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full 
+L  68 ind=10 open=0 close=1 | </div>
+L  75 ind= 8 open=0 close=1 | </div>
+L  78 ind= 8 open=1 close=0 | <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 s
+L  83 ind=14 open=1 close=0 | <div
+L  90 ind=16 open=1 close=0 | <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br fro
+L  92 ind=16 open=1 close=0 | <div>
+L  95 ind=20 open=1 close=0 | <div className="mb-3 p-2.5 rounded-lg bg-slate-800/50 border border-sl
+L 100 ind=20 open=0 close=1 | </div>
+L 102 ind=18 open=1 close=0 | <div>
+L 104 ind=20 open=1 close=0 | <div className="flex items-center justify-between gap-2 mb-4">
+L 111 ind=20 open=0 close=1 | </div>
+L 114 ind=20 open=1 close=0 | <div className="flex items-start gap-4 mb-3">
+L 115 ind=22 open=1 close=0 | <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-
+L 117 ind=22 open=0 close=1 | </div>
+L 118 ind=22 open=1 close=0 | <div>
+L 122 ind=24 open=1 close=0 | <div className="text-[11px] font-mono text-slate-500 uppercase trackin
+L 124 ind=24 open=0 close=1 | </div>
+L 125 ind=22 open=0 close=1 | </div>
+L 126 ind=20 open=0 close=1 | </div>
+L 135 ind=22 open=1 close=0 | <div className="mb-5 p-3.5 rounded-xl bg-slate-900/90 border border-am
+L 136 ind=24 open=1 close=0 | <div className="flex items-center justify-between text-xs font-mono fo
+L 142 ind=24 open=0 close=1 | </div>
+L 143 ind=24 open=1 close=0 | <div className="space-y-2 pt-1">
+L 145 ind=28 open=1 close=0 | <div
+L 149 ind=30 open=1 close=0 | <div className="flex items-center gap-2.5 min-w-0">
+L 156 ind=32 open=1 close=0 | <div className="min-w-0">
+L 157 ind=34 open=1 close=0 | <div className="text-xs font-bold text-white truncate leading-tight">
+L 159 ind=34 open=0 close=1 | </div>
+L 160 ind=34 open=1 close=0 | <div className="text-[11px] text-slate-400 truncate">
+L 162 ind=34 open=0 close=1 | </div>
+L 163 ind=32 open=0 close=1 | </div>
+L 164 ind=30 open=0 close=1 | </div>
+L 168 ind=28 open=0 close=1 | </div>
+L 170 ind=24 open=0 close=1 | </div>
+L 171 ind=22 open=0 close=1 | </div>
+L 176 ind=22 open=1 close=0 | <div className="mb-5 p-3 rounded-xl bg-amber-500/5 border border-amber
+L 177 ind=24 open=1 close=1 | <div className="font-semibold text-amber-200">Selectable Tracks:</div>
+L 179 ind=26 open=1 close=1 | <div key={th.id || th.title} className="text-[11px] text-slate-400">• 
+L 181 ind=22 open=0 close=1 | </div>
+L 183 ind=18 open=0 close=1 | </div>
+L 186 ind=18 open=1 close=0 | <div className="pt-4 border-t border-slate-800/80 flex items-center ju
+L 227 ind=18 open=0 close=1 | </div>
+L 228 ind=16 open=0 close=1 | </div>
+L 231 ind=14 open=0 close=1 | </div>
+L 232 ind= 6 open=0 close=1 | </div>
+L 236 ind=10 open=1 close=0 | <div className="fixed inset-0 z-50 flex items-center justify-center p-
+L 237 ind=12 open=1 close=0 | <div className="glass-panel max-w-lg w-full rounded-2xl p-6 sm:p-8 bor
+L 247 ind=14 open=1 close=0 | <div className="flex items-center gap-3 mb-4">
+L 254 ind=14 open=0 close=1 | </div>
+L 263 ind=14 open=1 close=0 | <div className="mb-6">
+L 275 ind=14 open=0 close=1 | </div>
+L 277 ind=14 open=1 close=0 | <div className="flex items-center justify-end gap-3 pt-4 border-t bord
+L 300 ind=14 open=0 close=1 | </div>
+L 301 ind=12 open=0 close=1 | </div>
+L 302 ind=10 open=0 close=1 | </div>

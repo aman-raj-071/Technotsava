@@ -1,0 +1,24 @@
+TOTAL_LINES=306
+ 219 '                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />\n'
+ 220 '                        </svg>\n'
+ 221 '                      </button>\n'
+ 222 '                    ) : (\n'
+ 223 '                      <span className="px-3 py-1.5 text-xs font-mono font-semibold rounded-lg bg-red-950/60 text-red-400 border border-red-500/30">\n'
+ 224 '                        Registration Closed\n'
+ 225 '                      </span>\n'
+ 226 '                    )}\n'
+ 227 '                  </div>\n'
+ 228 '                </div>\n'
+ 229 '                );\n'
+ 230 '          })}\n'
+ 231 '              </div>\n'
+ 232 '      </div>\n'
+ 233 '\n'
+ 234 '        {/* Rules / Guidelines Modal */}\n'
+ 235 '        {selectedRuleEvent && (\n'
+ 236 '          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">\n'
+ 237 '            <div className="glass-panel max-w-lg w-full rounded-2xl p-6 sm:p-8 border border-cyan-500/30 shadow-2xl relative">\n'
+ 238 '              <button\n'
+OPEN_PAREN=49 CLOSE_PAREN=49
+OPEN_BRACE=77 CLOSE_BRACE=77
+BACKTICK=4

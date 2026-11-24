@@ -1,0 +1,38 @@
+close L68 -> closes open L66 (ind 10)
+close L75 -> closes open L65 (ind 8)
+-- at L83 stack=['(63, 6)', '(78, 8)', '(83, 14)']
+close L100 -> closes open L95 (ind 20)
+close L111 -> closes open L104 (ind 20)
+close L117 -> closes open L115 (ind 22)
+close L124 -> closes open L122 (ind 24)
+close L125 -> closes open L118 (ind 22)
+close L126 -> closes open L114 (ind 20)
+close L142 -> closes open L136 (ind 24)
+close L159 -> closes open L157 (ind 34)
+close L162 -> closes open L160 (ind 34)
+close L163 -> closes open L156 (ind 32)
+close L164 -> closes open L149 (ind 30)
+close L168 -> closes open L145 (ind 28)
+close L170 -> closes open L143 (ind 24)
+close L171 -> closes open L135 (ind 22)
+close L177 -> closes open L177 (ind 24)
+close L179 -> closes open L179 (ind 26)
+close L181 -> closes open L176 (ind 22)
+close L183 -> closes open L102 (ind 18)
+close L227 -> closes open L186 (ind 18)
+close L228 -> closes open L92 (ind 16)
+-- at L228 stack=['(63, 6)', '(78, 8)', '(83, 14)', '(90, 16)']
+-- at L230 stack=['(63, 6)', '(78, 8)', '(83, 14)', '(90, 16)']
+close L231 -> closes open L90 (ind 16)
+-- at L231 stack=['(63, 6)', '(78, 8)', '(83, 14)']
+close L232 -> closes open L83 (ind 14)
+-- at L232 stack=['(63, 6)', '(78, 8)']
+close L233 -> closes open L78 (ind 8)
+-- at L233 stack=['(63, 6)']
+-- at L234 stack=['(63, 6)']
+close L255 -> closes open L248 (ind 14)
+close L276 -> closes open L264 (ind 14)
+close L301 -> closes open L278 (ind 14)
+close L302 -> closes open L238 (ind 12)
+close L303 -> closes open L237 (ind 10)
+FINAL_STACK=['(63, 6)']
