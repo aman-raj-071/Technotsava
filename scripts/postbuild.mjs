@@ -1,15 +1,14 @@
-// Vite emits the SPA entry to dist/src/index.html (because the input is
-// src/index.html). Vercel serves the dist/ dir root, so it needs the entry
-// at dist/index.html for "/" to work. Copy it there after every build.
 import { copyFileSync, existsSync } from 'node:fs';
 
-const from = 'dist/src/index.html';
+// Root index.html is the exact Neo-Brutalism website (yellow brutalist theme).
+// Copy root index.html to dist/index.html so Vercel serves the exact same app as localhost.
+const from = 'index.html';
 const to = 'dist/index.html';
 
 if (existsSync(from)) {
   copyFileSync(from, to);
-  console.log('postbuild: ' + from + ' -> ' + to);
+  console.log('postbuild: copied ' + from + ' -> ' + to);
 } else {
-  console.error('postbuild: ' + from + ' not found (did vite build run?)');
+  console.error('postbuild: ' + from + ' not found!');
   process.exit(1);
 }
