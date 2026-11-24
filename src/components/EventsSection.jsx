@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { EVENTS } from '../data/eventsData';
 
 export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
@@ -147,11 +147,10 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
                               className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-between gap-2.5"
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-wider shrink-0 ${
-                                  winner.position === '1ST'
-                                    ? 'bg-amber-400 text-slate-950 shadow-sm'
-                                    : 'bg-slate-300 text-slate-950'
-                                }`}>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-wider shrink-0 ${winner.position === '1ST'
+                                  ? 'bg-amber-400 text-slate-950 shadow-sm'
+                                  : 'bg-slate-300 text-slate-950'
+                                  }`}>
                                   {winner.position}
                                 </span>
                                 <div className="min-w-0">
@@ -227,9 +226,10 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
                     )}
                   </div>
                 </div>
-                );
-          })}
               </div>
+            );
+          })}
+        </div>
       </div>
 
         {/* Rules / Guidelines Modal */}
