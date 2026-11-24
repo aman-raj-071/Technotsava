@@ -76,6 +76,13 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
               Events (7)
             </button>
             <button
+              onClick={() => handleNavClick('winners')}
+              className="px-3.5 py-2 text-sm font-medium text-amber-300 hover:text-amber-200 hover:bg-white/5 rounded-lg transition-all flex items-center gap-1.5"
+            >
+              <span>🏆</span>
+              <span>Winners</span>
+            </button>
+            <button
               onClick={() => handleNavClick('schedule')}
               className="px-3.5 py-2 text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-white/5 rounded-lg transition-all"
             >
@@ -259,6 +266,12 @@ export const Navbar = ({ onOpenAdmin, onSelectEvent, currentView, onGoHome, onOp
             className="block w-full text-left px-3 py-2.5 text-base font-medium text-slate-200 hover:text-cyan-400 hover:bg-white/5 rounded-lg"
           >
             All Events (7)
+          </button>
+          <button
+            onClick={() => handleNavClick('winners')}
+            className="block w-full text-left px-3 py-2.5 text-base font-medium text-amber-300 hover:text-amber-200 hover:bg-white/5 rounded-lg"
+          >
+            🏆 Winners (Hall of Fame)
           </button>
           <button
             onClick={() => handleNavClick('schedule')}

@@ -1,0 +1,26 @@
+4176|        ctx.font = '600 ' + size + 'px Poppins, sans-serif';
+4177|        while (ctx.measureText(text).width > maxW && size > 16) {
+4178|          size -= 1;
+4179|          ctx.font = '600 ' + size + 'px Poppins, sans-serif';
+4180|        }
+4181|        ctx.textAlign = 'center';
+4182|        ctx.fillText(text, cx, baseline);
+4183|      };
+4184|
+4185|            let svgTemplateCache = null;
+4186|      let svgCoordTemplateCache = null;
+4187|      const getSvgTemplate = async () => {
+4188|        const isCoord = mode === 'coordinator' || mode === 'faculty';
+4189|        if (isCoord) {
+4190|          if (!svgCoordTemplateCache) {
+4191|            const res = await fetch('/certificate-coordinator-template.svg');
+4192|            svgCoordTemplateCache = await res.text();
+4193|          }
+4194|          if (mode === 'faculty') {
+4195|            return svgCoordTemplateCache.split('Student Co-ordinator').join('Faculty Co-ordinator');
+4196|          }
+4197|          return svgCoordTemplateCache;
+4198|        }
+4199|        if (!svgTemplateCache) {
+4200|          const res = await fetch('/certificate-template.svg');
+4201|          svgTemplateCache = await res.text();

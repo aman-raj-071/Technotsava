@@ -1,0 +1,9 @@
+4486|              {mode === 'coordinator' ? 'CLAIM STUDENT COORDINATOR CERTIFICATE' : 'CLAIM PARTICIPATION CERTIFICATES'}
+4487|            </h1>
+4488|            <p className="font-mono text-xs sm:text-sm text-slate-700 max-w-3xl">
+4489|              {mode === 'coordinator' ? (
+4490|                <>Enter your <span className="font-bold text-black underline">USN</span>. If you are a registered Student Co-ordinator, your certificate will be fetched and ready to preview or download!</>
+4491|              ) : (
+4492|                <>Enter your <span className="font-bold text-black underline">Unique Registration Code</span> (e.g. TECH26-...) or <span className="font-bold text-black underline">USN</span>. If your team attended, certificates for <strong>all team members</strong> will be fetched and ready to preview or download!</>
+4493|              )}
+4494|            </p>

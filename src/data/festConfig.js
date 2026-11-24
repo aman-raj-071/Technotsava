@@ -92,51 +92,168 @@ export const FEST_CONFIG = {
     }
   ],
 
-  // Organisers & Coordinators (Editable placeholders)
+  // Organisers & Coordinators
   coordinators: {
     faculty: [
       {
-        name: "Girish BG",
-        designation: "Faculty Coordinator",
-        department: "TECHNOTSAVA 2026",
-        phone: "+91 96203 07516",
+        name: "Dr. Murthy DHR",
+        designation: "Faculty Coordinator (Ideathon)",
+        department: "Dept. of CSE",
+        phone: "+91 96111 60318",
+        email: ""
+      },
+      {
+        name: "Mrs. Divya M N",
+        designation: "Faculty Coordinator (Ideathon)",
+        department: "Dept. of CSE",
+        phone: "+91 63636 45869",
+        email: ""
+      },
+      {
+        name: "Dr. Gavina CG",
+        designation: "Faculty Coordinator (Digital Tech Hunt)",
+        department: "Dept. of CSE",
+        phone: "+91 99019 37508",
+        email: ""
+      },
+      {
+        name: "Anita TM",
+        designation: "Faculty Coordinator (Digital Tech Hunt)",
+        department: "Dept. of CSE",
+        phone: "+91 70220 92489",
+        email: ""
+      },
+      {
+        name: "Dr. Ajay N",
+        designation: "Faculty Coordinator (Tech Quiz)",
+        department: "Dept. of CSE",
+        phone: "+91 97404 39787",
+        email: ""
+      },
+      {
+        name: "Varun Kumar N",
+        designation: "Faculty Coordinator (Tech Quiz)",
+        department: "Dept. of CSE",
+        phone: "+91 94499 16212",
+        email: ""
+      },
+      {
+        name: "E Akhilla",
+        designation: "Faculty Coordinator (Tech Quiz)",
+        department: "Dept. of CSE",
+        phone: "+91 89784 79426",
+        email: ""
+      },
+      {
+        name: "Dr. Shrihari MR",
+        designation: "Faculty Coordinator (Free Fire)",
+        department: "Dept. of CSE",
+        phone: "+91 99800 19411",
+        email: ""
+      },
+      {
+        name: "Divakar K M",
+        designation: "Faculty Coordinator (Free Fire)",
+        department: "Dept. of CSE",
+        phone: "+91 99458 09011",
+        email: ""
+      },
+      {
+        name: "Dr. Shwetha T",
+        designation: "Faculty Coordinator (Logo Mania)",
+        department: "Dept. of CSE",
+        phone: "+91 86180 84599",
+        email: ""
+      },
+      {
+        name: "Suman J",
+        designation: "Faculty Coordinator (Logo Mania)",
+        department: "Dept. of CSE",
+        phone: "+91 98451 08438",
+        email: ""
+      },
+      {
+        name: "Udayapriya",
+        designation: "Faculty Coordinator (Logo Mania)",
+        department: "Dept. of CSE",
+        phone: "+91 94488 65557",
+        email: ""
+      },
+      {
+        name: "Dr. Rashmi KA",
+        designation: "Faculty Coordinator (Videography)",
+        department: "Dept. of CSE",
+        phone: "+91 85534 19599",
+        email: ""
+      },
+      {
+        name: "Mrs. Navyashri N",
+        designation: "Faculty Coordinator (Videography)",
+        department: "Dept. of CSE",
+        phone: "+91 84387 32911",
+        email: ""
+      },
+      {
+        name: "Mamatha",
+        designation: "Faculty Coordinator (Minute to Win-It)",
+        department: "Dept. of CSE",
+        phone: "+91 99009 67894",
+        email: ""
+      },
+      {
+        name: "Divyshree V",
+        designation: "Faculty Coordinator (Minute to Win-It)",
+        department: "Dept. of CSE",
+        phone: "+91 82176 66763",
+        email: ""
+      },
+      {
+        name: "Chanadana D Swamy",
+        designation: "Faculty Coordinator (Minute to Win-It)",
+        department: "Dept. of CSE",
+        phone: "+91 63612 64955",
         email: ""
       }
     ],
     student: [
       {
         name: "Sohan Gowda K",
-        role: "Student Coordinator",
-        branchYear: "Sem 5",
+        role: "Main Student Coordinator",
+        usn: "1SJ24CS145",
+        branchYear: "5th Sem",
         phone: "+91 80505 73782",
         email: ""
       },
       {
-        name: "Kruthika MG",
-        role: "Student Coordinator",
-        branchYear: "Sem 5",
-        phone: "+91 94485 49609",
-        email: ""
-      },
-      {
         name: "Ruchitha L",
-        role: "Student Coordinator",
-        branchYear: "Sem 5",
+        role: "Main Student Coordinator",
+        usn: "1SJ24CS124",
+        branchYear: "5th Sem",
         phone: "+91 63618 00423",
         email: ""
       },
       {
-        name: "Tejas J V",
-        role: "Student Coordinator",
-        branchYear: "Sem 3",
-        phone: "+91 72595 96177",
+        name: "Brunda S",
+        role: "Main Student Coordinator",
+        usn: "1SJ24CS022",
+        branchYear: "5th Sem",
+        phone: "+91 78994 09898",
         email: ""
       },
       {
-        name: "Brunda S",
-        role: "Student Coordinator",
-        branchYear: "Sem 5",
-        phone: "+91 78994 09898",
+        name: "Kruthika M G",
+        role: "Main Student Coordinator",
+        usn: "1SJ24CS061",
+        branchYear: "5th Sem",
+        phone: "+91 94485 49609",
+        email: ""
+      },
+      {
+        name: "Tejas J V",
+        role: "Main Student Coordinator",
+        usn: "1SJ25CS153",
+        branchYear: "3rd Sem",
+        phone: "+91 72595 96177",
         email: ""
       }
     ]

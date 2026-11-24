@@ -29,6 +29,20 @@ export const EVENTS = [
         { size: 4, amount: 150 },
       ],
     },
+    winners: [
+      {
+        position: "1ST",
+        teamName: "CipherBytes",
+        college: "SJCIT, Chikkaballapur",
+        prize: "₹3,000",
+      },
+      {
+        position: "2ND",
+        teamName: "ShadowHunters",
+        college: "Acharya Institute of Technology",
+        prize: "₹1,500",
+      },
+    ],
     rules: [
       "Each team must consist of 2 to 4 participants including the team leader.",
       "A laptop or smartphone with high-speed internet connection is required.",
@@ -54,6 +68,20 @@ export const EVENTS = [
     glowColor: "rgba(168, 85, 247, 0.4)",
     badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/30",
     icon: "HelpCircle",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "BrainWave Duo",
+        college: "BMS College of Engineering",
+        prize: "₹3,000",
+      },
+      {
+        position: "2ND",
+        teamName: "QuizWits",
+        college: "M S Ramaiah Institute of Technology",
+        prize: "₹1,500",
+      },
+    ],
     rules: [
       "Participation requires exactly 2 members per team. Individual entries are strictly prohibited.",
       "Both members must belong to a recognized college/university.",
@@ -78,6 +106,20 @@ export const EVENTS = [
     glowColor: "rgba(245, 158, 11, 0.4)",
     badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/30",
     icon: "Lightbulb",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "AgriVision AI",
+        college: "SJCIT, Chikkaballapur",
+        prize: "₹4,000",
+      },
+      {
+        position: "2ND",
+        teamName: "CyberShield",
+        college: "National Institute of Engineering",
+        prize: "₹2,000",
+      },
+    ],
     themes: [
       {
         id: "open-innovation",
@@ -132,6 +174,20 @@ export const EVENTS = [
     glowColor: "rgba(244, 63, 94, 0.4)",
     badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/30",
     icon: "Gamepad2",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "Team Apex Predators",
+        college: "CMR University",
+        prize: "₹3,000",
+      },
+      {
+        position: "2ND",
+        teamName: "Redline Warriors",
+        college: "Gopalan College of Engineering",
+        prize: "₹1,500",
+      },
+    ],
     rules: [
       "Squad size is 2 to 4 players. Only mobile devices are allowed (emulators, iPads, triggers are prohibited).",
       "All squad members must be ready in the custom room 10 minutes prior to match schedule.",
@@ -153,9 +209,23 @@ export const EVENTS = [
     detailedDescription:
       "A fast-paced, high-energy individual showdown! Participants tackle a gauntlet of 60-second tech-inspired physical and mental agility games where every single millisecond dictates the leaderboard.",
     accentColor: "from-emerald-500 to-teal-600",
-    glowColor: "rgba(16, 185, 129, 0.4)",
+    glowColor: "rgba(168, 85, 247, 0.4)",
     badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
     icon: "Timer",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "Rahul Sharma",
+        college: "SJCIT, Chikkaballapur",
+        prize: "₹2,000",
+      },
+      {
+        position: "2ND",
+        teamName: "Sneha Patil",
+        college: "Sir MVIT, Bengaluru",
+        prize: "₹1,000",
+      },
+    ],
     rules: [
       "Strictly individual participation. No team entries permitted.",
       "Each participant receives exactly 60 seconds per challenge station.",
@@ -180,6 +250,20 @@ export const EVENTS = [
     glowColor: "rgba(192, 132, 252, 0.4)",
     badgeColor: "bg-violet-500/10 text-violet-400 border-violet-500/30",
     icon: "Video",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "CineWizards",
+        college: "Acharya Institute of Technology",
+        prize: "₹2,500",
+      },
+      {
+        position: "2ND",
+        teamName: "FrameCraft Media",
+        college: "SJCIT, Chikkaballapur",
+        prize: "₹1,500",
+      },
+    ],
     rules: [
       "Teams can comprise 2 to 4 participants including the team leader.",
       "Raw footage and theme audio assets will be provided at the start of the event.",
@@ -204,6 +288,20 @@ export const EVENTS = [
     glowColor: "rgba(34, 211, 238, 0.4)",
     badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
     icon: "Crown",
+    winners: [
+      {
+        position: "1ST",
+        teamName: "BrandMasters",
+        college: "Reva University",
+        prize: "₹2,500",
+      },
+      {
+        position: "2ND",
+        teamName: "LogoGeeks",
+        college: "SJCIT, Chikkaballapur",
+        prize: "₹1,500",
+      },
+    ],
     rules: [
       "Teams: Each team must have exactly 2 members. Students may not compete alone or in groups larger than 2.",
       "How the game works: A logo will be displayed on screen. The first team to press the buzzer after recognizing the brand or company gets the chance to answer.",

@@ -14,11 +14,13 @@
 
 import { supabase, isSupabaseConfigured } from './supabase';
 import { EVENTS } from '../data/eventsData';
+import { COORDINATORS } from '../data/coordinators';
 
 // ── localStorage keys ────────────────────────────────────────────────────
 const LS_REGISTRATIONS = 'technotsav_2026_registrations';
 const LS_EVENT_SETTINGS = 'technotsav_2026_event_settings';
 const LS_BACKUP_REGISTRATIONS = 'technotsav_2026_backup_registrations';
+const LS_COORDINATORS = 'technotsav_2026_coordinators';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -482,4 +484,62 @@ export const exportRegistrationsToCSV = (registrations) => {
   });
 
   return [headers.map(escape).join(','), ...rows].join('\n');
+};
+
+// ── Student Coordinators Service Layer ─────────────────────────────────────
+
+const lsGetCoordinators = () => {
+  try {
+    const raw = localStorage.getItem(LS_COORDINATORS);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return COORDINATORS;
+};
+
+const lsSetCoordinators = (list) => {
+  try {
+    localStorage.setItem(LS_COORDINATORS, JSON.stringify(list));
+  } catch (e) {
+    console.warn('[db] localStorage coordinators write failed:', e);
+  }
+};
+
+/**
+ * Fetch all student coordinators.
+ * Tries Supabase `coordinators` table first; if not found or offline,
+ * falls back to localStorage or static bundled COORDINATORS list.
+ */
+export const getAllCoordinators = async () => {
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('coordinators')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        lsSetCoordinators(data);
+        return data;
+      }
+    } catch (err) {
+      console.warn('[db] getAllCoordinators network/table error:', err);
+    }
+  }
+  return lsGetCoordinators();
+};
+
+/**
+ * Find coordinator by USN (case-insensitive) or phone.
+ */
+export const findCoordinatorByUSN = async (usnOrPhone) => {
+  if (!usnOrPhone) return null;
+  const clean = String(usnOrPhone).trim().toLowerCase();
+  const all = await getAllCoordinators();
+  return (
+    all.find(
+      (c) =>
+        String(c.usn || '').toLowerCase() === clean ||
+        String(c.phone || '').replace(/[\s\-\+]/g, '') === clean.replace(/[\s\-\+]/g, '')
+    ) || null
+  );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FEST_CONFIG } from '../data/festConfig';
 
-export const Footer = ({ onOpenAdmin, onSelectSection, onOpenCertificate }) => {
+export const Footer = ({ onOpenAdmin, onSelectSection, onOpenCertificate, onOpenCoordinator, onOpenFaculty }) => {
   return (
     <footer className="border-t border-slate-800 bg-[#04060d] text-slate-400 text-xs relative z-10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,6 +56,14 @@ export const Footer = ({ onOpenAdmin, onSelectSection, onOpenCertificate }) => {
               </li>
               <li>
                 <button
+                  onClick={() => onSelectSection('winners')}
+                  className="text-amber-400 hover:text-amber-300 transition-colors"
+                >
+                  🏆 Winners Section
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onSelectSection('schedule')}
                   className="hover:text-cyan-400 transition-colors"
                 >
@@ -76,6 +84,22 @@ export const Footer = ({ onOpenAdmin, onSelectSection, onOpenCertificate }) => {
                   className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium"
                 >
                   ★ Claim Certificate
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onOpenCoordinator}
+                  className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                >
+                  🎓 Student Coordinator Certificate
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onOpenFaculty}
+                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium"
+                >
+                  👩‍🏫 Faculty Coordinator Certificate
                 </button>
               </li>
             </ul>

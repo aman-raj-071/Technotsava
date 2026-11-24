@@ -1,0 +1,25 @@
+4259|        setSuccessMsg('');
+4260|        setTeamRecord(null);
+4261|        setMembersList([]);
+4262|        setSelectedMember(null);
+4263|        setLoading(true);
+4264|
+4265|        const cleanKey = k.toLowerCase();
+4266|
+4267|        // Faculty Coordinator mode: look up by FULL NAME (case-insensitive)
+4268|        if (mode === 'faculty') {
+4269|          const found = FACULTY_COORDINATORS.find((f) => String(f.name).toLowerCase() === cleanKey);
+4270|          if (!found) {
+4271|            setLoading(false);
+4272|            setErrorMsg('No Faculty Co-ordinator found for name "' + k + '". Please check the spelling.');
+4273|            return;
+4274|          }
+4275|          const facultyMember = {
+4276|            id: 'faculty',
+4277|            name: found.name,
+4278|            usn: found.designation || 'Faculty',
+4279|            role: 'Faculty Coordinator',
+4280|            college: 'S J C Institute of Technology',
+4281|            event: 'Technotsava 8.0'
+4282|          };
+4283|          setTeamRecord({ reg_id: 'FAC-TECH26-' + cleanKey.replace(/[^a-z0-9]/g, '').toUpperCase(), leader_name: found.name, event_name: 'Technotsava 8.0' });

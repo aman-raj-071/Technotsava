@@ -1,0 +1,9 @@
+4240|        const cleanKey = k.toLowerCase();
+4241|
+4242|        // Student Coordinator mode: look up by USN in the coordinator roster
+4243|        if (mode === 'coordinator') {
+4244|          const found = COORDINATORS.find((c) => String(c.usn).toLowerCase() === cleanKey);
+4245|          if (!found) {
+4246|            setLoading(false);
+4247|            setErrorMsg('No Student Co-ordinator found for "' + k + '". Please check your USN.');
+4248|            return;

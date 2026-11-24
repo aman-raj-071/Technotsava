@@ -1,0 +1,26 @@
+4111|    
+4112|const FACULTY_COORDINATORS = [
+4113|  { name: 'Dr. Murthy DHR', designation: 'Faculty Coordinator (Ideathon)' },
+4114|  { name: 'Mrs. Divya M N', designation: 'Faculty Coordinator (Ideathon)' },
+4115|  { name: 'Dr. Gavina CG', designation: 'Faculty Coordinator (Digital Tech Hunt)' },
+4116|  { name: 'Anita TM', designation: 'Faculty Coordinator (Digital Tech Hunt)' },
+4117|  { name: 'Dr. Ajay N', designation: 'Faculty Coordinator (Tech Quiz)' },
+4118|  { name: 'Varun Kumar N', designation: 'Faculty Coordinator (Tech Quiz)' },
+4119|  { name: 'E Akhilla', designation: 'Faculty Coordinator (Tech Quiz)' },
+4120|  { name: 'Dr. Shrihari MR', designation: 'Faculty Coordinator (Free Fire)' },
+4121|  { name: 'Divakar K M', designation: 'Faculty Coordinator (Free Fire)' },
+4122|  { name: 'Dr. Shwetha T', designation: 'Faculty Coordinator (Logo Mania)' },
+4123|  { name: 'Suman J', designation: 'Faculty Coordinator (Logo Mania)' },
+4124|  { name: 'Udayapriya', designation: 'Faculty Coordinator (Logo Mania)' },
+4125|  { name: 'Dr. Rashmi KA', designation: 'Faculty Coordinator (Videography)' },
+4126|  { name: 'Mrs. Navyashri N', designation: 'Faculty Coordinator (Videography)' },
+4127|  { name: 'Mamatha', designation: 'Faculty Coordinator (Minute to Win-It)' },
+4128|  { name: 'Divyshree V', designation: 'Faculty Coordinator (Minute to Win-It)' },
+4129|  { name: 'Chanadana D Swamy', designation: 'Faculty Coordinator (Minute to Win-It)' },
+4130|];
+4131|
+4132|
+4133|function CertificatePortal({ onBack }) {
+4134|      const [mode, setMode] = useState('participation'); // 'participation' | 'coordinator'
+4135|      const [keyInput, setKeyInput] = useState('');
+4136|      const [loading, setLoading] = useState(false);

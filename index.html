@@ -4039,7 +4039,99 @@
     // ========================================================
     // CERTIFICATE SEARCH & DOWNLOAD PORTAL
     // ========================================================
-    function CertificatePortal({ onBack }) {
+
+    // ── STUDENT COORDINATOR ROSTER (certificate lookup by USN) ────────
+    const COORDINATORS = [
+      { usn: '1SJ24CS145', name: 'Sohan Gowda K', role: 'Main Coordinator' },
+      { usn: '1SJ24CS124', name: 'Ruchitha L', role: 'Main Coordinator' },
+      { usn: '1SJ24CS022', name: 'Brunda S', role: 'Main Coordinator' },
+      { usn: '1SJ24CS061', name: 'Kruthika M G', role: 'Main Coordinator' },
+      { usn: '1SJ25CS153', name: 'Tejas J V', role: 'Main Coordinator' },
+      { usn: '1SJ24CS024', name: 'Chandushri V M', role: 'Team Lead' },
+      { usn: '1SJ24CS012', name: 'Anusha S', role: 'Student Coordinator' },
+      { usn: '1SJ25CS126', name: 'Sahithi K N', role: 'Student Coordinator' },
+      { usn: '1SJ25CS125', name: 'Sahana M', role: 'Student Coordinator' },
+      { usn: '1SJ25CS123', name: 'Sagar Metri', role: 'Student Coordinator' },
+      { usn: '1SJ24CS035', name: 'Ganavi V', role: 'Team Lead' },
+      { usn: '1SJ24CS025', name: 'D N Harshitha', role: 'Student Coordinator' },
+      { usn: '1SJ25CS121', name: 'Sadhvika B R', role: 'Student Coordinator' },
+      { usn: '1SJ25CS135', name: 'Shashirekha G', role: 'Student Coordinator' },
+      { usn: '1SJ25CS140', name: 'Shrunga N', role: 'Student Coordinator' },
+      { usn: '1SJ25CS144', name: 'Sowmya V', role: 'Student Coordinator' },
+      { usn: '1SJ24CS067', name: 'Likhitha A', role: 'Team Lead' },
+      { usn: '1SJ24CS072', name: 'Madhu P G', role: 'Student Coordinator' },
+      { usn: '1SJ24CS100', name: 'Poojitha R', role: 'Student Coordinator' },
+      { usn: '1SJ24CS088', name: 'Nanditha A', role: 'Student Coordinator' },
+      { usn: '1SJ24CS085', name: 'Namitha A', role: 'Student Coordinator' },
+      { usn: '1SJ24CS064', name: 'Kusuma B M', role: 'Student Coordinator' },
+      { usn: '1SJ24CS176', name: 'Vivek P M', role: 'Team Lead' },
+      { usn: 'YASHAS-A', name: 'Yashas A', role: 'Student Coordinator' },
+      { usn: '1SJ24CS127', name: 'Sai Gagan N K', role: 'Student Coordinator' },
+      { usn: 'CHIRAYUSH-TM', name: 'Chirayush T M', role: 'Student Coordinator' },
+      { usn: '1SJ24CS158', name: 'Uday S Reddy', role: 'Student Coordinator' },
+      { usn: '1SJ24CS169', name: 'Vidit Raj', role: 'Student Coordinator' },
+      { usn: '1SJ24CS182', name: 'Yashwanth Gowda R', role: 'Team Lead' },
+      { usn: '1SJ24CS184', name: 'Yogish Gowda S', role: 'Student Coordinator' },
+      { usn: '1SJ24CS130', name: 'Sandeep N', role: 'Student Coordinator' },
+      { usn: '1SJ24CS147', name: 'Sudeep R H', role: 'Student Coordinator' },
+      { usn: '1SJ24CS128', name: 'Samith Gowda', role: 'Student Coordinator' },
+      { usn: '1SJ24CS138', name: 'Shodhan V Shetty', role: 'Student Coordinator' },
+      { usn: '1SJ25CS137', name: 'Shivanand Konnur', role: 'Student Coordinator' },
+      { usn: '1SJ25CS117', name: 'Rohith C S', role: 'Student Coordinator' },
+      { usn: '1SJ25CS167', name: 'Yashavanth H D', role: 'Student Coordinator' },
+      { usn: '1SJ25CS118', name: 'Rohith S R', role: 'Student Coordinator' },
+      { usn: '1SJ24CS003', name: 'Abhishek E', role: 'Student Coordinator' },
+      { usn: '1SJ25CS017', name: 'Ayiman Tarannum', role: 'Team Lead' },
+      { usn: '1SJ25CS011', name: 'Aman Raj', role: 'Student Coordinator' },
+      { usn: '1SJ25CS007', name: 'Afza Farheen A', role: 'Student Coordinator' },
+      { usn: '1SJ25CS014', name: 'Aniket', role: 'Student Coordinator' },
+      { usn: '1SJ25CS034', name: 'Chaithanya R', role: 'Student Coordinator' },
+      { usn: '1SJ24CS181', name: 'Yashaswini M', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS178', name: 'Vyshnavi P', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS129', name: 'Sanchitha S', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS045', name: 'Haripriya RM', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS026', name: 'Bhavana J', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS043', name: 'G.N Meghana', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS183', name: 'Yathish V', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS103', name: 'Pratham S B', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS132', name: 'Sanika R', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS168', name: 'Vidhya N', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS118', name: 'Riya Singh', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS112', name: 'Rachamalla Kavya', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS113', name: 'Ragi Rakshitha', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS148', name: 'Sumanth Reddy', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS141', name: 'Shreya M', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS173', name: 'Reshika Kirana Kumar', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS009', name: 'Akshay S', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS170', name: 'Vidya Shree D', role: 'Publishing Coordinator' },
+      { usn: '1SJ24CS166', name: 'Varsha Tejamayi R', role: 'Publishing Coordinator' },
+      { usn: '1SJ25CS061', name: 'Keerthi Kumar B J', role: 'Publishing Coordinator' },
+    ];
+
+    
+const FACULTY_COORDINATORS = [
+  { name: 'Dr. Murthy DHR', designation: 'Faculty Coordinator (Ideathon)' },
+  { name: 'Mrs. Divya M N', designation: 'Faculty Coordinator (Ideathon)' },
+  { name: 'Dr. Gavina CG', designation: 'Faculty Coordinator (Digital Tech Hunt)' },
+  { name: 'Anita TM', designation: 'Faculty Coordinator (Digital Tech Hunt)' },
+  { name: 'Dr. Ajay N', designation: 'Faculty Coordinator (Tech Quiz)' },
+  { name: 'Varun Kumar N', designation: 'Faculty Coordinator (Tech Quiz)' },
+  { name: 'E Akhilla', designation: 'Faculty Coordinator (Tech Quiz)' },
+  { name: 'Dr. Shrihari MR', designation: 'Faculty Coordinator (Free Fire)' },
+  { name: 'Divakar K M', designation: 'Faculty Coordinator (Free Fire)' },
+  { name: 'Dr. Shwetha T', designation: 'Faculty Coordinator (Logo Mania)' },
+  { name: 'Suman J', designation: 'Faculty Coordinator (Logo Mania)' },
+  { name: 'Udayapriya', designation: 'Faculty Coordinator (Logo Mania)' },
+  { name: 'Dr. Rashmi KA', designation: 'Faculty Coordinator (Videography)' },
+  { name: 'Mrs. Navyashri N', designation: 'Faculty Coordinator (Videography)' },
+  { name: 'Mamatha', designation: 'Faculty Coordinator (Minute to Win-It)' },
+  { name: 'Divyshree V', designation: 'Faculty Coordinator (Minute to Win-It)' },
+  { name: 'Chanadana D Swamy', designation: 'Faculty Coordinator (Minute to Win-It)' },
+];
+
+
+function CertificatePortal({ onBack }) {
+      const [mode, setMode] = useState('participation'); // 'participation' | 'coordinator'
       const [keyInput, setKeyInput] = useState('');
       const [loading, setLoading] = useState(false);
       const [errorMsg, setErrorMsg] = useState('');
@@ -4068,6 +4160,9 @@
         if (hash.includes('?')) {
           const qs = hash.split('?')[1];
           const sp = new URLSearchParams(qs);
+          const m = sp.get('mode');
+          if (m === 'coordinator') setMode('coordinator');
+          if (m === 'faculty') setMode('faculty');
           const k = sp.get('key') || sp.get('usn');
           if (k) {
             setKeyInput(k);
@@ -4088,7 +4183,19 @@
       };
 
             let svgTemplateCache = null;
+      let svgCoordTemplateCache = null;
       const getSvgTemplate = async () => {
+        const isCoord = mode === 'coordinator' || mode === 'faculty';
+        if (isCoord) {
+          if (!svgCoordTemplateCache) {
+            const res = await fetch('/certificate-coordinator-template.svg');
+            svgCoordTemplateCache = await res.text();
+          }
+          if (mode === 'faculty') {
+            return svgCoordTemplateCache.split('Student Co-ordinator').join('Faculty Co-ordinator');
+          }
+          return svgCoordTemplateCache;
+        }
         if (!svgTemplateCache) {
           const res = await fetch('/certificate-template.svg');
           svgTemplateCache = await res.text();
@@ -4111,7 +4218,7 @@
           let filledSvg = rawSvg;
           filledSvg = filledSvg.replace(
             /<text id="name"[^>]*><\/text>/,
-            '<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + name + '</text>'
+            '<text id="name" x="600" y="' + (mode === 'coordinator' || mode === 'faculty' ? '508' : '515') + '" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + name + '</text>'
           );
           filledSvg = filledSvg.replace(
             /<tspan id="college-tspan"[^>]*><\/tspan>/,
@@ -4156,6 +4263,83 @@
         setLoading(true);
 
         const cleanKey = k.toLowerCase();
+
+        // Faculty Coordinator mode: look up by FULL NAME (case-insensitive)
+        if (mode === 'faculty') {
+          const normName = (s) => String(s || '').toLowerCase().replace(/\b(dr|mrs|mr|prof|ms)\b\.?/g, '').replace(/[^a-z0-9]/g, '');
+          const nKey = normName(k);
+          if (!nKey || nKey.length < 2) {
+            setLoading(false);
+            setErrorMsg('Please enter at least 2 characters of the Faculty Co-ordinator name.');
+            return;
+          }
+          const scored = FACULTY_COORDINATORS.map((f) => {
+            const fn = normName(f.name);
+            let score = 0;
+            if (fn === nKey) score = 100;
+            else if (fn.startsWith(nKey)) score = 80;
+            else if (nKey.startsWith(fn)) score = 70;
+            else if (fn.includes(nKey) || nKey.includes(fn)) score = 60;
+            return { f: f, score: score };
+          }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score);
+          if (!scored.length) {
+            setLoading(false);
+            setErrorMsg('No Faculty Co-ordinator found for name "' + k + '". Please check the spelling.');
+            return;
+          }
+          const best = scored[0];
+          const ties = scored.filter((x) => x.score === best.score);
+          if (ties.length > 1 && best.score < 100) {
+            setLoading(false);
+            setErrorMsg('Multiple Faculty Co-ordinators match "' + k + '": ' + ties.map((t) => t.f.name).slice(0, 3).join(', ') + '. Please type more of the full name.');
+            return;
+          }
+          const found = best.f;
+          const facultyMember = {
+            id: 'faculty',
+            name: found.name,
+            usn: found.designation || 'Faculty',
+            role: 'Faculty Coordinator',
+            college: 'S J C Institute of Technology',
+            event: 'Technotsava 8.0'
+          };
+          setTeamRecord({ reg_id: 'FAC-TECH26-' + cleanKey.replace(/[^a-z0-9]/g, '').toUpperCase(), leader_name: found.name, event_name: 'Technotsava 8.0' });
+          setMembersList([facultyMember]);
+          setSelectedMember(facultyMember);
+          setSuccessMsg('🎉 Verified! Faculty Co-ordinator certificate ready for ' + found.name + '.');
+          setLoading(false);
+          if (window.confetti) {
+            try { window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } }); } catch (e) {}
+          }
+          return;
+        }
+
+        // Student Coordinator mode: look up by USN in the coordinator roster
+        if (mode === 'coordinator') {
+          const found = COORDINATORS.find((c) => String(c.usn).toLowerCase() === cleanKey);
+          if (!found) {
+            setLoading(false);
+            setErrorMsg('No Student Co-ordinator found for "' + k + '". Please check your USN.');
+            return;
+          }
+          const coordMember = {
+            id: 'coordinator',
+            name: found.name,
+            usn: found.usn,
+            role: found.role || 'Student Coordinator',
+            college: found.college || 'S J C Institute of Technology',
+            event: 'Technotsava 8.0'
+          };
+          setTeamRecord({ reg_id: found.usn, leader_name: found.name, event_name: 'Technotsava 8.0' });
+          setMembersList([coordMember]);
+          setSelectedMember(coordMember);
+          setSuccessMsg('🎉 Verified! Student Co-ordinator certificate ready for ' + found.name + '.');
+          setLoading(false);
+          if (window.confetti) {
+            try { window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } }); } catch (e) {}
+          }
+          return;
+        }
 
         try {
           const allRegs = await getStoredRegistrations();
@@ -4302,7 +4486,7 @@
             let mSvg = rawSvgBulk;
             mSvg = mSvg.replace(
               /<text id="name"[^>]*><\/text>/,
-              '<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + (m.name || 'Participant') + '</text>'
+              '<text id="name" x="600" y="' + (mode === 'coordinator' || mode === 'faculty' ? '508' : '515') + '" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">' + (m.name || 'Participant') + '</text>'
             );
             mSvg = mSvg.replace(
               /<tspan id="college-tspan"[^>]*><\/tspan>/,
@@ -4374,22 +4558,50 @@
               </span>
             </div>
             <h1 className="font-display font-black text-3xl sm:text-5xl text-black uppercase mb-2">
-              CLAIM PARTICIPATION CERTIFICATES
+              {mode === 'faculty' ? 'CLAIM FACULTY COORDINATOR CERTIFICATE' : mode === 'coordinator' ? 'CLAIM STUDENT COORDINATOR CERTIFICATE' : 'CLAIM PARTICIPATION CERTIFICATES'}
             </h1>
             <p className="font-mono text-xs sm:text-sm text-slate-700 max-w-3xl">
-              Enter your <span className="font-bold text-black underline">Unique Registration Code</span> (e.g. TECH26-...) or <span className="font-bold text-black underline">USN</span>. If your team attended, certificates for <strong>all team members</strong> will be fetched and ready to preview or download!
+              {mode === 'faculty' ? (
+                <>Enter your <span className="font-bold text-black underline">Full Name</span>. If you are a registered Faculty Co-ordinator, your certificate will be fetched and ready to preview or download!</>
+              ) : mode === 'coordinator' ? (
+                <>Enter your <span className="font-bold text-black underline">USN</span>. If you are a registered Student Co-ordinator, your certificate will be fetched and ready to preview or download!</>
+              ) : (
+                <>Enter your <span className="font-bold text-black underline">Unique Registration Code</span> (e.g. TECH26-...) or <span className="font-bold text-black underline">USN</span>. If your team attended, certificates for <strong>all team members</strong> will be fetched and ready to preview or download!</>
+              )}
             </p>
+          </div>
+
+          {/* Mode Toggle */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <button
+              onClick={() => { setMode('participation'); setErrorMsg(''); setSuccessMsg(''); }}
+              className={mode === 'participation' ? 'px-4 py-2 font-mono font-black text-xs bg-[#00E575] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
+            >
+              🏅 PARTICIPATION CERTIFICATE
+            </button>
+            <button
+              onClick={() => { setMode('coordinator'); setErrorMsg(''); setSuccessMsg(''); }}
+              className={mode === 'coordinator' ? 'px-4 py-2 font-mono font-black text-xs bg-[#FFE600] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
+            >
+              🎓 STUDENT COORDINATOR CERTIFICATE
+            </button>
+            <button
+              onClick={() => { setMode('faculty'); setErrorMsg(''); setSuccessMsg(''); }}
+              className={mode === 'faculty' ? 'px-4 py-2 font-mono font-black text-xs bg-[#FFB3D9] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
+            >
+              👩‍🏫 FACULTY COORDINATOR CERTIFICATE
+            </button>
           </div>
 
           {/* Search Card */}
           <form onSubmit={(e) => { e.preventDefault(); handleFetch(); }} className="bg-white border-4 border-black brutal-shadow-lg p-6 sm:p-8 mb-8">
             <label className="block font-mono font-black text-xs uppercase tracking-wider text-black mb-2">
-              ENTER UNIQUE REGISTRATION CODE OR USN *
+              {mode === 'faculty' ? 'ENTER FACULTY COORDINATOR FULL NAME *' : mode === 'coordinator' ? 'ENTER STUDENT COORDINATOR USN *' : 'ENTER UNIQUE REGISTRATION CODE OR USN *'}
             </label>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
-                placeholder="e.g. TECH26-MWI-8427 or 1SJ21CS001"
+                placeholder={mode === 'faculty' ? 'e.g. Dr. Murthy DHR' : mode === 'coordinator' ? 'e.g. 1SJ24CS145' : 'e.g. TECH26-MWI-8427 or 1SJ21CS001'}
                 value={keyInput}
                 onChange={(e) => setKeyInput(e.target.value.toUpperCase())}
                 className="flex-1 px-4 py-3.5 font-mono font-bold text-base bg-[#FFFDF5] border-3 border-black text-black placeholder-slate-400 focus:outline-none focus:border-[#0066FF] uppercase"
@@ -4741,6 +4953,9 @@
                 <div className="flex items-center gap-3">
                   <button onClick={() => { setView('certificate'); location.hash = '#certificate'; }} className="underline hover:text-green-800 font-black mr-4">
                     🎓 CLAIM CERTIFICATE ↗
+                  </button>
+                  <button onClick={() => { setView('certificate'); location.hash = '#certificate?mode=coordinator'; }} className="underline hover:text-yellow-700 font-black mr-4">
+                    🎓 STUDENT COORDINATOR CERTIFICATE ↗
                   </button>
                   <button onClick={() => { setView('admin'); location.hash = '#admin'; }} className="underline hover:text-blue-700 font-black">
                     ADMIN LOGIN ↗

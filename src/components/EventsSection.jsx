@@ -130,6 +130,48 @@ export const EventsSection = ({ onSelectEvent, eventSettings = {} }) => {
                       {event.shortDescription}
                     </p>
 
+                    {/* Winners Section for this Event */}
+                    {event.winners && event.winners.length > 0 && (
+                      <div className="mb-5 p-3.5 rounded-xl bg-slate-900/90 border border-amber-500/30 space-y-2">
+                        <div className="flex items-center justify-between text-xs font-mono font-bold text-amber-400">
+                          <span className="flex items-center gap-1.5">
+                            <span>🏆</span>
+                            <span className="uppercase tracking-wider">Event Winners</span>
+                          </span>
+                          <span className="text-[10px] text-slate-400 uppercase font-normal">Top 2</span>
+                        </div>
+                        <div className="space-y-2 pt-1">
+                          {event.winners.map((winner, wIdx) => (
+                            <div
+                              key={wIdx}
+                              className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-between gap-2.5"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-wider shrink-0 ${
+                                  winner.position === '1ST'
+                                    ? 'bg-amber-400 text-slate-950 shadow-sm'
+                                    : 'bg-slate-300 text-slate-950'
+                                }`}>
+                                  {winner.position}
+                                </span>
+                                <div className="min-w-0">
+                                  <div className="text-xs font-bold text-white truncate leading-tight">
+                                    {winner.teamName}
+                                  </div>
+                                  <div className="text-[11px] text-slate-400 truncate">
+                                    {winner.college}
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-xs font-extrabold text-amber-300 font-mono shrink-0">
+                                {winner.prize}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Themes indicator for Ideathon */}
                     {event.themes && (
                       <div className="mb-5 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 space-y-1">

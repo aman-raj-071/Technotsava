@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { EventsSection } from './components/EventsSection';
+import { WinnersSection } from './components/WinnersSection';
 import { ScheduleSection } from './components/ScheduleSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
@@ -101,6 +102,20 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenCoordinator = () => {
+    setCurrentView('certificate');
+    setCertSeed(null);
+    window.location.hash = '#certificate?mode=coordinator';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenFaculty = () => {
+    setCurrentView('certificate');
+    setCertSeed(null);
+    window.location.hash = '#certificate?mode=faculty';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleRegisterAnother = () => {
     setCurrentView('home');
     setSelectedEvent(null);
@@ -146,6 +161,7 @@ export default function App() {
               onSelectEvent={handleSelectEvent}
               eventSettings={eventSettings}
             />
+            <WinnersSection />
             <ScheduleSection />
             <ContactSection />
           </>
@@ -180,6 +196,8 @@ export default function App() {
       <Footer
         onOpenAdmin={handleOpenAdmin}
         onOpenCertificate={handleOpenCertificate}
+        onOpenCoordinator={handleOpenCoordinator}
+        onOpenFaculty={handleOpenFaculty}
         onSelectSection={(sectionId) => {
           if (currentView !== 'home') {
             handleGoHome();

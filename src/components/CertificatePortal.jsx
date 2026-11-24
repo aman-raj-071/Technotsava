@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { getAllRegistrations } from '../lib/db';
+import { getAllRegistrations, findCoordinatorByUSN } from '../lib/db';
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
+import { COORDINATORS } from '../data/coordinators';
+import { FACULTY_COORDINATORS } from '../data/facultyCoordinators';
 
-export const CertificatePortal = ({ onBackToFest }) => {
+export const CertificatePortal = ({ onBackToFest, initialMode = 'participation' }) => {
+  const [mode, setMode] = useState(initialMode === 'coordinator' || initialMode === 'faculty' ? initialMode : 'participation');
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -26,12 +29,16 @@ export const CertificatePortal = ({ onBackToFest }) => {
     img.onload = () => { templateImgRef.current = img; };
   }, []);
 
-  // Check URL query param e.g. #certificate?key=...
+  // Check URL query param e.g. #certificate?key=... or #certificate?mode=coordinator
   useEffect(() => {
     const hash = window.location.hash;
     if (hash.includes('?')) {
       const queryStr = hash.split('?')[1];
       const params = new URLSearchParams(queryStr);
+      const m = params.get('mode');
+      if (m === 'coordinator' || m === 'faculty') {
+        setMode(m);
+      }
       const k = params.get('key') || params.get('usn');
       if (k) {
         setQuery(k);
@@ -109,6 +116,25 @@ export const CertificatePortal = ({ onBackToFest }) => {
   const TEXT_COLOR = '#4A1518'; // rgb(0.29, 0.08, 0.09)
 
   // ---------------------------------------------------------------------
+  // COORDINATOR / PARTICIPATION BODY TEXT
+  // ---------------------------------------------------------------------
+  // Swap body phrases for the Student Coordinator certificate (same layout
+  // as the participation certificate, coordinator wording). Each phrase
+  // occurs exactly once in /certificate-template.svg.
+  const applyModeText = (svg) => {
+    if (mode !== 'coordinator') return svg;
+    return svg
+      .replace(
+        'has actively participated in the Events',
+        'has served as a Student Co-ordinator for the Events'
+      )
+      .replace(
+        'We appreciate your outstanding performance and dedication.',
+        'We appreciate your outstanding contribution, commitment and dedication.'
+      );
+  };
+
+  // ---------------------------------------------------------------------
   // PREMIUM VECTOR BACKGROUND (replaces the low-res 1024×723 raster that
   // used to be embedded in the SVG and got upscaled -> blur).
   // Drawn with canvas primitives, it is razor-sharp at any resolution.
@@ -176,14 +202,27 @@ export const CertificatePortal = ({ onBackToFest }) => {
   };
 
   // Draw the premium vector background + SVG decorative overlays + text.
-  let svgTemplateText = null;
-  const getSvgTemplateText = async () => {
-    if (!svgTemplateText) {
-      const res = await fetch('/certificate-template.svg');
-      svgTemplateText = await res.text();
+  // We use separate SVG templates for Participant vs Student Coordinator to ensure
+  // exact layout, distinct wording, and zero interference with participant certificates.
+  let svgTemplateCache = {};
+  const getSvgTemplateText = async (targetMode = mode) => {
+    if (!svgTemplateCache[targetMode]) {
+      const templateFile =
+        targetMode === 'coordinator' || targetMode === 'faculty'
+          ? '/certificate-coordinator-template.svg'
+          : '/certificate-template.svg';
+      const res = await fetch(templateFile);
+      svgTemplateCache[targetMode] = await res.text();
     }
-    return svgTemplateText;
+    return svgTemplateCache[targetMode];
   };
+
+  // Swap the coordinator template's wording for Faculty Coordinators.
+  const applyFacultyModeText = (svg) =>
+    svg.replace(
+      'has served as a Student Co-ordinator for the Events',
+      'has served as a Faculty Co-ordinator for the Events'
+    );
 
   const drawCertificateToCanvas = async (canvas, member, scale) => {
     const W = Math.round(BASE_W * scale);
@@ -194,20 +233,24 @@ export const CertificatePortal = ({ onBackToFest }) => {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    const rawSvg = await getSvgTemplateText();
-    const name = member.name || 'Participant';
-    const college = member.college || 'S J C Institute of Technology';
+    const rawSvg = await getSvgTemplateText(mode);
+    const name = member.name || (mode === 'coordinator' ? 'Coordinator' : mode === 'faculty' ? 'Faculty Coordinator' : 'Participant');
+    const college = member.college || 'SJC Institute Of Technology';
 
     // Strip the low-res <image id="cert-bg"> raster from the SVG body.
     let bodySvg = rawSvg.replace(
       /<image\s+id="cert-bg"[^>]*\/>/,
       ''
     );
+    if (mode === 'faculty') {
+      bodySvg = applyFacultyModeText(bodySvg);
+    }
 
     let filledSvg = bodySvg;
+    const nameY = mode === 'coordinator' || mode === 'faculty' ? '508' : '515';
     filledSvg = filledSvg.replace(
       /<text id="name"[^>]*><\/text>/,
-      `<text id="name" x="600" y="515" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">${name}</text>`
+      `<text id="name" x="600" y="${nameY}" font-family="Poppins" font-size="24" font-weight="700" fill="#4A1518" text-anchor="middle">${name}</text>`
     );
     filledSvg = filledSvg.replace(
       /<tspan id="college-tspan"[^>]*><\/tspan>/,
@@ -245,14 +288,24 @@ export const CertificatePortal = ({ onBackToFest }) => {
     return fontPromiseCache;
   };
 
-  let templateBytesCache = null;
+  let templateBytesCache = {};
   const getTemplateBytes = async () => {
     // The PDF background is the same premium vector design + decorative SVG
     // overlays (crest, logos, seal, signatures) as the canvas preview,
-    // rasterized at full native resolution into a real JPEG.
-    if (!templateBytesCache) {
-      const rawSvg = await getSvgTemplateText();
-      const bodySvg = rawSvg.replace(/<image\s+id="cert-bg"[^>]*\/>/, '');
+    // rasterized at full native resolution into a real JPEG. The cache is
+    // keyed by mode so participation/coordinator use their dedicated files.
+    if (!templateBytesCache[mode]) {
+      const rawSvg = await getSvgTemplateText(mode);
+      let bodySvg = rawSvg.replace(/<image\s+id="cert-bg"[^>]*\/>/, '');
+      if (mode === 'faculty') {
+        bodySvg = applyFacultyModeText(bodySvg);
+      }
+      if (mode === 'coordinator' || mode === 'faculty') {
+        bodySvg = bodySvg.replace(
+          /<tspan id="college-tspan"[^>]*><\/tspan>/,
+          `<tspan id="college-tspan" font-weight="700" fill="#8A5A12">SJC Institute Of Technology</tspan>`
+        );
+      }
       const blob = new Blob([bodySvg], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const overlay = new Image();
@@ -270,9 +323,9 @@ export const CertificatePortal = ({ onBackToFest }) => {
       URL.revokeObjectURL(url);
 
       const res = await fetch(off.toDataURL('image/jpeg', 0.92));
-      templateBytesCache = await res.arrayBuffer();
+      templateBytesCache[mode] = await res.arrayBuffer();
     }
-    return templateBytesCache;
+    return templateBytesCache[mode];
   };
 
   // Build a vector-text PDF (1200 x 848 pt landscape) for one member.
@@ -316,11 +369,9 @@ export const CertificatePortal = ({ onBackToFest }) => {
       });
     };
 
-    // Name: SVG x=600, y=515 → PDF cx=600, baseline=515
-    drawCenteredAt(member.name || 'Participant', 600, 515, 240, 24);
-    // College is embedded in "from <college> has..." text at y=558 in SVG,
-    // but the PDF draws it separately since we can't embed tspans.
-    // We skip drawing college separately since it's baked into the SVG overlay.
+    // Name position:
+    const nameBaseline = mode === 'coordinator' || mode === 'faculty' ? 508 : 515;
+    drawCenteredAt(member.name || (mode === 'coordinator' ? 'Coordinator' : mode === 'faculty' ? 'Faculty Coordinator' : 'Participant'), 600, nameBaseline, 240, 24);
 
     const bytes = await pdfDoc.save();
     return bytes;
@@ -365,7 +416,8 @@ export const CertificatePortal = ({ onBackToFest }) => {
     if (selectedMember) {
       renderCertificate(selectedMember);
     }
-  }, [selectedMember]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMember, mode]);
 
   const fetchCertificates = async (searchKey) => {
     const key = (searchKey || query).trim();
@@ -379,6 +431,103 @@ export const CertificatePortal = ({ onBackToFest }) => {
     setLoading(true);
 
     const cleanKey = key.toLowerCase();
+
+    // ── Faculty Coordinator mode: look up by NAME (case-insensitive) ──
+    if (mode === 'faculty') {
+      const normName = (s) =>
+        String(s || '').toLowerCase()
+          .replace(/\b(dr|mrs|mr|prof|ms)\b\.?/g, '')
+          .replace(/[^a-z0-9]/g, '');
+      const nKey = normName(key);
+      if (!nKey || nKey.length < 2) {
+        setErrorMsg('Please enter at least 2 characters of the Faculty Coordinator name.');
+        setLoading(false);
+        return;
+      }
+      const scored = FACULTY_COORDINATORS.map((f) => {
+        const fn = normName(f.name);
+        let score = 0;
+        if (fn === nKey) score = 100;
+        else if (fn.startsWith(nKey)) score = 80;
+        else if (nKey.startsWith(fn)) score = 70;
+        else if (fn.includes(nKey) || nKey.includes(fn)) score = 60;
+        return { f, score };
+      }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score);
+      if (!scored.length) {
+        setErrorMsg(`No Faculty Coordinator record found for name "${key}". Please check the spelling.`);
+        setLoading(false);
+        return;
+      }
+      const best = scored[0];
+      const ties = scored.filter((x) => x.score === best.score);
+      if (ties.length > 1 && best.score < 100) {
+        setErrorMsg(`Multiple Faculty Coordinators match "${key}": ${ties.map((t) => t.f.name).slice(0, 3).join(', ')}. Please type more of the full name.`);
+        setLoading(false);
+        return;
+      }
+      const found = best.f;
+      const member = {
+        id: 'faculty',
+        name: found.name,
+        usn: found.department || found.designation || 'Faculty',
+        role: 'Faculty Coordinator',
+        designation: found.designation,
+        college: 'SJC Institute Of Technology',
+        event: 'Technotsava 8.0',
+        serial: 'CERT-TECH26-FAC-01',
+        faculty: true
+      };
+      const record = {
+        reg_id: `FAC-TECH26-${cleanKey.replace(/[^a-z0-9]/g, '')}`,
+        leader_name: found.name,
+        leader_usn: found.department || found.designation,
+        event_name: 'Faculty Coordinator',
+        team_name: found.name,
+        attended: true
+      };
+      setTeamRecord(record);
+      setMembersList([member]);
+      setSelectedMember(member);
+      setSuccessMsg(`Verified! Faculty Coordinator certificate available for ${found.name}.`);
+      setLoading(false);
+      return;
+    }
+
+    // ── Student Coordinator mode: look up by USN in coordinators list/db ──
+    if (mode === 'coordinator') {
+      const coord = (await findCoordinatorByUSN(cleanKey)) || COORDINATORS.find(
+        (c) => String(c.usn || '').toLowerCase() === cleanKey
+      );
+      if (!coord) {
+        setErrorMsg(`No Student Coordinator record found for USN "${key}". Please check your USN.`);
+        setLoading(false);
+        return;
+      }
+      const member = {
+        id: 'coordinator',
+        name: coord.name,
+        usn: coord.usn,
+        role: 'Student Coordinator',
+        college: 'SJC Institute Of Technology',
+        event: 'Technotsava 8.0',
+        serial: 'CERT-TECH26-COORD-01',
+        coordinator: true
+      };
+      const record = {
+        reg_id: `COORD-TECH26-${cleanKey}`,
+        leader_name: coord.name,
+        leader_usn: coord.usn,
+        event_name: 'Student Coordinator',
+        team_name: coord.name,
+        attended: true
+      };
+      setTeamRecord(record);
+      setMembersList([member]);
+      setSelectedMember(member);
+      setSuccessMsg(`Verified! Student Coordinator certificate available for ${coord.name}.`);
+      setLoading(false);
+      return;
+    }
 
     try {
       const allRegs = (await getAllRegistrations()) || [];
@@ -537,16 +686,59 @@ export const CertificatePortal = ({ onBackToFest }) => {
 
   return (
     <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center">
+      {/* Mode Toggle */}
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <button
+          onClick={() => { setMode('participation'); setQuery(''); setErrorMsg(''); setSuccessMsg(''); setTeamRecord(null); setMembersList([]); setSelectedMember(null); }}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold font-mono transition-all border ${mode === 'participation'
+            ? 'bg-cyan-500/20 border-cyan-500/60 text-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.25)]'
+            : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400'
+            }`}
+        >
+          🏅 Participation Certificate
+        </button>
+        <button
+          onClick={() => { setMode('coordinator'); setQuery(''); setErrorMsg(''); setSuccessMsg(''); setTeamRecord(null); setMembersList([]); setSelectedMember(null); }}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold font-mono transition-all border ${mode === 'coordinator'
+            ? 'bg-cyan-500/20 border-cyan-500/60 text-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.25)]'
+            : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400'
+            }`}
+        >
+          🎓 Student Coordinator Certificate
+        </button>
+        <button
+          onClick={() => { setMode('faculty'); setQuery(''); setErrorMsg(''); setSuccessMsg(''); setTeamRecord(null); setMembersList([]); setSelectedMember(null); }}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold font-mono transition-all border ${mode === 'faculty'
+            ? 'bg-amber-500/20 border-amber-500/60 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
+            : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:border-amber-500/40 hover:text-amber-400'
+            }`}
+        >
+          👩‍🏫 Faculty Coordinator Certificate
+        </button>
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8">
         <span className="inline-block px-3 py-1 mb-3 text-xs font-mono font-semibold tracking-wider text-cyan-300 uppercase bg-cyan-950/60 border border-cyan-500/30 rounded-full">
-          Official Team & Member Certification
+          {mode === 'faculty' ? 'Official Faculty Certification' : mode === 'coordinator' ? 'Official Coordinator Certification' : 'Official Team & Member Certification'}
         </span>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          Claim Participation Certificates
+          {mode === 'faculty' ? 'Claim Faculty Coordinator Certificate' : mode === 'coordinator' ? 'Claim Student Coordinator Certificate' : 'Claim Participation Certificates'}
         </h1>
         <p className="mt-2 text-sm text-slate-400 max-w-xl mx-auto">
-          Enter your <span className="text-cyan-400 font-mono">Unique Registration Code</span> (e.g. TECH26-...) or <span className="text-cyan-400 font-mono">USN</span> to fetch certificates for all registered team members.
+          {mode === 'faculty' ? (
+            <>
+              Enter your <span className="text-amber-400 font-mono">Full Name</span> to fetch your Faculty Coordinator certificate.
+            </>
+          ) : mode === 'coordinator' ? (
+            <>
+              Enter your <span className="text-cyan-400 font-mono">USN</span> to fetch your Student Coordinator certificate.
+            </>
+          ) : (
+            <>
+              Enter your <span className="text-cyan-400 font-mono">Unique Registration Code</span> (e.g. TECH26-...) or <span className="text-cyan-400 font-mono">USN</span> to fetch certificates for all registered team members.
+            </>
+          )}
         </p>
       </div>
 
@@ -558,7 +750,7 @@ export const CertificatePortal = ({ onBackToFest }) => {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter Registration Code or USN"
+              placeholder={mode === 'faculty' ? 'Enter Faculty Name' : mode === 'coordinator' ? 'Enter USN' : 'Enter Registration Code or USN'}
               className="flex-1 px-4 py-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500 font-mono text-sm uppercase outline-none transition-all shadow-inner"
               required
             />
@@ -576,7 +768,7 @@ export const CertificatePortal = ({ onBackToFest }) => {
                   <span>Verifying...</span>
                 </>
               ) : (
-                <span>Fetch All Certificates</span>
+                <span>{mode === 'faculty' ? 'Fetch Faculty Certificate' : mode === 'coordinator' ? 'Fetch Coordinator Certificate' : 'Fetch All Certificates'}</span>
               )}
             </button>
           </div>

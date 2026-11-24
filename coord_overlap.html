@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Coordinator Overlap Check</title></head>
+<body>
+<div id="out">loading...</div>
+<script>
+(async () => {
+  const out = document.getElementById('out');
+  const res = await fetch('/coordinator_test.svg');
+  const svgText = await res.text();
+  const holder = document.createElement('div');
+  holder.innerHTML = svgText;
+  const svg = holder.querySelector('svg');
+  document.body.appendChild(svg);
+  svg.setAttribute('width', '1200');
+  svg.setAttribute('height', '848');
+
+  const texts = [...svg.querySelectorAll('text')];
+  const boxes = texts.map((t, i) => {
+    const b = t.getBBox();
+    const content = (t.textContent || '').trim().slice(0, 60);
+    return { i, content, x: b.x, y: b.y, w: b.width, h: b.height, bottom: b.y + b.height };
+  });
+
+  const lines = [];
+  lines.push('TEXT COUNT: ' + boxes.length);
+  boxes.forEach((b) => {
+    lines.push(`#${b.i} x=${b.x.toFixed(0)} y=${b.y.toFixed(0)} w=${b.w.toFixed(0)} h=${b.h.toFixed(0)} bottom=${b.bottom.toFixed(0)} | ${b.content}`);
+  });
+  lines.push('--- OVERLAPS (same row, overlap) ---');
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i], b = boxes[j];
+      const yOverlap = Math.min(a.bottom, b.bottom) - Math.max(a.y, b.y);
+      const xOverlap = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      if (yOverlap > 4 && xOverlap > 4) {
+        lines.push(`OVERLAP #${a.i}(${a.content}) <-> #${b.i}(${b.content}) xOv=${xOverlap.toFixed(0)} yOv=${yOverlap.toFixed(0)}`);
+      }
+    }
+  }
+  out.textContent = lines.join('\n');
+})();
+</script>
+</body>
+</html>

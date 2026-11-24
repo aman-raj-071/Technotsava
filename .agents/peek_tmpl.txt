@@ -1,0 +1,6 @@
+4169|            const res = await fetch('/certificate-coordinator-template.svg');
+4170|            svgCoordTemplateCache = await res.text();
+4171|          }
+4172|          return svgCoordTemplateCache;
+4173|        }
+4174|        if (!svgTemplateCache) {

@@ -1,0 +1,6 @@
+d = open('index.html', encoding='utf-8', errors='replace').read()
+print('=== around 283331 ===')
+print(d[283200:283900])
+print()
+print('=== around 288422 ===')
+print(d[288300:288900])

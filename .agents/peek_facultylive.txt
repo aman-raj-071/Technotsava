@@ -1,0 +1,66 @@
+4250|           renderCertificateToCanvas(selectedMember);
+4251|         }
+4252|       }, [selectedMember]);
+4253| 
+4254|       const handleFetch = async (queryVal) => {
+4255|         const k = (queryVal || keyInput).trim();
+4256|         if (!k) return;
+4257| 
+4258|         setErrorMsg('');
+4259|         setSuccessMsg('');
+4260|         setTeamRecord(null);
+4261|         setMembersList([]);
+4262|         setSelectedMember(null);
+4263|         setLoading(true);
+4264| 
+4265|         const cleanKey = k.toLowerCase();
+4266| 
+4267|         // Faculty Coordinator mode: look up by FULL NAME (case-insensitive)
+4268|         if (mode === 'faculty') {
+4269|           const normName = (s) => String(s || '').toLowerCase().replace(/\b(dr|mrs|mr|prof|ms)\b\.?/g, '').replace(/[^a-z0-9]/g, '');
+4270| const nKey = normName(k);
+4271| const found = FACULTY_COORDINATORS.find(
+4272|   (f) => normName(f.name) === nKey || normName(f.name).includes(nKey) || nKey.includes(normName(f.name))
+4273| );
+4274|           if (!found) {
+4275|             setLoading(false);
+4276|             setErrorMsg('No Faculty Co-ordinator found for name "' + k + '". Please check the spelling.');
+4277|             return;
+4278|           }
+4279|           const facultyMember = {
+4280|             id: 'faculty',
+4281|             name: found.name,
+4282|             usn: found.designation || 'Faculty',
+4283|             role: 'Faculty Coordinator',
+4284|             college: 'S J C Institute of Technology',
+4285|             event: 'Technotsava 8.0'
+4286|           };
+4287|           setTeamRecord({ reg_id: 'FAC-TECH26-' + cleanKey.replace(/[^a-z0-9]/g, '').toUpperCase(), leader_name: found.name, event_name: 'Technotsava 8.0' });
+4288|           setMembersList([facultyMember]);
+4289|           setSelectedMember(facultyMember);
+4290|           setSuccessMsg('🎉 Verified! Faculty Co-ordinator certificate ready for ' + found.name + '.');
+4291|           setLoading(false);
+4292|           if (window.confetti) {
+4293|             try { window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } }); } catch (e) {}
+4294|           }
+4295|           return;
+4296|         }
+4297| 
+4298|         // Student Coordinator mode: look up by USN in the coordinator roster
+4299|         if (mode === 'coordinator') {
+4300|           const found = COORDINATORS.find((c) => String(c.usn).toLowerCase() === cleanKey);
+4301|           if (!found) {
+4302|             setLoading(false);
+4303|             setErrorMsg('No Student Co-ordinator found for "' + k + '". Please check your USN.');
+4304|             return;
+4305|           }
+4306|           const coordMember = {
+4307|             id: 'coordinator',
+4308|             name: found.name,
+4309|             usn: found.usn,
+4310|             role: found.role || 'Student Coordinator',
+4311|             college: found.college || 'S J C Institute of Technology',
+4312|             event: 'Technotsava 8.0'
+4313|           };
+4314|           setTeamRecord({ reg_id: found.usn, leader_name: found.name, event_name: 'Technotsava 8.0' });
+4315|           setMembersList([coordMember]);

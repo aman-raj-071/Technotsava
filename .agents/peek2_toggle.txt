@@ -1,0 +1,9 @@
+4564|            </button>
+4565|            <button
+4566|              onClick={() => { setMode('faculty'); setErrorMsg(''); setSuccessMsg(''); }}
+4567|              className={mode === 'faculty' ? 'px-4 py-2 font-mono font-black text-xs bg-[#FFB3D9] text-black border-3 border-black brutal-shadow-sm' : 'px-4 py-2 font-mono font-black text-xs bg-white text-black border-3 border-black'}
+4568|            >
+4569|              👩‍🏫 FACULTY COORDINATOR CERTIFICATE
+4570|            </button>
+4571|          </div>
+4572|
